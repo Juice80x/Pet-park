@@ -1052,7 +1052,7 @@ function updPhoto(dt){const p=G.ph;if(!p)return;p.t+=dt;p.flash=Math.max(0,p.fla
 /* ================= render ================= */
 function spr(c,x,y,s,flip){const w=c.width*s,h=c.height*s,X=sn(x-w/2),Y=sn(y-(c.height-1)*s);
  if(flip){g.save();g.translate(X+w,Y);g.scale(-1,1);g.drawImage(c,0,0,w,h);g.restore()}else g.drawImage(c,X,Y,w,h)}
-function shadow(x,y,rx){g.fillStyle='rgba(0,0,0,.22)';g.fillRect(sn(x-rx),sn(y-2),rx*2,3);g.fillRect(sn(x-rx+2),sn(y-3),rx*2-4,5)}
+function shadow(x,y,rx,a){g.fillStyle=`rgba(0,0,0,${a||.22})`;g.fillRect(sn(x-rx),sn(y-2),rx*2,3);g.fillRect(sn(x-rx+2),sn(y-3),rx*2-4,5)}
 function drawScene(sc,fd){sc=sc||0;const per=fd?'D':period(hourNow()),gy=gY(),sky={M:['#ffd6a0','#aee0ff'],D:['#6cc0ff','#c4e8ff'],E:['#f58f5c','#ffd48a'],N:['#10163a','#2a3470']}[per];
  const gr=g.createLinearGradient(0,0,0,gy);gr.addColorStop(0,sky[0]);gr.addColorStop(1,sky[1]);g.fillStyle=gr;g.fillRect(0,0,vw,gy);
  if(per==='N'){const r=rng(9);for(let i=0;i<40;i++)px(g,r()*vw|0,r()*gy*.8|0,1,1,(G.time*2+i)%5<4?'#fff':'#8a94c8');disc(g,vw-26,22,9,'#f4f0d0');disc(g,vw-22,19,8,sky[0])}
@@ -1087,10 +1087,10 @@ function drawDogEnt(e,x,y){const sc=dsc(e.v),tr=e.trick;let s=dogSpr(e),hop=e.ho
  spr(s.c,x,y-hop,sc,s.flip)}
 function drawPlayer(x,y){const i=(P.anim/8|0)%4,f=P.moving?[1,0,2,0][i]:0;spr(playerSpr(P.dir,f),x,y-(P.moving&&(i&1)?1:0),1,P.dir===2&&P.flip)}
 function lightVals(){const h=hourNow(),tc=tint(h),night=clamp((255-(tc[0]+tc[1])/2)/150,0,1),t=clamp((h-6)/12,0,1),day=h>6&&h<18;
- return{h,tc,night,sc:day?(.5-t)*2.4:.5,sd:day?.26+Math.abs(.5-t)*.5:.3,sa:day?.2*(1-night*.5):.07}}
+ return{h,tc,night,sc:day?(.5-t)*1.7:.4,sd:.3,sa:day?.11*(1-night*.5):.05}}
 const SILS=new WeakMap();
 function silB(c){let s=SILS.get(c);if(!s){s=mk(c.width,c.height);s.x.drawImage(c,0,0);s.x.globalCompositeOperation='source-in';px(s.x,0,0,c.width,c.height,'#000');SILS.set(c,s)}return s}
-function cast(c,x,y,s,LV){const w=c.width*s,h=c.height*s;g.save();g.globalAlpha=LV.sa;g.transform(1,0,LV.sc,-LV.sd,sn(x),sn(y));g.drawImage(silB(c),-w/2,-h+s,w,h);g.restore()}
+function cast(c,x,y,s,LV){const w=c.width*s,h=c.height*s;g.save();g.globalAlpha=LV.sa;g.transform(1,0,LV.sc,LV.sd,sn(x),sn(y));g.drawImage(silB(c),-w/2,-h+s,w,h);g.restore()}
 function vignette(a){const gr=g.createRadialGradient(vw/2,vh/2,Math.min(vw,vh)*.42,vw/2,vh/2,Math.max(vw,vh)*.72);gr.addColorStop(0,'rgba(8,10,30,0)');gr.addColorStop(1,`rgba(8,10,30,${a})`);g.fillStyle=gr;g.fillRect(0,0,vw,vh)}
 function emoB(e,x,y){const a=clamp(e.emo.t,0,1),yy=sn(y-(3.2-e.emo.t)*1.5),X=sn(x);g.globalAlpha=a;px(g,X-8,yy-15,16,14,OUT);px(g,X-9,yy-14,18,12,OUT);px(g,X-1,yy-2,3,3,OUT);px(g,X-7,yy-14,14,12,'#fff');px(g,X-8,yy-13,16,10,'#fff');px(g,X,yy-2,1,2,'#fff');
  const ic=SPR[e.emo.txt]||SPR.heart;g.drawImage(ic,sn(X-ic.width/2),sn(yy-8-ic.height/2));g.globalAlpha=1}
@@ -1151,7 +1151,7 @@ function render(){
  for(const o of objs){if(o.y<cam.y-6)continue;if(o.y>cam.y+vh+90)break;if(o.x>cam.x-50&&o.x<cam.x+vw+50)L.push(o)}
  for(const d of dogs)if(Math.abs(d.x-P.x)<vw+40&&Math.abs(d.y-P.y)<vh+40)L.push(d);
  L.push(P);if(BUD.on)L.push(BUD);if(Math.abs(BAL.x-P.x)<vw+40&&Math.abs(BAL.y-P.y)<vh+40)L.push(BAL);
- for(const o of L){const x=o.x-cam.x,y=o.y-cam.y;if(o===P)cast(playerSpr(P.dir,0),x,y,1,LV);else if(o.b){if(!o.mode)cast(dogSpr(o).c,x,y,dsc(o.v),LV)}else if(CASTK[o.k])cast(OSPR(o),x,y,1,LV)}
+ for(const o of L){const x=o.x-cam.x,y=o.y-cam.y;if(o===P){shadow(x,y,5,.14);cast(playerSpr(P.dir,0),x,y,1,LV)}else if(o.b){if(!o.mode){shadow(x,y,Math.round((o.b.sz+4)*dsc(o.v)),.14);cast(dogSpr(o).c,x,y,dsc(o.v),LV)}}else if(CASTK[o.k])cast(OSPR(o),x,y,1,LV)}
  L.sort((a,b)=>a.y-b.y);
  for(const o of L){const x=o.x-cam.x,y=o.y-cam.y;
   if(o===P)drawPlayer(x,y);
