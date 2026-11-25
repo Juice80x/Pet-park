@@ -927,7 +927,7 @@ function update(dt){G.time+=dt;G.dt=dt;
  if(S.buddy&&S.dogs[S.buddy]&&BY[S.buddy]){const dd=S.dogs[S.buddy];if(!BUD.on||BUD.id!==S.buddy){BUD.on=true;BUD.id=S.buddy;BUD.x=P.x-14;BUD.y=P.y+2;BUD.emo=null;BUD.pd=0}
   BUD.b=BY[S.buddy];BUD.o=dd;BUD.owned=true;BUD.v=dd.v||1;emoTick(BUD,dt);
   const dx=P.x-BUD.x,dy=P.y-BUD.y,dist=Math.hypot(dx,dy);
-  if(dist>160){BUD.x=P.x-12;BUD.y=P.y}else if(dist>20&&!(G.pet&&G.pet.e===BUD)){const s=Math.min(95,dist*3.2)*dt;BUD.x+=dx/dist*s;BUD.y+=dy/dist*s;BUD.st='walk';if(Math.abs(dx)>2)BUD.dir=dx>0?1:-1;
+  if(dist>160){BUD.x=P.x-12;BUD.y=P.y}else if((BUD.st==='walk'?dist>15:dist>27)&&!(G.pet&&G.pet.e===BUD)){const s=Math.min(100,(dist-10)*4.5)*dt;BUD.x+=dx/dist*s;BUD.y+=dy/dist*s;BUD.st='walk';if(Math.abs(dx)>7)BUD.dir=dx>0?1:-1;
    BUD.pd+=s;if(BUD.pd>6){BUD.pd=0;const t=map[I(BUD.x>>4,BUD.y>>4)];if(t===1)FP.push({x:BUD.x+(R()*3-1.5),y:BUD.y-1,t:6,l:6,k:1,p:1})}}else BUD.st='sit';
   }else BUD.on=false;
  setNear(near,np);if(G.pet&&(!BUD.on||Math.hypot(BUD.x-P.x,BUD.y-P.y)>80))closePet();
