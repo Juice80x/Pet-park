@@ -73,7 +73,7 @@ input{font:inherit;font-size:16px;text-align:center;background:#fff7e0;border:3p
 .c{margin:4px 0}
 .tr{font-size:14px;margin:4px 0}
 .logo,#playB,.tagl{font-family:"Arial Rounded MT Bold","Chalkboard SE","Baloo 2","Trebuchet MS",system-ui,sans-serif;font-weight:900}
-#title{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:min(2.4vh,14px);z-index:8;padding:0 0 16vh;overflow:hidden;text-align:center}
+#title{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:min(2.4vh,14px);z-index:8;padding:0 0 26vh;overflow:hidden;text-align:center}
 body[data-s=title] #title{display:flex}
 .logo{font-size:min(27vw,20vh);line-height:.92;text-align:center;width:100%;position:relative;filter:drop-shadow(.035em 0 0 #fff) drop-shadow(-.035em 0 0 #fff) drop-shadow(0 .035em 0 #fff) drop-shadow(0 -.035em 0 #fff) drop-shadow(0 .08em .06em rgba(0,0,0,.35))}
 .logo div{display:flex;justify-content:center}
@@ -84,13 +84,14 @@ body[data-s=title] #title{display:flex}
 .logo div:nth-child(2) span:nth-child(odd){color:#fff}.logo div:nth-child(2) span:nth-child(even){color:#7fe04a}
 .logo span:nth-child(2){animation-delay:.15s}.logo span:nth-child(3){animation-delay:.3s}.logo span:nth-child(4){animation-delay:.45s}
 @keyframes bobl{0%,100%{translate:0 0}50%{translate:0 -.07em}}
-.tagl{color:#fff;font-size:min(4.6vw,3.4vh);-webkit-text-stroke:.3em #4a1f04;paint-order:stroke fill;text-align:center}
+.tagl{color:#fff;font-size:min(4.2vw,3vh);-webkit-text-stroke:.3em #4a1f04;paint-order:stroke fill;text-align:center}
 #playB{font-size:min(9.5vw,7.5vh);color:#fff;background:linear-gradient(#7fe04a,#3aa82e);border:.11em solid #1f5a1a;border-radius:99px;padding:.28em 1.1em .3em;margin-top:.2em;
  box-shadow:0 .16em 0 #1f5a1a,0 .3em .3em rgba(0,0,0,.3),inset 0 .09em 0 rgba(255,255,255,.5);-webkit-text-stroke:.12em #1f5a1a;paint-order:stroke fill;cursor:pointer;animation:pulse 1.1s ease-in-out infinite;display:flex;align-items:center;gap:.3em}
 #playB:active{transform:translateY(.1em);box-shadow:0 .06em 0 #1f5a1a}
 #playB i{width:0;height:0;border-left:.62em solid #fff;border-top:.4em solid transparent;border-bottom:.4em solid transparent;filter:drop-shadow(.05em .05em 0 #1f5a1a)}
 @keyframes pulse{0%,100%{scale:1}50%{scale:1.07}}
 #tsub{min-height:1em}
+@media (orientation:landscape){#title{padding-bottom:4vh;gap:4px}.logo{font-size:min(15vw,23vh)}#playB{font-size:min(6vw,9vh)}#charB{font-size:min(3vw,5vh)}}
 #charB{font-family:"Arial Rounded MT Bold","Chalkboard SE","Baloo 2","Trebuchet MS",system-ui,sans-serif;font-weight:900;font-size:min(5vw,3.8vh);color:#4a1f04;background:linear-gradient(#ffe08a,#f2b23a);border:.14em solid #7a3e12;border-radius:99px;padding:.35em 1.1em;box-shadow:0 .16em 0 #7a3e12,0 .3em .3em rgba(0,0,0,.25);cursor:pointer}
 #dexB{position:fixed;top:calc(8px + env(safe-area-inset-top));left:calc(8px + env(safe-area-inset-left));display:none;align-items:center;gap:6px;font:inherit;font-size:12px;color:#5a2a0a;
  background:#f6d79b;border:3px solid #7a3e12;box-shadow:0 0 0 2px #d98a3a,0 3px 0 2px rgba(0,0,0,.3);padding:5px 8px;cursor:pointer;z-index:5}
@@ -211,6 +212,31 @@ const TP={},TPN={feisty:'Feisty',fast:'Speedy',sleepy:'Sleepy',friendly:'Friendl
 const TQ={feisty:{v:1.6,p0:.15,p1:.4,pc:.15},fast:{v:1.9,p0:.2,p1:.5,pc:.25},sleepy:{v:.5,p0:1.5,p1:2.6,pc:.6},friendly:{v:.9,p0:.8,p1:1.4,pc:.5},shy:{v:1.15,p0:.2,p1:.5,pc:.1,edge:1},calm:{v:1,p0:.35,p1:1,pc:.3}};
 const BY={};BR.forEach(b=>BY[b.id]=b);
 const BALI={id:'bali',n:'Aussie Shepherd',sz:1,c:'#7a4630',s:'#f8f2ea',ec:'#94603e',lc:'#c8824a',brow:'#d08a48',eye:'#d89a30',nose:'#6a4038',e:'fold',t:'fluff',p:'mask',f:1};BY.bali=BALI;
+const SHALL=new URLSearchParams(location.search).get('shiny');
+function hueShift(hex){const n=parseInt(hex.slice(1),16);let r=(n>>16)/255,g=(n>>8&255)/255,b=(n&255)/255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h=0,s=0,l=(mx+mn)/2;
+ if(mx!==mn){const d=mx-mn;s=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4;h/=6}
+ h=(h+.52)%1;s=Math.max(s,.34);l=Math.min(l,.9);const q=l<.5?l*(1+s):l+s-l*s,p2=2*l-q,f=t=>{t=(t+1)%1;return t<1/6?p2+(q-p2)*6*t:t<.5?q:t<2/3?p2+(q-p2)*(2/3-t)*6:p2};
+ return'#'+[f(h+1/3),f(h),f(h-1/3)].map(v=>(256+Math.round(v*255)).toString(16).slice(1)).join('')}
+const SHC={};
+function SHV(b){return SHC[b.id]||(SHC[b.id]=Object.assign({},b,{id:b.id+'~',c:hueShift(b.c),s:hueShift(b.s),ec:b.ec?hueShift(b.ec):undefined,lc:b.lc?hueShift(b.lc):undefined,brow:b.brow?hueShift(b.brow):undefined}))}
+const BV=id=>S.dogs[id]&&S.dogs[id].shiny?SHV(BY[id]):BY[id];
+const lvl=d=>Math.min(10,1+((d.bond||0)/3|0));
+const TRK=[['speak',1,'Speak'],['spin',2,'Spin'],['jump',4,'Jump'],['roll',6,'Roll over']];
+const PERK={fast:'You walk faster',friendly:'Skittish dogs stay calm near you',feisty:'Finds buried treasure more often',sleepy:'+50% treats from mini games',shy:'Shiny dogs appear twice as often',calm:'Dogs hold still longer for photos'};
+function perk(){return S.buddy&&S.dogs[S.buddy]?(TP[S.buddy]||'calm'):''}
+function addBond(id,n){const d=S.dogs[id],a=lvl(d);d.bond=(d.bond||0)+n;const b=lvl(d);if(b>a){const t=TRK.find(t=>t[1]===b);setTimeout(()=>toast(`${d.name} reached Lv ${b}!${t?' New trick: '+t[2]:''}`,3200),700);sfx.jingle()}save()}
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()};
+function qlabel(q){const k=q.k,n=q.n;return k==='snap'?`Photograph ${n} dogs`:k==='star3'?'Take a three-star photo':k==='newb'?'Discover a new breed':k==='pat'?`Pat or praise your dogs ${n} times`:k==='treat'?`Feed ${n} treats`:k==='dig'?'Dig up buried treasure':k==='trick'?`Do ${n} tricks`:k==='game'?`Score ${n} in a mini game`:k.startsWith('tp:')?`Snap a ${TPN[k.slice(3)]} dog`:`Snap a dog at ${ZNAME[k.slice(3)]}`}
+function newDaily(){const r=rng(hash(today()+'q'));const pool=[['snap',3,20],['star3',1,20],['pat',5,15],['treat',2,15],['dig',1,20],['trick',3,15],['game',30,25],['tp:'+pick2(r,['fast','feisty','sleepy','friendly']),1,25],['zn:'+pick2(r,['pond','woods','sand','meadow']),1,20]];if(count()<BR.length)pool.push(['newb',1,30]);
+ const q=[];while(q.length<3){const c=pool.splice(r()*pool.length|0,1)[0];q.push({k:c[0],n:c[1],p:0,r:c[2]})}return{day:today(),q,bonus:false}}
+function dayCheck(){const t=today();if(S.daily&&S.daily.day===t)return 0;const y=new Date(Date.now()-864e5),yk=y.getFullYear()+'-'+(y.getMonth()+1)+'-'+y.getDate();S.streak=S.lastDay===yk?(S.streak||0)+1:1;S.lastDay=t;S.daily=newDaily();const gift=10*Math.min(S.streak,7);S.treats+=gift;save();return gift}
+function Q(k,v){const D=S.daily;if(!D||D.day!==today())return;let ch=false;
+ for(const q of D.q){if(q.p>=q.n||q.k!==k)continue;ch=true;q.p=k==='game'?Math.max(q.p,Math.min(q.n,v||0)):Math.min(q.n,q.p+(v||1));if(q.p>=q.n){S.treats+=q.r;sfx.jingle();toast(`Quest done: ${qlabel(q)}  +${q.r} treats`,3200)}}
+ if(ch&&!D.bonus&&D.q.every(q=>q.p>=q.n)){D.bonus=true;S.treats+=50;setTimeout(()=>toast('All daily quests done! Bonus +50 treats',3600),3400)}if(ch)save()}
+const DECO={wall:[['Cream',0,['#f0dcae','#e6cc96','#b9753a']],['Sky blue',60,['#cfe4f0','#b4d0e2','#5a7a9a']],['Blossom',60,['#f6d4dc','#eab8c6','#a85a6a']],['Mint',60,['#d6eccc','#bcdcae','#5a8a5a']]],
+ floor:[['Oak',0,['#c48a48','#cc9654','#a8703a','#b47c40']],['Walnut',80,['#8a5a34','#94643c','#6a4424','#7a5030']],['Checker tile',120,['#e8e4dc','#b8c4d0','#9aa4b0','#c8ccd2']]],
+ rug:[['Red & gold',0,['#b83a3a','#e8c46a','#c84a4a']],['Ocean',70,['#2a5aa8','#e8f0f8','#4a8ad8']],['Forest',70,['#2a7a44','#f0e8c8','#4aa864']],['Pink',90,['#d85a9a','#fff0f6','#f08ab8']]],
+ it:[['plant','Pot plant',40],['toybox','Toy box',60],['lamp','Floor lamp',70],['trophy','Trophy shelf',100],['sofa','Sofa',120],['tank','Fish tank',150],['ballpit','Ball pit',180]]};
 const RAR=[['Common','#6a8a3a'],['Uncommon','#2a7fd8'],['Rare','#a04fd8'],['Legendary','#e0851a']],RW=[60,22,7,1.6];
 const ZNAME={lawn:'the Lawns',woods:'the Woods',pond:'the Pond',sand:'Sandy Paws Beach',meadow:'the Meadow',any:'all over the park'};
 const NAMES=['Biscuit','Mango','Ziggy','Pepper','Banjo','Milo','Nugget','Waffles','Bindi','Koda','Roo','Digger','Pickles','Noodle','Bear','Luna','Scout','Olive','Tofu','Mochi','Rusty','Honey','Peanut','Matilda','Gizmo','Poppy'];
@@ -628,7 +654,7 @@ function spawnDog(d,far){const per=period(hourNow());let b=BY.mutt,x=P.x,y=P.y;
   const z=zoneAt(tx,ty),c=BR.filter(q=>(q.z.includes(z)||q.z[0]==='any')&&q.h.includes(per));if(!c.length)continue;
   let tot=0;for(const q of c)tot+=q.w||RW[q.r];let n=R()*tot;b=c[0];for(const q of c){n-=q.w||RW[q.r];if(n<=0){b=q;break}}
   if(dogs.filter(o=>o!==d&&o.b===b).length>2)continue;break}
- return Object.assign(d,{b,x,y,st:'sit',t:1+R()*3,dir:R()<.5?1:-1,life:70+R()*130,leave:false,fast:false,near:false,tx:x,ty:y,happy:0,seed:R()*10,hop:0,v:.82+R()*.36})}
+ return Object.assign(d,{b,x,y,st:'sit',t:1+R()*3,dir:R()<.5?1:-1,life:70+R()*130,leave:false,fast:false,near:false,tx:x,ty:y,happy:0,seed:R()*10,hop:0,v:.82+R()*.36,shiny:!!SHALL||R()<(perk()==='shy'?.05:.025)})}
 const solidAt=(x,y)=>{const tx=x>>4,ty=y>>4;return tx<0||ty<0||tx>=MW||ty>=MH||solid[I(tx,ty)]===1};
 function blocked(x,y){return solidAt(x-4,y-5)||solidAt(x+3,y-5)||solidAt(x-4,y-1)||solidAt(x+3,y-1)}
 
@@ -686,35 +712,45 @@ const count=()=>Object.keys(S.dogs).length;
 const stars=n=>'★'.repeat(n)+'☆'.repeat(3-n);
 const hearts=d=>{const n=Math.min(5,(d.bond||0)/2|0);return'♥'.repeat(n)+'<span style="color:#d9b98a">'+'♥'.repeat(5-n)+'</span>'};
 const TD=[];
-function titleInit(){TD.length=0;const ids=Object.keys(S.dogs);for(let i=0;i<5;i++){const id=ids[i]||pick(BR).id;TD.push({b:BY[id],o:S.dogs[id]||null,x:R()*400,v:36+R()*34,l:i})}
+function titleInit(){TD.length=0;const ids=Object.keys(S.dogs);for(let i=0;i<5;i++){const id=ids[i]||pick(BR).id;TD.push({b:S.dogs[id]?BV(id):BY[id],o:S.dogs[id]||null,x:i*97+R()*30,v:30+i*7,l:i})}
  $('#tsub').textContent=S.started?`${S.player.name?'Welcome back, '+S.player.name+'! · ':''}Dogdex ${count()}/${BR.length}`:''}
-function drawTitle(){drawScene(G.time*14);const gy=gY(),sp=(vh-gy-16)/5;for(const d of TD){const X=((d.x+G.time*d.v)%(vw+100))-50,Y=gy+10+d.l*sp;shadow(X,Y,10);spr(dogSide(d.b,1+((G.time*d.v/5|0)%4),d.o,1),X,Y,1.25)}}
-$('#playB').addEventListener('click',()=>{audioInit();sfx.jingle();G.fromTitle=false;setState('world');if(!S.started)charEdit()});
+function drawTitle(){drawScene(0,1);const gy=gY(),sp=(vh-gy-22)/3;for(const d of TD){if(d.l>3)continue;const X=((d.x+G.time*d.v)%(vw+110))-55,Y=gy+16+(d.l%4)*sp*.9;shadow(X,Y,9);spr(dogSide(d.b,1+((G.time*d.v/5|0)%4),d.o,1),X,Y,1.25)}}
+$('#playB').addEventListener('click',()=>{audioInit();sfx.jingle();G.fromTitle=false;setState('world');if(!S.started)charEdit();else{const gf=dayCheck();if(gf)questPanel(gf)}});
 $('#charB').addEventListener('click',()=>{audioInit();sfx.blip();G.fromTitle=true;charEdit()});
 $('#dexB').addEventListener('click',()=>{audioInit();sfx.blip();if(G.state==='world'&&!G.paused){closePet();dex()}});
 function menu(){openPanel(`<button class="xb" data-a="close" aria-label="Close">X</button><h2>Pup Park</h2><div class="tr">${bone()} ${S.treats} treats</div>
+ <button class="btn" data-a="quests">Daily quests ${S.daily?S.daily.q.filter(q=>q.p>=q.n).length:0}/3</button>
+ <button class="btn" data-a="deco">Decorate kennel</button>
  <button class="btn alt" data-a="settings">Settings</button>
  <button class="btn alt" data-a="leave">Leave game</button>`)}
+function questPanel(gift){if(!S.daily||S.daily.day!==today())gift=dayCheck()||gift;const D=S.daily;let h=`<button class="xb" data-a="close" aria-label="Close">X</button><h2>${gift?'Welcome back!':'Daily quests'}</h2><p><b>${S.streak||1}-day streak</b>${gift?` · gift +${gift} ${bone()}`:''}</p>`;
+ for(const q of D.q)h+=`<div class="cy" style="text-align:left;border-top:2px solid #d9a868;padding-top:5px"><span>${q.p>=q.n?'✔':'○'} ${qlabel(q)}</span><b>${q.p>=q.n?'done':q.p+'/'+q.n}<br><small>+${q.r}</small></b></div>`;
+ openPanel(h+`<p>${D.bonus?'All done! Bonus claimed.':'Finish all 3 for a +50 bonus.'}</p><p style="font-size:11px">Come back tomorrow for a bigger gift (grows to day 7).</p>`)}
+function deco(){const hs=S.home,own=S.hown||(S.hown=[]);let h=`<button class="xb" data-a="menu" aria-label="Close">X</button><h2>Decorate kennel</h2><div class="tr">${bone()} ${S.treats} treats</div>`;
+ for(const[cat,ttl]of[['wall','Walls'],['floor','Floor'],['rug','Rug']]){h+=`<h3>${ttl}</h3><div class="row">`;DECO[cat].forEach((it,i)=>{const o=!it[1]||own.includes(cat+i);h+=`<button class="btn sm ${hs[cat]===i?'on':''} ${o?'':'lock'}" data-a="dbuy" data-v="${cat}:${i}">${it[0]}${o?'':' · '+it[1]}</button>`});h+='</div>'}
+ h+='<h3>Furniture</h3><div class="row">';DECO.it.forEach(it=>{const o=own.includes(it[0]);h+=`<button class="btn sm ${hs.it.includes(it[0])?'on':''} ${o?'':'lock'}" data-a="dbuy" data-v="it:${it[0]}">${it[1]}${o?'':' · '+it[2]}</button>`});
+ openPanel(h+'</div><p style="font-size:11px">Walk into the cottage to see it. Tap furniture you own to put it away.</p>')}
+
 function settings(){openPanel(`<button class="xb" data-a="menu" aria-label="Close">X</button><h2>Settings</h2>
  <div class="two"><button class="btn alt" data-a="music">Music: ${S.music?'on':'off'}</button><button class="btn alt" data-a="sound">Sounds: ${S.sound?'on':'off'}</button></div>
  <button class="btn alt" data-a="how">How to play</button>
  <button class="btn lock sm" data-a="reset" data-v="0">Erase save</button>`)}
-function how(){openPanel(`<h2>How to play</h2><p style="text-align:left">• Drag anywhere to walk (or arrow keys).<br>• Walk into the red-roofed cottage by the plaza to visit your pups. Tap any dog of yours to pat, praise or play.<br>• Progress saves automatically on this device.<br>• Walk up to a dog and tap it, or tap the camera button.<br>• In camera mode, tap when the dog is inside the frame. Dead centre = 3 stars. You get 3 shots.<br>• Different dogs hang out in different parts of the park, and at different real-world times: morning, daytime, evening and night.<br>• Tap the book (top left) for your Dogdex and the clock (top right) for settings. Dress your dogs up, play mini games to earn treats, and pick a buddy to walk with you.</p><button class="btn" data-a="settings">Back</button>`)}
+function how(){openPanel(`<h2>How to play</h2><p style="text-align:left">• Drag anywhere to walk (or arrow keys).<br>• Walk into the red-roofed cottage by the plaza to visit your pups. Tap any dog of yours to pat, praise or play.<br>• Level your dogs up with pats, treats and games to unlock tricks. Your buddy digs up treasure as you walk and gives you a perk.<br>• Check Daily quests in the clock menu, and spend treats on outfits and kennel decorations.<br>• Progress saves automatically on this device.<br>• Walk up to a dog and tap it, or tap the camera button.<br>• In camera mode, tap when the dog is inside the frame. Dead centre = 3 stars. You get 3 shots.<br>• Different dogs hang out in different parts of the park, and at different real-world times: morning, daytime, evening and night.<br>• Tap the book (top left) for your Dogdex and the clock (top right) for settings. Dress your dogs up, play mini games to earn treats, and pick a buddy to walk with you.</p><button class="btn" data-a="settings">Back</button>`)}
 function dex(){let h=`<h2>Dogdex ${count()}/${BR.length}</h2><div class="grid">`;
  for(const b of BR){const d=S.dogs[b.id];
-  h+=d?`<button class="cell" style="border-color:${RAR[b.r][1]}" data-a="dog" data-v="${b.id}">${im(dogFront(b,0,d,true),2)}<br>${esc(d.name)}<i>${b.n}</i></button>`
+  h+=d?`<button class="cell" style="border-color:${RAR[b.r][1]}" data-a="dog" data-v="${b.id}">${im(dogFront(BV(b.id),0,d,true),2)}<br>${d.shiny?'✦ ':''}${esc(d.name)}<i>${b.n}</i></button>`
       :`<button class="cell un" data-a="hint" data-v="${b.id}">${im(sil(dogFront(b,0,null,false)),2)}<br>???<i style="color:${RAR[b.r][1]}">${RAR[b.r][0]}</i></button>`}
  h+=S.bali?`<button class="cell" style="border-color:#e0851a" data-a="bali">${im(dogFront(BALI,0,null,true),2)}<br>Bali<i>Uncatchable</i></button>`:`<button class="cell un" data-a="bali">${im(sil(dogFront(BALI,0,null,false)),2)}<br>???<i style="color:#e0851a">Mystery</i></button>`;
  openPanel(`<button class="xb" data-a="close" aria-label="Close">X</button>`+h+`</div>`,'wide')}
 function hint(id){const b=BY[id];openPanel(`<h2>???</h2><div class="c">${im(sil(dogFront(b,0,null,false)),3)}</div><p><span class="tag" style="background:${RAR[b.r][1]}">${RAR[b.r][0]}</span></p><p>Seen around ${b.z.map(z=>ZNAME[z]).join(' and ')}<br>in the ${b.h.split('').map(c=>PNAME[c]).join(', ')}.</p><button class="btn" data-a="dex">Back</button>`)}
 function dogPage(id){G.cur=id;const b=BY[id],d=S.dogs[id];
- openPanel(`<div class="c">${im(dogFront(b,0,d,true),3)}</div><input id="nm" maxlength="12" value="${esc(d.name)}" aria-label="Name">
+ openPanel(`<div class="c">${im(dogFront(BV(id),0,d,true),3)}</div><input id="nm" maxlength="12" value="${esc(d.name)}" aria-label="Name">
  <p>${b.n} · <span class="tag" style="background:${RAR[b.r][1]}">${RAR[b.r][0]}</span> · ${TPN[TP[id]||'calm']}</p>
- <p><span class="stars" style="font-size:16px">${stars(d.stars)}</span> &nbsp; <span style="color:#d83a5a">${hearts(d)}</span></p><p><i>${b.d}</i></p>
+ <p><span class="stars" style="font-size:16px">${stars(d.stars)}</span> &nbsp; <b>Lv ${lvl(d)}</b>${lvl(d)<10?' · '+(3-((d.bond||0)%3))+' to next':''}${d.shiny?' · ✦ Shiny':''}</p><p><i>${b.d}</i></p><p style="font-size:11px">Tricks: ${TRK.filter(t=>lvl(d)>=t[1]).map(t=>t[2]).join(', ')}<br>Buddy perk: ${PERK[TP[id]||'calm']}</p>
  <div class="two"><button class="btn" data-a="dress" data-v="${id}">Dress up</button><button class="btn" data-a="playm" data-v="${id}">Play</button></div>
  <button class="btn ${S.buddy===id?'on':'alt'}" data-a="buddy" data-v="${id}">${S.buddy===id?'Walking with you ✓':'Walk with me'}</button>
  <button class="btn alt" data-a="dex">Back</button>`)}
-function dress(id){G.cur=id;const d=S.dogs[id],b=BY[id];let h=`<h2>Dress up ${esc(d.name)}</h2><div class="c">${im(dogFront(b,0,d,true),3)}</div><div class="tr">${bone()} ${S.treats} treats</div>`;
+function dress(id){G.cur=id;const d=S.dogs[id],b=BY[id];let h=`<h2>Dress up ${esc(d.name)}</h2><div class="c">${im(dogFront(BV(id),0,d,true),3)}</div><div class="tr">${bone()} ${S.treats} treats</div>`;
  for(const sl of['hat','neck','eyes']){h+=`<h3>${{hat:'Head',neck:'Neck',eyes:'Eyes'}[sl]}</h3><div class="row"><button class="btn sm ${!d[sl]?'on':''}" data-a="equip" data-v="${sl}:">None</button>`;
   for(const o of OUTFITS)if(o.slot===sl){const own=S.owned.includes(o.id);h+=`<button class="btn sm ${d[sl]===o.id?'on':''} ${own?'':'lock'}" data-a="equip" data-v="${sl}:${o.id}">${o.n}${own?'':' · '+o.cost}</button>`}
   h+='</div>'}
@@ -731,8 +767,12 @@ function charEdit(){PS={};const p=S.player;let h=`<h2>${S.started?'Your characte
 const ACT={
  leave(){closePanel();if(G.scene==='home')exitHome();closePet();setNear(null,null);S.pos=[P.x,P.y];save();titleInit();setState('title')},
  bali(){openPanel(S.bali?`<h2>Bali</h2><div class="c">${im(dogFront(BALI,0,null,true),3)}</div><p>Aussie Shepherd · <span class="tag" style="background:#e0851a">Uncatchable</span></p><p><i>Get too close and Bali spins into a tornado and blows you away. Nobody has ever got the photo.</i></p><p>Blown away ${S.bali} time${S.bali>1?'s':''}.</p><button class="btn" data-a="dex">Back</button>`:`<h2>???</h2><div class="c">${im(sil(dogFront(BALI,0,null,false)),3)}</div><p>They say a brown blur roams the park. Nobody has ever caught it.</p><button class="btn" data-a="dex">Back</button>`)},
+ quests(){questPanel(0)},deco,
+ dbuy(v){const[cat,id]=v.split(':'),hs=S.home,own=S.hown,key=cat==='it'?id:cat+id,cost=cat==='it'?DECO.it.find(i=>i[0]===id)[2]:DECO[cat][+id][1];let bought=false;
+  if(cost&&!own.includes(key)){if(S.treats<cost){sfx.buzz();toast(`You need ${cost-S.treats} more treats.`);return}S.treats-=cost;own.push(key);bought=true;sfx.coin()}
+  if(cat==='it'){const i=hs.it.indexOf(id);if(i<0)hs.it.push(id);else if(!bought)hs.it.splice(i,1)}else hs[cat]=+id;buildHome();save();deco()},
  menu,settings,close:closePanel,dex,how,hint,dog:dogPage,dress,playm:playMenu,char:charEdit,
- chardone(){PS={};const first=!S.started,pn=$('#pn');if(pn)S.player.name=pn.value.trim().slice(0,12);if(G.fromTitle){G.fromTitle=false;if(S.started)save();closePanel();titleInit();return}S.started=true;save();closePanel();setState('world');if(first)toast('Drag anywhere to walk. Go find a dog!',4500)},
+ chardone(){PS={};const first=!S.started,pn=$('#pn');if(pn)S.player.name=pn.value.trim().slice(0,12);if(G.fromTitle){G.fromTitle=false;if(S.started)save();closePanel();titleInit();return}S.started=true;save();dayCheck();closePanel();setState('world');if(first)toast('Drag anywhere to walk. Go find a dog!',4500)},
  cyc(v){const[k,d]=v.split(':'),n=CY.find(c=>c[0]===k)[2];S.player[k]=(S.player[k]+ +d+n)%n;save();charEdit()},
  music(){S.music=!S.music;applyVol();save();settings()},sound(){S.sound=!S.sound;applyVol();save();settings()},
  reset(v,t){if(t.dataset.v==='0'){t.dataset.v='1';t.textContent='Tap again to erase everything'}else{try{localStorage.removeItem(SAVE_KEY)}catch(e){}try{IDB.transaction('kv','readwrite').objectStore('kv').delete('save')}catch(e){}setTimeout(()=>location.reload(),200)}},
@@ -749,20 +789,24 @@ ui.addEventListener('change',e=>{if(e.target.id==='nm'&&S.dogs[G.cur]){S.dogs[G.
 $('#clock').addEventListener('click',()=>{audioInit();sfx.blip();if(G.state==='world'&&!G.paused)menu()});
 const petEl=$('#pet'),PRAISE=['iStar','iSmile','iNote','iSpark','iHearts'];
 function emote(e,t){e.emo={txt:t,t:3.2};e.joy=3.2;e.hop=.3}
-function openPet(e,id){if(!S.dogs[id])return;G.pet={e,id};petEl.innerHTML=`<b>${esc(S.dogs[id].name)}</b><button data-p="pat">${im(SPR.heart,2)} Pat</button><button data-p="praise">${im(SPR.iStar,1.5)} Praise</button><button data-p="treat">${im(SPR.bone,1.5)} Treat</button><button data-p="play">${im(SPR.ball,2)} Play</button><button data-p="dress">${im(SPR.iHat,1.5)} Dress</button><button data-p="x">X</button>`;petEl.classList.add('on');sfx.blip();e.hop=.25}
+function openPet(e,id){if(!S.dogs[id])return;G.pet={e,id};petEl.innerHTML=`<b>${esc(S.dogs[id].name)} · Lv ${lvl(S.dogs[id])}</b><button data-p="pat">${im(SPR.heart,2)} Pat</button><button data-p="praise">${im(SPR.iStar,1.5)} Praise</button><button data-p="treat">${im(SPR.bone,1.5)} Treat</button><button data-p="trick">${im(SPR.iSpark,1.5)} Trick</button><button data-p="play">${im(SPR.ball,2)} Play</button><button data-p="dress">${im(SPR.iHat,1.5)} Dress</button><button data-p="x">X</button>`;petEl.classList.add('on');sfx.blip();e.hop=.25}
 function closePet(){G.pet=null;petEl.classList.remove('on')}
 petEl.addEventListener('click',ev=>{const t=ev.target.closest('[data-p]');if(!t||!G.pet)return;audioInit();const{e,id}=G.pet,d=S.dogs[id],k=t.dataset.p;
  if(k==='x')return closePet();
- if(k==='pat'){emote(e,'heart');sfx.pop();const n=Date.now();if(n-(d.lp||0)>60000){d.bond=(d.bond||0)+1;d.lp=n;save()}}
- else if(k==='praise'){emote(e,pick(PRAISE));sfx.bark(BY[id].sz)}
- else if(k==='treat'){if(S.treats<1){toast('No treats left. Play a game to earn some!');sfx.buzz();return}S.treats--;d.bond=(d.bond||0)+1;save();emote(e,'iYum');sfx.coin()}
+ if(k==='pat'){emote(e,'heart');sfx.pop();const n=Date.now();if(n-(d.lp||0)>60000){d.lp=n;addBond(id,1)}Q('pat')}
+ else if(k==='praise'){emote(e,pick(PRAISE));sfx.bark(BY[id].sz);Q('pat')}
+ else if(k==='trick'){const t=pick(TRK.filter(t=>lvl(d)>=t[1]));if(t[0]==='speak'){emote(e,'iNote');sfx.bark(BY[id].sz)}else{e.trick={k:t[0],t:1,d:1};e.joy=1.4;sfx.jump()}Q('trick')}
+ else if(k==='treat'){if(S.treats<1){toast('No treats left. Play a game to earn some!');sfx.buzz();return}S.treats--;addBond(id,1);emote(e,'iYum');sfx.coin();Q('treat')}
  else if(k==='play'){closePet();playMenu(id)}else if(k==='dress'){closePet();dress(id)}});
 let ACTI=['',''];
 function setNear(n,pt){if(n===G.near&&pt===G.nearPet)return;G.near=n;G.nearPet=pt;actB.classList.toggle('on',!!(n||pt));actB.innerHTML=ACTI[n?0:1]}
 actB.addEventListener('click',()=>{audioInit();if(G.state!=='world'||G.paused)return;if(G.near)startEncounter(G.near);else if(G.nearPet)openPet(G.nearPet,G.nearPet.id)});
 const whose=()=>S.player.name?S.player.name+"'s":'Your';
+function digDone(){const id=S.buddy,d=S.dogs[id];if(!d)return;const r=R();let msg;const un=OUTFITS.filter(o=>!S.owned.includes(o.id)&&o.cost<=60);
+ if(r<.1&&un.length){const o=pick(un);S.owned.push(o.id);msg=`a ${o.n}! (new outfit)`;sfx.jingle()}else{const n=r<.28?25+(R()*20|0):5+(R()*11|0);S.treats+=n;msg=`${n} treats!`;sfx.coin()}
+ emote(BUD,r<.1?'iSpark':'bone');BUD.st='sit';FP.push({x:BUD.x+BUD.dir*8,y:BUD.y,t:25,l:25,k:9});toast(`${d.name} dug up ${msg}`,2800);S.digs=(S.digs||0)+1;save();Q('dig')}
 function enterHome(){G.ret=[HOUSE.x,HOUSE.y+12];G.scene='home';closePet();keysClear();P.vx=P.vy=0;const W=HOME.w*16,H=HOME.h*16;P.x=W/2;P.y=H-14;P.dir=1;
- HOME.dogs=Object.keys(S.dogs).filter(id=>BY[id]).map(id=>({id,b:BY[id],o:S.dogs[id],owned:true,v:S.dogs[id].v||1,x:24+R()*(W-48),y:58+R()*(H-84),st:'sit',t:R()*3,dir:R()<.5?1:-1,seed:R()*10,hop:0,joy:0}));
+ HOME.dogs=Object.keys(S.dogs).filter(id=>BY[id]).map(id=>({id,b:BY[id],o:S.dogs[id],owned:true,shiny:!!S.dogs[id].shiny,v:S.dogs[id].v||1,x:24+R()*(W-48),y:58+R()*(H-84),st:'sit',t:R()*3,dir:R()<.5?1:-1,seed:R()*10,hop:0,joy:0}));
  sfx.pop();const n=HOME.dogs.length;toast(n?`${whose()} Kennel · ${n} pup${n>1?'s':''}. Tap one to pat it!`:`${whose()} Kennel. Catch a dog and it will live here!`,3600)}
 function exitHome(){G.scene='park';closePet();keysClear();setNear(null,null);P.x=G.ret[0];P.y=G.ret[1];P.dir=0;P.vx=P.vy=0;G.cam.fx=undefined;sfx.pop()}
 mh.addEventListener('click',()=>{if(G.state==='photo'&&G.ph&&!G.ph.done){G.ph.done=true;endPhoto()}else if(G.state==='mini'&&MINI)endMini(MINI,true)});
@@ -789,12 +833,13 @@ function snap(){const p=G.ph;if(!p||p.done||p.t<.6)return;p.film--;p.flash=1;sfx
 function photoResult(p){const b=p.b,old=S.dogs[b.id],isNew=!old;let tr;
  if(isNew){tr=10*p.stars+[0,10,25,60][b.r];S.dogs[b.id]={name:pick(NAMES),stars:p.stars,bond:0,hat:'',neck:'',eyes:'',n:1,v:p.d.v}}
  else{tr=2*p.stars+(p.stars>old.stars?5:0);old.n=(old.n||1)+1;if(p.stars>old.stars)old.stars=p.stars}
- S.treats+=tr;let extra='';
+ const sh=!!p.d.shiny;let extra='';if(sh){tr*=3;if(!S.dogs[b.id].shiny){S.dogs[b.id].shiny=true;extra+='<p><b>✦ SHINY! ✦</b> A rare coat. Triple treats!</p>'}}
+ S.treats+=tr;Q('snap');if(p.stars===3)Q('star3');if(isNew)Q('newb');Q('tp:'+(TP[b.id]||'calm'));Q('zn:'+zoneAt(p.d.x>>4,p.d.y>>4));
  if(!S.buddy){S.buddy=b.id;BUD.on=false;extra='<p>It wants to walk with you!</p>'}
  if(count()===BR.length&&isNew)extra+='<p>DOGDEX COMPLETE! You legend.</p>';
  save();sfx.jingle();
  const c=mk(80,72),x=c.x,per=period(hourNow());px(x,0,0,80,50,{M:'#ffd6a0',D:'#8fd3ff',E:'#f7a66b',N:'#232c66'}[per]);px(x,0,46,80,26,'#4aa63c');for(let i=0;i<10;i++)disc(x,i*9+2,45,5,'#2f7d32');px(x,0,50,80,1,'#3c8c38');
- x.drawImage(dogFront(b,0,null,true),7,-16,66,88);
+ x.drawImage(dogFront(sh?SHV(b):b,0,null,true),7,-16,66,88);
  if(per==='N'){x.globalCompositeOperation='multiply';px(x,0,0,80,72,'#9aa4e0');x.globalCompositeOperation='source-over'}
  G.cur=b.id;
  openPanel(`<h2>${isNew?'New Dogdex entry!':'Nice shot!'}</h2><div class="card">${im(c,3)}<p style="margin:4px 0 0;color:#333">${b.n}</p></div>
@@ -812,7 +857,7 @@ function burst(m,x,y,col,n){for(let i=0;i<(n||8);i++){const a=R()*6.28,s=25+R()*
 function fxStep(m,dt){for(const f of m.fx){f.t-=dt;f.x+=f.vx*dt;f.y+=f.vy*dt;if(f.g)f.vy+=f.g*dt}m.fx=m.fx.filter(f=>f.t>0)}
 function fxDraw(m,ox){for(const f of m.fx){g.globalAlpha=clamp(f.t/f.life*2,0,1);if(f.txt)txt(f.txt,f.x-(ox||0),f.y,f.s||9,f.c||'#ffd84a');else px(g,f.x-(ox||0),f.y,2,2,f.c);g.globalAlpha=1}}
 const MSTAR={catch:[20,45,80],hop:[12,26,42],fetch:[12,20,26]},MPAY={catch:.5,hop:1,fetch:1.5};
-function startMini(kind,id){const b=BY[id],o=S.dogs[id];closePanel();
+function startMini(kind,id){const b=BV(id),o=S.dogs[id];closePanel();
  const base={kind,id,b,o,score:0,over:false,fx:[],cd:2.1,shake:0,held:false,lbl:''};
  if(kind==='catch')MINI=Object.assign(base,{name:'Treat Catch',tip:'Slide to move',t:40,x:vw/2,tx:vw/2,items:[],sp:.4,stun:0,dir:1,mov:false,combo:0,mult:1,hop:0,dist:0,
   hud(){return`${this.score} pts · x${this.mult} · ${Math.ceil(this.t)}s`},
@@ -896,9 +941,9 @@ function miniDraw(){const m=MINI;g.save();if(m.shake>0)g.translate((R()-.5)*5*m.
  if(m.cd>0){txt(m.lbl,vw/2,vh*.36,m.lbl==='GO!'?26:18,'#ffd84a');if(m.cd>.6)txt(m.tip,vw/2,vh*.36+22,6.5,'#fff')}}
 function endMini(m,quit){if(m.over)return;m.over=true;MINI=null;setState('world');const d=S.dogs[m.id];
  if(quit&&!m.score){playMenu(m.id);return}
- const pay=Math.round(m.score*MPAY[m.kind]),th=MSTAR[m.kind],st=m.score>=th[2]?3:m.score>=th[1]?2:m.score>=th[0]?1:0;
+ const pay=Math.round(m.score*MPAY[m.kind]*(perk()==='sleepy'?1.5:1)),th=MSTAR[m.kind],st=m.score>=th[2]?3:m.score>=th[1]?2:m.score>=th[0]?1:0;
  S.best=S.best||{};const nb=m.score>(S.best[m.kind]||0);if(nb)S.best[m.kind]=m.score;
- S.treats+=pay;d.bond=(d.bond||0)+1;save();sfx.jingle();
+ S.treats+=pay;sfx.jingle();addBond(m.id,1);Q('game',m.score);
  openPanel(`<h2>${m.name}</h2><div class="c">${im(dogFront(m.b,0,d,true),3)}</div><div class="stars">${stars(st)}</div><p><b>${m.score} points</b>${nb?' · NEW BEST!':' · best '+S.best[m.kind]}</p><p>${esc(d.name)} had a great time!</p><p>+${pay} ${bone()} &nbsp; <span style="color:#d83a5a">${hearts(d)}</span></p>
  <div class="two"><button class="btn" data-a="again" data-v="${m.kind}">Again</button><button class="btn alt" data-a="dog" data-v="${m.id}">Done</button></div>`)}
 
@@ -943,7 +988,7 @@ function movePlayer(dt,blk){let mx=0,my=0;
  if(keys.arrowleft||keys.a)mx--;if(keys.arrowright||keys.d)mx++;if(keys.arrowup||keys.w)my--;if(keys.arrowdown||keys.s)my++;
  let str=1;
  if(ptr.id!==null&&ptr.drag){const dx=ptr.x-ptr.sx,dy=ptr.y-ptr.sy,m=Math.hypot(dx,dy);if(m>3){mx=dx/m;my=dy/m;str=clamp(m/16,.35,1);if(m>24){ptr.sx=ptr.x-mx*24;ptr.sy=ptr.y-my*24}}}
- const m=Math.hypot(mx,my),kk=Math.min(1,dt*13),tvx=m>0?mx/m*62*str:0,tvy=m>0?my/m*62*str:0;
+ const WS=perk()==='fast'?78:62,m=Math.hypot(mx,my),kk=Math.min(1,dt*13),tvx=m>0?mx/m*WS*str:0,tvy=m>0?my/m*WS*str:0;
  P.vx+=(tvx-P.vx)*kk;P.vy+=(tvy-P.vy)*kk;const spd=Math.hypot(P.vx,P.vy);P.moving=spd>5;
  const nx=P.x+P.vx*dt,ny=P.y+P.vy*dt;if(!blk(nx,P.y))P.x=nx;else P.vx=0;if(!blk(P.x,ny))P.y=ny;else P.vy=0;
  if(m>0){if(Math.abs(mx)>Math.abs(my)){P.dir=2;P.flip=mx<0}else P.dir=my<0?1:0}
@@ -951,7 +996,7 @@ function movePlayer(dt,blk){let mx=0,my=0;
 function wander(d,dt,ok,sp){d.t-=dt;
  if(d.st==='sit'){if(d.t<=0){const tx=d.x+(R()*2-1)*56,ty=d.y+(R()*2-1)*56;if(ok(tx,ty)){d.tx=tx;d.ty=ty;d.st='walk';d.t=4}else d.t=.5}}
  else{const ax=d.tx-d.x,ay=d.ty-d.y,am=Math.hypot(ax,ay);if(am<2||d.t<=0){d.st='sit';d.t=1.5+R()*4}else{const s=sp*dt,nx=d.x+ax/am*s,ny=d.y+ay/am*s;if(!ok(nx,ny)){d.st='sit';d.t=1}else{d.x=nx;d.y=ny;if(Math.abs(ax)>1)d.dir=ax>0?1:-1}}}}
-function emoTick(e,dt){if(e.emo){e.emo.t-=dt;if(e.emo.t<=0)e.emo=null}e.joy=Math.max(0,(e.joy||0)-dt);e.hop=Math.max(0,(e.hop||0)-dt)}
+function emoTick(e,dt){if(e.trick){e.trick.t-=dt;if(e.trick.t<=0)e.trick=null}if(e.emo){e.emo.t-=dt;if(e.emo.t<=0)e.emo=null}e.joy=Math.max(0,(e.joy||0)-dt);e.hop=Math.max(0,(e.hop||0)-dt)}
 function updateHome(dt){const W=HOME.w*16,H=HOME.h*16;movePlayer(dt,HOME.blk);
  if(P.y>H-4&&Math.abs(P.x-W/2)<10&&P.my>.3)return exitHome();
  let np=null,nd=28;for(const d of HOME.dogs){emoTick(d,dt);const dx=P.x-d.x,dy=P.y-d.y,dist=Math.hypot(dx,dy);
@@ -975,7 +1020,7 @@ function update(dt){G.time+=dt;G.dt=dt;
    if(d.t<=0&&(!on||d.t<-4))spawnDog(d,true);continue}
   if(dist<30&&!(d.flee>0)){if(!d.near){d.near=true;d.hop=.25;d.sleep=false;d.fast=false;if(on)sfx.pop()}d.st='sit';d.dir=dx>0?1:-1;if(dist<nd){nd=dist;near=d}}
   else{d.near=false;const tp=TP[d.b.id]||'calm';d.flee=Math.max(0,(d.flee||0)-dt);
-   if((tp==='feisty'||tp==='shy')&&dist<(tp==='shy'?58:48)&&spd>44&&d.flee<=0&&on){d.flee=1.1;if(tp==='feisty')sfx.bark(d.b.sz);if(!S.tip2){S.tip2=1;toast('A skittish one! Walk up slowly (drag gently).',4000)}}
+   if((tp==='feisty'||tp==='shy')&&dist<(tp==='shy'?58:48)&&spd>44&&d.flee<=0&&on&&perk()!=='friendly'){d.flee=1.1;if(tp==='feisty')sfx.bark(d.b.sz);if(!S.tip2){S.tip2=1;toast('A skittish one! Walk up slowly (drag gently).',4000)}}
    if(d.flee>0){const a=Math.atan2(-dy,-dx),sp=(tp==='shy'?70:84)*dt,nx=d.x+Math.cos(a)*sp,ny=d.y+Math.sin(a)*sp;d.st='walk';d.fast=true;d.sleep=false;d.dir=Math.cos(a)>0?1:-1;if(PARKOK(nx,d.y))d.x=nx;if(PARKOK(d.x,ny))d.y=ny;if(d.flee<=dt){d.st='sit';d.t=1}}
    else{d.fast=tp==='fast';
     if(tp==='friendly'&&dist<72&&on){d.st='walk';d.dir=dx>0?1:-1;const sp=30*dt,nx=d.x+dx/dist*sp,ny=d.y+dy/dist*sp;if(PARKOK(nx,ny)){d.x=nx;d.y=ny}}
@@ -990,9 +1035,10 @@ function update(dt){G.time+=dt;G.dt=dt;
    if(dist<46){B.mode=1;B.tt=3.6;B.wa=R()*6;sfx.whoosh();S.bali=(S.bali||0)+1;save();toast(S.bali<2?"That's Bali! Nobody catches Bali…":'Bali strikes again!',2800)}}}
  let np=null;
  if(S.buddy&&S.dogs[S.buddy]&&BY[S.buddy]){const dd=S.dogs[S.buddy];if(!BUD.on||BUD.id!==S.buddy){BUD.on=true;BUD.id=S.buddy;BUD.x=P.x-14;BUD.y=P.y+2;BUD.emo=null;BUD.pd=0}
-  BUD.b=BY[S.buddy];BUD.o=dd;BUD.owned=true;BUD.v=dd.v||1;emoTick(BUD,dt);
+  BUD.b=BY[S.buddy];BUD.o=dd;BUD.owned=true;BUD.v=dd.v||1;BUD.shiny=!!dd.shiny;emoTick(BUD,dt);
   const dx=P.x-BUD.x,dy=P.y-BUD.y,dist=Math.hypot(dx,dy);
-  if(dist>160){BUD.x=P.x-12;BUD.y=P.y}else if((BUD.st==='walk'?dist>15:dist>27)&&!(G.pet&&G.pet.e===BUD)){const s=Math.min(100,(dist-10)*4.5)*dt;BUD.x+=dx/dist*s;BUD.y+=dy/dist*s;BUD.st='walk';if(Math.abs(dx)>7)BUD.dir=dx>0?1:-1;
+  if(BUD.dig>0){BUD.dig-=dt;BUD.st='dig';if(BUD.dig<=0)digDone()}else if(dist>160){BUD.x=P.x-12;BUD.y=P.y}else if((BUD.st==='walk'?dist>15:dist>27)&&!(G.pet&&G.pet.e===BUD)){const s=Math.min(100,(dist-10)*4.5)*dt;BUD.x+=dx/dist*s;BUD.y+=dy/dist*s;BUD.st='walk';if(Math.abs(dx)>7)BUD.dir=dx>0?1:-1;
+   BUD.sn=(BUD.sn||0)+s;if(BUD.sn>(BUD.nx||(BUD.nx=220+R()*220))){const tt=map[I(BUD.x>>4,BUD.y>>4)];if(tt!==3&&tt!==6&&tt!==2){BUD.sn=0;BUD.nx=(260+R()*260)*(perk()==='feisty'?.55:1);BUD.dig=1.7;sfx.pop()}}
    BUD.pd+=s;if(BUD.pd>6){BUD.pd=0;const t=map[I(BUD.x>>4,BUD.y>>4)];if(t===1)FP.push({x:BUD.x+(R()*3-1.5),y:BUD.y-1,t:6,l:6,k:1,p:1})}}else BUD.st='sit';
   }else BUD.on=false;
  setNear(near,np);if(G.pet&&(!BUD.on||Math.hypot(BUD.x-P.x,BUD.y-P.y)>80))closePet();
@@ -1001,21 +1047,23 @@ function update(dt){G.time+=dt;G.dt=dt;
 function updPhoto(dt){const p=G.ph;if(!p)return;p.t+=dt;p.flash=Math.max(0,p.flash-dt*3);if(p.done)return;
  const Rg=Math.min(vw/2-14,80);
  if(p.pause>0){p.pause-=dt;if(p.pause<=0){const q=p.q;p.tx=R()<q.pc?(R()*2-1)*8:q.edge?(R()<.5?-1:1)*Rg*(.6+R()*.4):(R()*2-1)*Rg;p.first=false}}
- else{const d=p.tx-p.x,st=p.v*dt;if(Math.abs(d)<=st){p.x=p.tx;p.pause=p.first?Math.min(1.1,p.q.p1+.3):p.q.p0+R()*(p.q.p1-p.q.p0)}else{p.x+=Math.sign(d)*st;p.dir=Math.sign(d)}}}
+ else{const d=p.tx-p.x,st=p.v*dt;if(Math.abs(d)<=st){p.x=p.tx;p.pause=(p.first?Math.min(1.1,p.q.p1+.3):p.q.p0+R()*(p.q.p1-p.q.p0))*(perk()==='calm'?1.4:1)}else{p.x+=Math.sign(d)*st;p.dir=Math.sign(d)}}}
 
 /* ================= render ================= */
 function spr(c,x,y,s,flip){const w=c.width*s,h=c.height*s,X=sn(x-w/2),Y=sn(y-(c.height-1)*s);
  if(flip){g.save();g.translate(X+w,Y);g.scale(-1,1);g.drawImage(c,0,0,w,h);g.restore()}else g.drawImage(c,X,Y,w,h)}
 function shadow(x,y,rx){g.fillStyle='rgba(0,0,0,.22)';g.fillRect(sn(x-rx),sn(y-2),rx*2,3);g.fillRect(sn(x-rx+2),sn(y-3),rx*2-4,5)}
-function drawScene(sc){sc=sc||0;const per=period(hourNow()),gy=gY(),sky={M:['#ffd6a0','#aee0ff'],D:['#6cc0ff','#c4e8ff'],E:['#f58f5c','#ffd48a'],N:['#10163a','#2a3470']}[per];
+function drawScene(sc,fd){sc=sc||0;const per=fd?'D':period(hourNow()),gy=gY(),sky={M:['#ffd6a0','#aee0ff'],D:['#6cc0ff','#c4e8ff'],E:['#f58f5c','#ffd48a'],N:['#10163a','#2a3470']}[per];
  const gr=g.createLinearGradient(0,0,0,gy);gr.addColorStop(0,sky[0]);gr.addColorStop(1,sky[1]);g.fillStyle=gr;g.fillRect(0,0,vw,gy);
  if(per==='N'){const r=rng(9);for(let i=0;i<40;i++)px(g,r()*vw|0,r()*gy*.8|0,1,1,(G.time*2+i)%5<4?'#fff':'#8a94c8');disc(g,vw-26,22,9,'#f4f0d0');disc(g,vw-22,19,8,sky[0])}
  else{disc(g,vw-26,per==='D'?22:gy-40,9,per==='D'?'#fff4a0':'#ffe0a0');const cx=(G.time*4)%(vw+60)-30;ell(g,cx|0,30,14,4,'#fff');ell(g,(cx+8)|0,26,8,4,'#fff');ell(g,((cx+vw*.6)%(vw+60)-30)|0,52,11,3,'#fff')}
+ if(fd){ell(g,Math.round(vw*.2),gy+10,Math.round(vw*.55),24,'#8fd47a');ell(g,Math.round(vw*.85),gy+12,Math.round(vw*.5),30,'#7cc86a');
+  spr(SPR.tree[0],vw*.07,gy-8,.5);spr(SPR.tree[4],vw*.27,gy-10,.5);spr(SPR.house,vw*.82,gy-13,.375);spr(SPR.tree[3],vw*.96,gy-9,.5);spr(SPR.tree[1],vw*.64,gy-12,.5)}
  const ho=sn((sc*.5)%13),hi=Math.floor(sc*.5/13);for(let i=-1;i<vw/13+2;i++){const j=Math.abs(i+hi);disc(g,i*13+6-ho,gy-5+((j*7)%3),10,'#2f7d32');disc(g,i*13+4-ho,gy-9+((j*5)%3),5,'#3d9a3a')}
  px(g,0,gy-3,vw,vh-gy+3,'#4aa63c');px(g,0,gy-3,vw,1,'#3c8c38');
  const r=rng(3);for(let i=0;i<vw*(vh-gy)/160;i++){const W=Math.ceil(vw)+4,a=sn(((r()*W-sc)%W+W)%W)-2,b=gy+r()*(vh-gy)|0;px(g,a,b,1,2,'#62c04c');px(g,a+2,b,1,2,'#62c04c');px(g,a+1,b+1,1,1,'#62c04c')}
  if(per==='N'){g.fillStyle='rgba(20,26,90,.38)';g.fillRect(0,gy-18,vw,vh)}}
-function drawPhoto(){const p=G.ph;drawScene();if(!p)return;const gy=gY()+12,cx=vw/2,b=p.b;
+function drawPhoto(){const p=G.ph;drawScene();if(!p)return;const gy=gY()+12,cx=vw/2,b=p.d.shiny?SHV(p.b):p.b;
  const moving=p.pause<=0&&!p.done;shadow(cx+p.x,gy,22);
  spr(moving?dogSide(b,1+((G.time*10|0)%4),null,1):dogFront(b,(G.time%3<.12)?2:(G.time*5&1),null,true),cx+p.x,gy-(moving?0:Math.abs(Math.sin(G.time*6))*2|0),3,p.dir<0);
  // letterbox + viewfinder
@@ -1028,10 +1076,15 @@ function drawPhoto(){const p=G.ph;drawScene();if(!p)return;const gy=gY()+12,cx=v
  if(p.flash>0){g.fillStyle=`rgba(255,255,255,${p.flash})`;g.fillRect(0,0,vw,vh)}
  if(p.t<.4)iris(cx,vh/2,p.t/.4)}
 function iris(x,y,k){const r=Math.max(vw,vh)*k;g.fillStyle='#000';g.beginPath();g.rect(0,0,vw,vh);g.arc(x,y,Math.max(0,r),0,6.283,true);g.fill('evenodd')}
-function dogSpr(e){const b=e.b,o=e.owned?e.o:null,act=e.near||e.happy>0||e.joy>0;
- if(e.st==='walk')return{c:dogSide(b,1+(((G.time*(e.fast?13:8)+(e.seed||0))|0)%4),o,e.fast||e.owned?1:0),flip:e.dir<0};
+function dogSpr(e){const b=e.shiny?SHV(e.b):e.b,o=e.owned?e.o:null,act=e.near||e.happy>0||e.joy>0;
+ if(e.st==='walk'||e.st==='dig')return{c:dogSide(b,1+(((G.time*(e.fast||e.st==='dig'?14:8)+(e.seed||0))|0)%4),o,e.fast||e.owned?1:0),flip:e.dir<0};
  const tt=G.time+(e.seed||0);if(e.sleep&&!act)return{c:dogFront(b,2,o,false),flip:false};return{c:dogFront(b,e.joy>0?3:act?(G.time*6&1):(tt%4<.15?2:tt%3<.3?1:0),o,!!(act||e.owned)),flip:false}}
-function drawDogEnt(e,x,y){const s=dogSpr(e),hop=e.hop>0?Math.abs(Math.sin(e.hop*12))*4:0;spr(s.c,x,y-hop,dsc(e.v),s.flip)}
+function drawDogEnt(e,x,y){const sc=dsc(e.v),tr=e.trick;let s=dogSpr(e),hop=e.hop>0?Math.abs(Math.sin(e.hop*12))*4:0;
+ if(tr){const q=1-tr.t/tr.d,b=e.shiny?SHV(e.b):e.b,o=e.owned?e.o:null;
+  if(tr.k==='spin'){const f=(q*8|0)%4;s=f%2?{c:dogSide(b,1,o,1),flip:f===3}:{c:dogFront(b,f?3:0,o,true),flip:false}}
+  else if(tr.k==='jump'){hop=Math.sin(q*3.14)*16;s={c:dogFront(b,3,o,true),flip:false}}
+  else if(tr.k==='roll'){g.save();g.translate(sn(x),sn(y-9*sc));g.rotate(q*6.283*(e.dir||1));spr(dogSide(b,0,o,1),0,9*sc,sc,false);g.restore();return}}
+ spr(s.c,x,y-hop,sc,s.flip)}
 function drawPlayer(x,y){const i=(P.anim/8|0)%4,f=P.moving?[1,0,2,0][i]:0;spr(playerSpr(P.dir,f),x,y-(P.moving&&(i&1)?1:0),1,P.dir===2&&P.flip)}
 function lightVals(){const h=hourNow(),tc=tint(h),night=clamp((255-(tc[0]+tc[1])/2)/150,0,1),t=clamp((h-6)/12,0,1),day=h>6&&h<18;
  return{h,tc,night,sc:day?(.5-t)*2.4:.5,sd:day?.26+Math.abs(.5-t)*.5:.3,sa:day?.2*(1-night*.5):.07}}
@@ -1047,17 +1100,24 @@ function tornado(x,y){const t=G.time;px(g,sn(x-9),sn(y-1),18,3,'rgba(0,0,0,.2)')
  for(let i=0;i<5;i++){const a=t*11+i*1.3;px(g,sn(x+Math.cos(a)*11),sn(y-1+Math.sin(a)*2),2,1,'#d8c8a2')}}
 function drawJoy(){if(ptr.id!==null&&ptr.drag&&G.state==='world'){g.strokeStyle='rgba(255,255,255,.5)';g.lineWidth=1;g.beginPath();g.arc(ptr.sx,ptr.sy,14,0,6.283);g.stroke();g.fillStyle='rgba(255,255,255,.55)';const dx=ptr.x-ptr.sx,dy=ptr.y-ptr.sy,m=Math.max(1,Math.hypot(dx,dy)),k=Math.min(14,m)/m;g.beginPath();g.arc(ptr.sx+dx*k,ptr.sy+dy*k,5,0,6.283);g.fill()}}
 const headTop=e=>([27,32,37][e.b.sz]+(e.b.tall?3:0))*dsc(e.v);
-function buildHome(){const W=HOME.w*16,H=HOME.h*16,c=mk(W,H),x=c.x;
- for(let ty=0;ty<HOME.h;ty++)for(let tx=0;tx<HOME.w;tx++){const X=tx*16,Y=ty*16;px(x,X,Y,16,16,(tx+ty)%2?'#c48a48':'#cc9654');px(x,X,Y+15,16,1,'#a8703a');px(x,X+((ty%2)*8+3),Y,1,15,'#b47c40')}
- px(x,0,0,W,30,'#f0dcae');for(let i=0;i<W;i+=12)px(x,i,0,1,22,'#e6cc96');px(x,0,22,W,8,'#b9753a');px(x,0,22,W,1,'#d99a52');px(x,0,30,W,3,'#7a4a24');px(x,0,33,W,3,'rgba(0,0,0,.16)');
+function buildHome(){const W=HOME.w*16,H=HOME.h*16,c=mk(W,H),x=c.x,hs=S.home||(S.home={wall:0,floor:0,rug:0,it:[]}),F=DECO.floor[hs.floor][2],WL=DECO.wall[hs.wall][2],RG=DECO.rug[hs.rug][2],it=hs.it;
+ for(let ty=0;ty<HOME.h;ty++)for(let tx=0;tx<HOME.w;tx++){const X=tx*16,Y=ty*16;px(x,X,Y,16,16,(tx+ty)%2?F[0]:F[1]);px(x,X,Y+15,16,1,F[2]);px(x,X+((ty%2)*8+3),Y,1,15,F[3])}
+ px(x,0,0,W,30,WL[0]);for(let i=0;i<W;i+=12)px(x,i,0,1,22,WL[1]);px(x,0,22,W,8,WL[2]);px(x,0,22,W,1,'#d99a52');px(x,0,30,W,3,'#7a4a24');px(x,0,33,W,3,'rgba(0,0,0,.16)');
  for(const wx of[40,W-72]){px(x,wx-1,3,34,18,'#7a4a24');px(x,wx,4,32,16,'#9ad8ff');px(x,wx+15,4,2,16,'#f4ead8');px(x,wx,11,32,2,'#f4ead8');px(x,wx+2,6,5,2,'#fff');g2(x,wx)}
  function g2(x,wx){x.fillStyle='rgba(255,240,180,.16)';x.beginPath();x.moveTo(wx,36);x.lineTo(wx+32,36);x.lineTo(wx+56,110);x.lineTo(wx-6,110);x.fill()}
  for(const fx of[92,W/2-7,W-106]){px(x,fx,5,14,12,'#7a4a24');px(x,fx+1,6,12,10,'#fff4d8');px(x,fx+5,11,4,3,'#b9753a');px(x,fx+4,8,2,2,'#b9753a');px(x,fx+8,8,2,2,'#b9753a')}
- ell(x,W/2,H/2+18,54,26,'#b83a3a');ell(x,W/2,H/2+18,48,22,'#e8c46a');ell(x,W/2,H/2+18,42,18,'#c84a4a');ell(x,W/2,H/2+18,20,8,'#e8c46a');
+ ell(x,W/2,H/2+18,54,26,RG[0]);ell(x,W/2,H/2+18,48,22,RG[1]);ell(x,W/2,H/2+18,42,18,RG[2]);ell(x,W/2,H/2+18,20,8,RG[1]);
  const cols=['#3a6fd8','#e86aa8','#3aa655','#f2c230','#8a4fd8'];for(let i=0;i<5;i++){const bx=Math.round(30+i*((W-60)/4)),by=50;ell(x,bx,by,13,6,shade(cols[i],.7));ell(x,bx,by-1,10,4,cols[i]);ell(x,bx-2,by-2,5,2,shade(cols[i],1.25))}
  [[18,H-30,'#d83a3a'],[34,H-30,'#3a6fd8']].forEach(([a,b,k])=>{px(x,a,b+2,10,4,k);px(x,a+1,b,8,3,shade(k,.7));px(x,a+2,b+1,6,1,k==='#3a6fd8'?'#62b8e8':'#8a5a2a')});
  x.drawImage(SPR.ball,W-40,H-44);x.drawImage(SPR.bone,W-70,H-28);x.drawImage(SPR.ball,70,96);x.drawImage(SPR.bone,W/2+70,70);
  px(x,W/2-13,H-14,26,9,'#8a6a3a');px(x,W/2-11,H-12,22,5,'#a8864a');px(x,0,H-4,W,4,'#5e3618');px(x,W/2-10,H-4,20,4,'#2a1a10');px(x,0,0,3,H,'#7a4a24');px(x,W-3,0,3,H,'#7a4a24');
+ if(it.includes('trophy')){px(x,158,15,36,2,'#7a4a24');for(let i=0;i<3;i++){px(x,162+i*11,8,6,5,'#f4c020');px(x,164+i*11,13,2,2,'#c89a1a');px(x,162+i*11,8,1,3,'#fff0a0');px(x,161+i*11,9,1,2,'#f4c020');px(x,168+i*11,9,1,2,'#f4c020')}}
+ if(it.includes('tank')){const tx=W-150,ty=40;px(x,tx,ty+12,30,10,'#7a4a24');px(x,tx,ty+12,30,2,'#96623a');px(x,tx+1,ty-4,28,16,'#2a2a32');px(x,tx+2,ty-3,26,14,'#4fb0e6');px(x,tx+2,ty+8,26,3,'#e6c86a');px(x,tx+6,ty+1,4,2,'#f08a2a');px(x,tx+9,ty+1,1,2,'#f08a2a');px(x,tx+17,ty+4,4,2,'#f2c230');px(x,tx+22,ty,1,8,'#3aa655');px(x,tx+24,ty+2,1,6,'#3aa655');px(x,tx+3,ty-2,6,1,'#bfe8ff')}
+ if(it.includes('plant')){px(x,8,48,10,8,'#b5622a');px(x,7,47,12,2,'#d98a4a');for(const[a,b]of[[13,32],[8,36],[18,36],[10,40],[16,41]])ell(x,a,b+4,3,5,'#3aa655');ell(x,13,36,2,6,'#5ac878')}
+ if(it.includes('sofa')){const sx=5,sy=84;px(x,sx,sy,18,44,'#8a4fd8');px(x,sx,sy,6,44,'#6a3ab8');px(x,sx+6,sy+3,10,18,'#a87af0');px(x,sx+6,sy+23,10,18,'#a87af0');px(x,sx,sy-3,18,5,'#6a3ab8');px(x,sx,sy+42,18,5,'#6a3ab8');px(x,sx+7,sy+4,8,1,'#c8a8ff')}
+ if(it.includes('toybox')){const bx=W-34,by=H-70;px(x,bx,by,24,14,'#3a8ad8');px(x,bx,by,24,3,'#5aaaf0');px(x,bx+10,by+5,4,3,'#f4d03f');disc(x,bx+5,by-2,3,'#e84a4a');disc(x,bx+13,by-3,3,'#c8e63a');px(x,bx+17,by-4,5,3,'#f8eedc')}
+ if(it.includes('lamp')){const lx=W-14,ly=46;x.fillStyle='rgba(255,230,150,.16)';x.beginPath();x.arc(lx+1,ly+10,36,0,7);x.fill();px(x,lx,ly,2,26,'#3a3f4a');px(x,lx-3,ly+26,8,2,'#3a3f4a');px(x,lx-5,ly-8,12,9,'#ffe9a0');px(x,lx-4,ly-9,10,1,'#f2c230')}
+ if(it.includes('ballpit')){const cx2=W-96,cy2=H-36;ell(x,cx2,cy2,26,13,'#3a6fd8');ell(x,cx2,cy2-1,22,10,'#2a4a98');const r=rng(4);for(let i=0;i<28;i++){const a=r()*6.28,d=r();disc(x,cx2+Math.cos(a)*d*19|0,cy2-1+Math.sin(a)*d*8|0,2,['#e84a4a','#f2c230','#3aa655','#e86aa8','#3ac2c2'][i%5])}}
  HOME.ground=c}
 function renderHome(){const W=HOME.w*16,H=HOME.h*16;px(g,0,0,vw,vh,'#120a06');
  const ox=sn(vw>=W?(vw-W)/2:-clamp(P.x-vw/2,0,W-vw)),oy=sn(vh>=H?(vh-H)/2:-clamp(P.y-12-vh/2,0,H-vh));G.hox=ox;G.hoy=oy;
@@ -1085,7 +1145,7 @@ function render(){
  cam.x=clamp(sn(cam.fx),0,MW*TS-vw);cam.y=clamp(sn(cam.fy),0,MH*TS-vh);
  g.drawImage(ground,cam.x,cam.y,vw,vh,0,0,vw,vh);
  for(let i=0;i<24;i++){const hsh=Math.sin(i*91.7+Math.floor(G.time*2+i*.37)*13.1)*43758.5,fx=(hsh-Math.floor(hsh))*vw|0,h2=hsh*1.7,fy=(h2-Math.floor(h2))*vh|0;if(map[I((fx+cam.x)>>4,(fy+cam.y)>>4)]===2)px(g,fx,fy,3,1,'#bfe8ff')}
- for(const f of FP){if(f.t<=0)continue;g.globalAlpha=clamp(f.t/f.l*1.6,0,1)*(f.k===1?.55:.3);g.fillStyle=f.k===1?'#9a6e28':f.k===3?'#7a6a4a':f.k===6?'#5a3a1a':'#1c5220';g.fillRect(sn(f.x-cam.x-1.5),sn(f.y-cam.y-1),f.p?1.5:3,f.p?1.5:2)}g.globalAlpha=1;
+ for(const f of FP){if(f.t<=0)continue;if(f.k===9){g.globalAlpha=clamp(f.t/3,0,1);px(g,sn(f.x-cam.x-4),sn(f.y-cam.y-1),8,3,'#6a4424');px(g,sn(f.x-cam.x-2),sn(f.y-cam.y-2),4,1,'#8a6234');px(g,sn(f.x-cam.x-2),sn(f.y-cam.y),4,1,'#3a2414');g.globalAlpha=1;continue}g.globalAlpha=clamp(f.t/f.l*1.6,0,1)*(f.k===1?.55:.3);g.fillStyle=f.k===1?'#9a6e28':f.k===3?'#7a6a4a':f.k===6?'#5a3a1a':'#1c5220';g.fillRect(sn(f.x-cam.x-1.5),sn(f.y-cam.y-1),f.p?1.5:3,f.p?1.5:2)}g.globalAlpha=1;
  for(const d of AMB.ducks){const a=G.time*.12*(d.i%2?1:-1)+d.a,dx=1184+Math.cos(a)*(44+d.i*5),dy=248+Math.sin(a)*(22+d.i*5);if(map[I(dx>>4,dy>>4)]!==2)continue;const X=dx-cam.x,Y=dy-cam.y;if(X<-12||Y<-12||X>vw+12||Y>vh+12)continue;px(g,sn(X-6),sn(Y),12,1,'rgba(255,255,255,.35)');spr(SPR.duck[d.i%2],X,Y,1,(Math.sin(a)>0)===(d.i%2===1))}
  const LV=lightVals(),L=[];
  for(const o of objs){if(o.y<cam.y-6)continue;if(o.y>cam.y+vh+90)break;if(o.x>cam.x-50&&o.x<cam.x+vw+50)L.push(o)}
@@ -1115,10 +1175,11 @@ function render(){
  vignette(.14+LV.night*.3);
  {const hx=HOUSE.x-cam.x,hy=HOUSE.y-34-cam.y;if(hx<-14||hx>vw+14||hy<-30||hy>vh+30){const cx=vw/2,cy=vh/2,a=Math.atan2(hy-cy,hx-cx),k=Math.min((cx-9)/Math.abs(Math.cos(a)||1e-6),(cy-10)/Math.abs(Math.sin(a)||1e-6));let ax=sn(cx+Math.cos(a)*k),ay=sn(cy+Math.sin(a)*k);if(ay<30&&(ax>vw-64||ax<50))ay=30;
   const hd=Math.hypot(HOUSE.x-P.x,HOUSE.y-P.y),sc=clamp(1.15-hd/1000,.5,1);g.save();g.translate(ax,ay);g.rotate(a);g.scale(sc,sc);g.globalAlpha=.85+Math.sin(G.time*4)*.15;g.lineJoin='round';g.fillStyle='#ffd84a';g.strokeStyle='#5a2a0a';g.lineWidth=2;g.beginPath();g.moveTo(8,0);g.lineTo(-3,-6);g.lineTo(-.5,0);g.lineTo(-3,6);g.closePath();g.stroke();g.fill();g.restore()}}
- for(const d of dogs){if(d.sleep&&!d.near){const q=(G.time+d.seed)%2;g.globalAlpha=1-q/2;txt('z',d.x-cam.x+5+q*2,d.y-cam.y-headTop(d)-q*4,4+q,'#fff');g.globalAlpha=1}if(!d.near&&d.happy<=0)continue;const x=d.x-cam.x,y=d.y-cam.y-headTop(d);
+ for(const d of dogs){if(d.shiny&&!d.leave){for(let i=0;i<4;i++){const a=G.time*3+i*1.7;if(Math.sin(a*2.3)>0){const X=sn(d.x-cam.x+Math.cos(a)*10),Y=sn(d.y-cam.y-10+Math.sin(a*1.3)*9);px(g,X,Y-1,1,3,'#fff8b0');px(g,X-1,Y,3,1,'#fff8b0')}}}if(d.sleep&&!d.near){const q=(G.time+d.seed)%2;g.globalAlpha=1-q/2;txt('z',d.x-cam.x+5+q*2,d.y-cam.y-headTop(d)-q*4,4+q,'#fff');g.globalAlpha=1}if(!d.near&&d.happy<=0)continue;const x=d.x-cam.x,y=d.y-cam.y-headTop(d);
   if(d.happy>0)g.drawImage(SPR.heart,sn(x-4),sn(y-4-(2-d.happy)*6));
   else g.drawImage(S.dogs[d.b.id]?SPR.heartB:SPR.bang,sn(x-5),sn(y-12+(d===G.near?Math.sin(G.time*6)*1.5:0)))}
  if(!BAL.mode&&Math.hypot(BAL.x-P.x,BAL.y-P.y)<110)txt('Bali',BAL.x-cam.x,BAL.y-cam.y-headTop(BAL)-4,5,'#ffd84a');
+ if(BUD.on&&BUD.st==='dig'){const t=G.time;for(let i=0;i<6;i++)px(g,sn(BUD.x-cam.x-BUD.dir*(4+((t*40+i*7)%14))),sn(BUD.y-cam.y-1-((t*46+i*9)%10)),2,2,i%2?'#8a6234':'#6a4424')}
  if(BUD.on&&BUD.emo)emoB(BUD,BUD.x-cam.x,BUD.y-cam.y-headTop(BUD)-1);
  for(const f of G.fx)g.drawImage(SPR.heart,sn(f.x-cam.x-4),sn(f.y-cam.y-(1-f.t)*14));
  drawJoy();
@@ -1131,7 +1192,7 @@ function boot(){load();mkSprites();genWorld();buildHome();resize();ACTI=[im(SPR.
  if(S.pos&&!blocked(S.pos[0],S.pos[1])){P.x=S.pos[0];P.y=S.pos[1]}
  for(let i=0;i<44;i++)dogs.push(spawnDog({},false));baliSpawn();
  updClock();setInterval(updClock,1000);titleInit();requestAnimationFrame(frame);
- idbOpen().then(idbGet).then(j=>{if(j){try{const d=JSON.parse(j);if(d&&d.v===1&&(d.ts||0)>(S.ts||0)&&G.state==='title'){Object.assign(S,d);PS={};if(S.pos&&!blocked(S.pos[0],S.pos[1])){P.x=S.pos[0];P.y=S.pos[1]}titleInit()}}catch(e){}}
+ idbOpen().then(idbGet).then(j=>{if(j){try{const d=JSON.parse(j);if(d&&d.v===1&&(d.ts||0)>(S.ts||0)&&G.state==='title'){Object.assign(S,d);PS={};buildHome();if(S.pos&&!blocked(S.pos[0],S.pos[1])){P.x=S.pos[0];P.y=S.pos[1]}titleInit()}}catch(e){}}
   if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{})});
  if('serviceWorker'in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
  window.__pp={BAL,BALI,HOME,BUD,enterHome,exitHome,openPet,G,P,get S(){return S},dogs,BR,BY,startEncounter,snap,startMini,dogFront,dogSide,playerSpr,SPR,get MINI(){return MINI},menu,dex,zoneAt,spr,save}}
