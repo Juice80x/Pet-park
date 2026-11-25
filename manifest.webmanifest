@@ -1,0 +1,15 @@
+{
+  "name": "Pup Park",
+  "short_name": "Pup Park",
+  "description": "Explore the park, photograph every breed and fill your Dogdex.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#1c3a1c",
+  "theme_color": "#3c8c38",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
