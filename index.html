@@ -91,6 +91,10 @@ body[data-s=title] #title{display:flex}
 #playB i{width:0;height:0;border-left:.62em solid #fff;border-top:.4em solid transparent;border-bottom:.4em solid transparent;filter:drop-shadow(.05em .05em 0 #1f5a1a)}
 @keyframes pulse{0%,100%{scale:1}50%{scale:1.07}}
 #tsub{min-height:1em}
+#charB{font-family:"Arial Rounded MT Bold","Chalkboard SE","Baloo 2","Trebuchet MS",system-ui,sans-serif;font-weight:900;font-size:min(5vw,3.8vh);color:#4a1f04;background:linear-gradient(#ffe08a,#f2b23a);border:.14em solid #7a3e12;border-radius:99px;padding:.35em 1.1em;box-shadow:0 .16em 0 #7a3e12,0 .3em .3em rgba(0,0,0,.25);cursor:pointer}
+#dexB{position:fixed;top:calc(8px + env(safe-area-inset-top));left:calc(8px + env(safe-area-inset-left));display:none;align-items:center;gap:6px;font:inherit;font-size:12px;color:#5a2a0a;
+ background:#f6d79b;border:3px solid #7a3e12;box-shadow:0 0 0 2px #d98a3a,0 3px 0 2px rgba(0,0,0,.3);padding:5px 8px;cursor:pointer;z-index:5}
+body[data-s=world] #dexB{display:flex}
 #pet{position:fixed;top:calc(54px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);display:none;align-items:center;gap:4px;flex-wrap:wrap;justify-content:center;max-width:96vw;
  background:#f6d79b;border:3px solid #7a3e12;box-shadow:0 0 0 2px #d98a3a,0 3px 0 2px rgba(0,0,0,.3);padding:5px 6px;font-size:13px;z-index:6}
 body[data-s=world] #pet.on{display:flex}
@@ -104,9 +108,10 @@ body[data-s=world] #pet.on{display:flex}
 <div id="clock"><canvas id="sky" class="px" width="12" height="12"></canvas><div><b id="cd"></b><span id="ct"></span></div></div>
 <button id="act" aria-label="Take photo"></button>
 <div id="toast"></div>
+<button id="dexB" aria-label="Dogdex"></button>
 <div id="mh"></div>
 <div id="pet"></div>
-<div id="title"><div id="burst"></div><div class="logo"><div><span>P</span><span>U</span><span>P</span></div><div><span>P</span><span>A</span><span>R</span><span>K</span></div></div><div class="tagl">Snap every dog. Fill your Dogdex!</div><button id="playB"><i></i>PLAY</button><div class="tagl" id="tsub"></div></div>
+<div id="title"><div id="burst"></div><div class="logo"><div><span>P</span><span>U</span><span>P</span></div><div><span>P</span><span>A</span><span>R</span><span>K</span></div></div><div class="tagl">Snap every dog. Fill your Dogdex!</div><button id="playB"><i></i>PLAY</button><button id="charB">My character</button><div class="tagl" id="tsub"></div></div>
 <div id="ui"></div>
 <script>
 'use strict';
@@ -510,6 +515,7 @@ function mkSprites(){
  SPR.iSpark=pm(['....w....','....w....','...wWw...','..wWWWw..','wwWWWWWww','..wWWWw..','...wWw...','....w....','....w....'],{w:'#ffd84a',W:'#fffbe0'});
  SPR.iHearts=pm(['.rr.rr...','rRrrrr...','rrrrrr...','.rrrr.pp.p','..rr.pPppp','.....pppp','......pp.'].map(r=>r.padEnd(10,'.')),{r:'#e84a6a',R:'#ffb0c0',p:'#ff8ab0',P:'#ffd0e0'});
  SPR.iHat=pm(['..kkkkk..','..kKkkk..','..kKkkk..','..rrrrr..','kkkkkkkkk'],{k:'#2a2a32',K:'#5a5a66',r:'#d83a3a'});
+ SPR.iBook=pm(['rrrrrrrr.','rRRRRRRrw','rRRppRRrw','rRpRRpRrw','rRRppRRrw','rRRRRRRrw','rrrrrrrrw','.wwwwwwww'],{r:'#b83a3a',R:'#e05a4a',p:'#fff4d8',w:'#f4ead8'});
  ['bench','lamp','rock','bush','table','sign','bin','stump','tunnel','house','hurdle','fountain'].forEach(k=>inSh(SPR[k]));
  c=mk(30,34);x=c.x;disc(x,7,29,3,'#3a3a44');disc(x,22,29,3,'#3a3a44');px(x,7,29,1,1,'#b4bac4');px(x,22,29,1,1,'#b4bac4');px(x,3,16,24,11,'#f8f4ec');px(x,3,22,24,2,'#f08ab8');px(x,3,25,24,2,'#d8d2c4');px(x,3,10,1,6,'#8a8f98');px(x,26,10,1,6,'#8a8f98');
  for(let i=0;i<7;i++)px(x,1+i*4,4,4,6,i%2?'#fff4f0':'#e84a4a');px(x,1,9,28,1,'#b83a3a');tri(x,14,13,12,16,17,'#e8c05a');disc(x,14,12,2,'#ffb4d4');SPR.cart=inSh(outline(c));
@@ -683,23 +689,23 @@ const TD=[];
 function titleInit(){TD.length=0;const ids=Object.keys(S.dogs);for(let i=0;i<5;i++){const id=ids[i]||pick(BR).id;TD.push({b:BY[id],o:S.dogs[id]||null,x:R()*400,v:36+R()*34,l:i})}
  $('#tsub').textContent=S.started?`${S.player.name?'Welcome back, '+S.player.name+'! · ':''}Dogdex ${count()}/${BR.length}`:''}
 function drawTitle(){drawScene(G.time*14);const gy=gY(),sp=(vh-gy-16)/5;for(const d of TD){const X=((d.x+G.time*d.v)%(vw+100))-50,Y=gy+10+d.l*sp;shadow(X,Y,10);spr(dogSide(d.b,1+((G.time*d.v/5|0)%4),d.o,1),X,Y,1.25)}}
-$('#playB').addEventListener('click',()=>{audioInit();sfx.jingle();setState('world');if(!S.started)charEdit()});
+$('#playB').addEventListener('click',()=>{audioInit();sfx.jingle();G.fromTitle=false;setState('world');if(!S.started)charEdit()});
+$('#charB').addEventListener('click',()=>{audioInit();sfx.blip();G.fromTitle=true;charEdit()});
+$('#dexB').addEventListener('click',()=>{audioInit();sfx.blip();if(G.state==='world'&&!G.paused){closePet();dex()}});
 function menu(){openPanel(`<button class="xb" data-a="close" aria-label="Close">X</button><h2>Pup Park</h2><div class="tr">${bone()} ${S.treats} treats</div>
- <button class="btn" data-a="dex">Dogdex ${count()}/${BR.length}</button>
- <button class="btn" data-a="char">My character</button>
  <button class="btn alt" data-a="settings">Settings</button>
  <button class="btn alt" data-a="leave">Leave game</button>`)}
 function settings(){openPanel(`<button class="xb" data-a="menu" aria-label="Close">X</button><h2>Settings</h2>
  <div class="two"><button class="btn alt" data-a="music">Music: ${S.music?'on':'off'}</button><button class="btn alt" data-a="sound">Sounds: ${S.sound?'on':'off'}</button></div>
  <button class="btn alt" data-a="how">How to play</button>
  <button class="btn lock sm" data-a="reset" data-v="0">Erase save</button>`)}
-function how(){openPanel(`<h2>How to play</h2><p style="text-align:left">• Drag anywhere to walk (or arrow keys).<br>• Walk into the red-roofed cottage by the plaza to visit your pups. Tap any dog of yours to pat, praise or play.<br>• Progress saves automatically on this device.<br>• Walk up to a dog and tap it, or tap the camera button.<br>• In camera mode, tap when the dog is inside the frame. Dead centre = 3 stars. You get 3 shots.<br>• Different dogs hang out in different parts of the park, and at different real-world times: morning, daytime, evening and night.<br>• Tap the clock to open your Dogdex. Dress your dogs up, play mini games to earn treats, and pick a buddy to walk with you.</p><button class="btn" data-a="settings">Back</button>`)}
+function how(){openPanel(`<h2>How to play</h2><p style="text-align:left">• Drag anywhere to walk (or arrow keys).<br>• Walk into the red-roofed cottage by the plaza to visit your pups. Tap any dog of yours to pat, praise or play.<br>• Progress saves automatically on this device.<br>• Walk up to a dog and tap it, or tap the camera button.<br>• In camera mode, tap when the dog is inside the frame. Dead centre = 3 stars. You get 3 shots.<br>• Different dogs hang out in different parts of the park, and at different real-world times: morning, daytime, evening and night.<br>• Tap the book (top left) for your Dogdex and the clock (top right) for settings. Dress your dogs up, play mini games to earn treats, and pick a buddy to walk with you.</p><button class="btn" data-a="settings">Back</button>`)}
 function dex(){let h=`<h2>Dogdex ${count()}/${BR.length}</h2><div class="grid">`;
  for(const b of BR){const d=S.dogs[b.id];
   h+=d?`<button class="cell" style="border-color:${RAR[b.r][1]}" data-a="dog" data-v="${b.id}">${im(dogFront(b,0,d,true),2)}<br>${esc(d.name)}<i>${b.n}</i></button>`
       :`<button class="cell un" data-a="hint" data-v="${b.id}">${im(sil(dogFront(b,0,null,false)),2)}<br>???<i style="color:${RAR[b.r][1]}">${RAR[b.r][0]}</i></button>`}
  h+=S.bali?`<button class="cell" style="border-color:#e0851a" data-a="bali">${im(dogFront(BALI,0,null,true),2)}<br>Bali<i>Uncatchable</i></button>`:`<button class="cell un" data-a="bali">${im(sil(dogFront(BALI,0,null,false)),2)}<br>???<i style="color:#e0851a">Mystery</i></button>`;
- openPanel(h+`</div><button class="btn" data-a="menu">Back</button>`,'wide')}
+ openPanel(`<button class="xb" data-a="close" aria-label="Close">X</button>`+h+`</div>`,'wide')}
 function hint(id){const b=BY[id];openPanel(`<h2>???</h2><div class="c">${im(sil(dogFront(b,0,null,false)),3)}</div><p><span class="tag" style="background:${RAR[b.r][1]}">${RAR[b.r][0]}</span></p><p>Seen around ${b.z.map(z=>ZNAME[z]).join(' and ')}<br>in the ${b.h.split('').map(c=>PNAME[c]).join(', ')}.</p><button class="btn" data-a="dex">Back</button>`)}
 function dogPage(id){G.cur=id;const b=BY[id],d=S.dogs[id];
  openPanel(`<div class="c">${im(dogFront(b,0,d,true),3)}</div><input id="nm" maxlength="12" value="${esc(d.name)}" aria-label="Name">
@@ -721,12 +727,12 @@ function playMenu(id){G.cur=id;const d=S.dogs[id];openPanel(`<h2>Play with ${esc
 const CY=[['skin','Skin',SKIN.length],['hair','Hair',HAIRS.length],['hairC','Hair colour',HAIRC.length],['beard','Beard',2],['shirt','Top',SHIRT.length],['pants','Pants',PANTS.length]];
 function charEdit(){PS={};const p=S.player;let h=`<h2>${S.started?'Your character':'Welcome to Pup Park!'}</h2><p>What should we call you?</p><input id="pn" maxlength="12" placeholder="Your name" value="${esc(p.name||'')}" autocomplete="off"><div class="c">${im(playerSpr(0,0),5)} ${im(playerSpr(2,1),5)}</div>`;
  for(const[k,n]of CY){const v=k==='hair'?HAIRS[p.hair]:k==='beard'?(p.beard?'Yes':'No'):(p[k]+1);h+=`<div class="cy"><button class="btn" data-a="cyc" data-v="${k}:-1">◀</button><span>${n}: ${v}</span><button class="btn" data-a="cyc" data-v="${k}:1">▶</button></div>`}
- openPanel(h+`<button class="btn" data-a="chardone">${S.started?'Done':'Let\'s go!'}</button>`)}
+ openPanel(h+`<button class="btn" data-a="chardone">${S.started||G.fromTitle?'Done':'Let\'s go!'}</button>`)}
 const ACT={
  leave(){closePanel();if(G.scene==='home')exitHome();closePet();setNear(null,null);S.pos=[P.x,P.y];save();titleInit();setState('title')},
  bali(){openPanel(S.bali?`<h2>Bali</h2><div class="c">${im(dogFront(BALI,0,null,true),3)}</div><p>Aussie Shepherd · <span class="tag" style="background:#e0851a">Uncatchable</span></p><p><i>Get too close and Bali spins into a tornado and blows you away. Nobody has ever got the photo.</i></p><p>Blown away ${S.bali} time${S.bali>1?'s':''}.</p><button class="btn" data-a="dex">Back</button>`:`<h2>???</h2><div class="c">${im(sil(dogFront(BALI,0,null,false)),3)}</div><p>They say a brown blur roams the park. Nobody has ever caught it.</p><button class="btn" data-a="dex">Back</button>`)},
  menu,settings,close:closePanel,dex,how,hint,dog:dogPage,dress,playm:playMenu,char:charEdit,
- chardone(){PS={};const first=!S.started,pn=$('#pn');if(pn)S.player.name=pn.value.trim().slice(0,12);S.started=true;save();closePanel();setState('world');if(first)toast('Drag anywhere to walk. Go find a dog!',4500)},
+ chardone(){PS={};const first=!S.started,pn=$('#pn');if(pn)S.player.name=pn.value.trim().slice(0,12);if(G.fromTitle){G.fromTitle=false;if(S.started)save();closePanel();titleInit();return}S.started=true;save();closePanel();setState('world');if(first)toast('Drag anywhere to walk. Go find a dog!',4500)},
  cyc(v){const[k,d]=v.split(':'),n=CY.find(c=>c[0]===k)[2];S.player[k]=(S.player[k]+ +d+n)%n;save();charEdit()},
  music(){S.music=!S.music;applyVol();save();settings()},sound(){S.sound=!S.sound;applyVol();save();settings()},
  reset(v,t){if(t.dataset.v==='0'){t.dataset.v='1';t.textContent='Tap again to erase everything'}else{try{localStorage.removeItem(SAVE_KEY)}catch(e){}try{IDB.transaction('kv','readwrite').objectStore('kv').delete('save')}catch(e){}setTimeout(()=>location.reload(),200)}},
@@ -767,6 +773,7 @@ function updClock(){const d=new Date(),h=hourNow(),per=period(h);let hh=HO!==nul
  if(per==='N'){disc(x,6,6,4,'#f4f0d0');disc(x,8,5,3,'#f6d79b');px(x,1,2,1,1,'#fff')}
  else{disc(x,6,6,3,per==='D'?'#f8c820':'#f08a2a');[[6,0],[6,11],[0,6],[11,6],[2,2],[10,2],[2,10],[10,10]].forEach(([a,b])=>px(x,a,b,1,1,'#f08a2a'))}
  if(G.per&&G.per!==per&&G.state==='world'){toast({M:'Good morning! The early dogs are out.',D:'The park is filling up for the day.',E:'Evening walkies. New dogs are arriving.',N:'Night falls. Something is howling in the woods…'}[per],4000);for(const dg of dogs)dg.life=R()*25}
+ const dn=$('#dexN');if(dn)dn.textContent=count()+'/'+BR.length;
  G.per=per}
 
 /* ================= encounters & photo ================= */
@@ -793,7 +800,7 @@ function photoResult(p){const b=p.b,old=S.dogs[b.id],isNew=!old;let tr;
  openPanel(`<h2>${isNew?'New Dogdex entry!':'Nice shot!'}</h2><div class="card">${im(c,3)}<p style="margin:4px 0 0;color:#333">${b.n}</p></div>
  <div class="stars">${stars(p.stars)}</div><p><span class="tag" style="background:${RAR[b.r][1]}">${RAR[b.r][0]}</span> &nbsp; +${tr} ${bone()}</p>${isNew?`<p><i>${b.d}</i></p><p>Give it a name:</p><input id="nm" maxlength="12" value="${S.dogs[b.id].name}" aria-label="Name" autocomplete="off">`:''}${extra}
  <button class="btn" data-a="ok">${isNew?'Save name':'OK'}</button>`);
- if(isNew&&S.tips<1){S.tips=1;save();setTimeout(()=>toast('Tap the clock to open your Dogdex.',5000),1500)}}
+ if(isNew&&S.tips<1){S.tips=1;save();setTimeout(()=>toast('Tap the book, top left, to open your Dogdex.',5000),1500)}}
 function endPhoto(){const p=G.ph;if(p){const d=p.d;d.happy=p.stars?2:0;d.leave=true;d.t=p.stars?3.5:2;d.st='sit'}G.ph=null;setState('world')}
 
 /* ================= mini games ================= */
@@ -1122,7 +1129,7 @@ function render(){
 /* ================= boot ================= */
 let last=0;
 function frame(t){const dt=Math.min(.05,(t-last)/1000||0);last=t;update(dt);render();requestAnimationFrame(frame)}
-function boot(){load();mkSprites();genWorld();buildHome();resize();ACTI=[im(SPR.cam,3),im(SPR.paw,4)];
+function boot(){load();mkSprites();genWorld();buildHome();resize();ACTI=[im(SPR.cam,3),im(SPR.paw,4)];$('#dexB').innerHTML=im(SPR.iBook,2)+'<span id="dexN"></span>';
  if(S.pos&&!blocked(S.pos[0],S.pos[1])){P.x=S.pos[0];P.y=S.pos[1]}
  for(let i=0;i<44;i++)dogs.push(spawnDog({},false));baliSpawn();
  updClock();setInterval(updClock,1000);titleInit();requestAnimationFrame(frame);
