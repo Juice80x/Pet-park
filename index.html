@@ -1113,10 +1113,8 @@ function render(){
  const per=period(LV.h);
  if(per==='M'||per==='E'){g.globalCompositeOperation='lighter';g.fillStyle='rgba(255,214,140,.07)';const dir=per==='M'?1:-1;for(let i=0;i<4;i++){const bx=((i*83+G.time*3)%(vw+140))-70;g.beginPath();g.moveTo(bx,0);g.lineTo(bx+28,0);g.lineTo(bx+28-dir*vh*.45,vh);g.lineTo(bx-dir*vh*.45,vh);g.fill()}g.globalCompositeOperation='source-over'}
  vignette(.14+LV.night*.3);
- {const hx=HOUSE.x-cam.x,hy=HOUSE.y-34-cam.y;if(hx<-14||hx>vw+14||hy<-30||hy>vh+30){const cx=vw/2,cy=vh/2,a=Math.atan2(hy-cy,hx-cx),k=Math.min((cx-12)/Math.abs(Math.cos(a)||1e-6),(cy-14)/Math.abs(Math.sin(a)||1e-6));let ax=sn(cx+Math.cos(a)*k),ay=sn(cy+Math.sin(a)*k);if(ax>vw-64&&ay<40)ay=40;
-  g.save();g.translate(ax,ay);g.globalAlpha=.8+Math.sin(G.time*4)*.2;g.fillStyle='#7a3e12';g.beginPath();g.arc(0,0,8.5,0,6.283);g.fill();g.fillStyle='#f6d79b';g.beginPath();g.arc(0,0,7.3,0,6.283);g.fill();
-  px(g,-3,-1,6,5,'#d9a25a');px(g,-4,-2,8,1,'#c8442a');px(g,-3,-3,6,1,'#c8442a');px(g,-2,-4,4,1,'#c8442a');px(g,-1,-5,2,1,'#c8442a');px(g,-1,1,2,3,'#7a4a24');
-  g.rotate(a);g.fillStyle='#7a3e12';g.beginPath();g.moveTo(13.5,0);g.lineTo(8.5,-4);g.lineTo(8.5,4);g.fill();g.fillStyle='#ffd84a';g.beginPath();g.moveTo(12,0);g.lineTo(9,-2.4);g.lineTo(9,2.4);g.fill();g.restore()}}
+ {const hx=HOUSE.x-cam.x,hy=HOUSE.y-34-cam.y;if(hx<-14||hx>vw+14||hy<-30||hy>vh+30){const cx=vw/2,cy=vh/2,a=Math.atan2(hy-cy,hx-cx),k=Math.min((cx-9)/Math.abs(Math.cos(a)||1e-6),(cy-10)/Math.abs(Math.sin(a)||1e-6));let ax=sn(cx+Math.cos(a)*k),ay=sn(cy+Math.sin(a)*k);if(ay<30&&(ax>vw-64||ax<50))ay=30;
+  const hd=Math.hypot(HOUSE.x-P.x,HOUSE.y-P.y),sc=clamp(1.15-hd/1000,.5,1);g.save();g.translate(ax,ay);g.rotate(a);g.scale(sc,sc);g.globalAlpha=.85+Math.sin(G.time*4)*.15;g.lineJoin='round';g.fillStyle='#ffd84a';g.strokeStyle='#5a2a0a';g.lineWidth=2;g.beginPath();g.moveTo(8,0);g.lineTo(-3,-6);g.lineTo(-.5,0);g.lineTo(-3,6);g.closePath();g.stroke();g.fill();g.restore()}}
  for(const d of dogs){if(d.sleep&&!d.near){const q=(G.time+d.seed)%2;g.globalAlpha=1-q/2;txt('z',d.x-cam.x+5+q*2,d.y-cam.y-headTop(d)-q*4,4+q,'#fff');g.globalAlpha=1}if(!d.near&&d.happy<=0)continue;const x=d.x-cam.x,y=d.y-cam.y-headTop(d);
   if(d.happy>0)g.drawImage(SPR.heart,sn(x-4),sn(y-4-(2-d.happy)*6));
   else g.drawImage(S.dogs[d.b.id]?SPR.heartB:SPR.bang,sn(x-5),sn(y-12+(d===G.near?Math.sin(G.time*6)*1.5:0)))}
