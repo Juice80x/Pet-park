@@ -477,7 +477,15 @@ function mkSprites(){
  c=mk(12,16);x=c.x;px(x,2,4,8,11,'#3a8a4a');px(x,2,4,2,11,'#5aaa6a');px(x,1,2,10,3,'#2a6a3a');px(x,5,0,2,2,'#2a6a3a');SPR.bin=outline(c);
  c=mk(34,22);x=c.x;px(x,2,6,30,14,'#3a8ad8');ell(x,17,7,15,5,'#5aaaf0');for(let i=6;i<32;i+=8)px(x,i,3,2,17,'#2a6ab8');ell(x,5,14,3,6,'#16161c');SPR.tunnel=outline(c);
  c=mk(26,40);x=c.x;px(x,3,30,20,9,'#8a8f98');px(x,1,28,24,3,'#b4bac4');px(x,3,36,20,1,'#6a6f78');{const d=dogFront(BY.lab,0,null,false),t=mk(33,44);t.x.drawImage(d,0,0);t.x.globalCompositeOperation='source-atop';px(t.x,0,0,33,44,'rgba(150,158,170,.82)');x.drawImage(t,-3,-13)}SPR.statue=c;
- c=mk(13,12);x=c.x;ell(x,6,8,3,2,'#7a4a24');ell(x,2,4,1,1,'#7a4a24');ell(x,5,2,1,1,'#7a4a24');ell(x,8,2,1,1,'#7a4a24');ell(x,11,4,1,1,'#7a4a24');SPR.paw=c}
+ c=mk(13,12);x=c.x;ell(x,6,8,3,2,'#7a4a24');ell(x,2,4,1,1,'#7a4a24');ell(x,5,2,1,1,'#7a4a24');ell(x,8,2,1,1,'#7a4a24');ell(x,11,4,1,1,'#7a4a24');SPR.paw=c;
+ const pm=(rows,pal)=>{const c=mk(rows[0].length+2,rows.length+2);rows.forEach((r,y)=>[...r].forEach((ch,i)=>{if(pal[ch])px(c.x,i+1,y+1,1,1,pal[ch])}));return outline(c)};
+ SPR.iStar=pm(['....y....','....y....','...yYy...','yyyyYYyyy','.yYYYYYy.','..yYYYy..','..yYyYy..','.yy...yy.','.y.....y.'],{y:'#f4c020',Y:'#ffe680'});
+ SPR.iSmile=pm(['..yyyyy..','.yYYYYYy.','yYYYYYYYy','yYkYYYkYy','yYYYYYYYy','yYkYYYkYy','yYYkkkYYy','.yYYYYYy.','..yyyyy..'],{y:'#e8a818',Y:'#ffd84a',k:'#3a2a10'});
+ SPR.iYum=pm(['..yyyyy..','.yYYYYYy.','yYYYYYYYy','yYkYYYkYy','yYYYYYYYy','yYkkkkkYy','yYYYppYYy','.yYYppYy.','..yyyyy..'],{y:'#e8a818',Y:'#ffd84a',k:'#3a2a10',p:'#f0708a'});
+ SPR.iNote=pm(['...bbbbb.','...bBBBb.','...b...b.','...b...b.','...b...b.','.bbb.bbb.','bBBb.bBBb','bbbb.bbbb','.........'].slice(0,8),{b:'#3a6fd8',B:'#7aa8ff'});
+ SPR.iSpark=pm(['....w....','....w....','...wWw...','..wWWWw..','wwWWWWWww','..wWWWw..','...wWw...','....w....','....w....'],{w:'#ffd84a',W:'#fffbe0'});
+ SPR.iHearts=pm(['.rr.rr...','rRrrrr...','rrrrrr...','.rrrr.pp.p','..rr.pPppp','.....pppp','......pp.'].map(r=>r.padEnd(10,'.')),{r:'#e84a6a',R:'#ffb0c0',p:'#ff8ab0',P:'#ffd0e0'});
+ SPR.iHat=pm(['..kkkkk..','..kKkkk..','..kKkkk..','..rrrrr..','kkkkkkkkk'],{k:'#2a2a32',K:'#5a5a66',r:'#d83a3a'})}
 function genWorld(){
  const r=rng(8675309);
  for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){const z=zoneAt(x,y);map[I(x,y)]=z==='woods'?4:z==='meadow'?5:0}
@@ -689,15 +697,15 @@ ui.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t)retur
 ui.addEventListener('input',e=>{if(e.target.id==='pn')S.player.name=e.target.value.trim().slice(0,12)});
 ui.addEventListener('change',e=>{if(e.target.id==='nm'&&S.dogs[G.cur]){S.dogs[G.cur].name=e.target.value.trim().slice(0,12)||BY[G.cur].n;save()}});
 $('#clock').addEventListener('click',()=>{audioInit();sfx.blip();if(G.state==='world'&&!G.paused)menu()});
-const petEl=$('#pet'),PRAISE=['😄','🥰','⭐','🎉','😊','💖','👏'];
+const petEl=$('#pet'),PRAISE=['iStar','iSmile','iNote','iSpark','iHearts'];
 function emote(e,t){e.emo={txt:t,t:3.2};e.joy=3.2;e.hop=.3}
-function openPet(e,id){if(!S.dogs[id])return;G.pet={e,id};petEl.innerHTML=`<b>${esc(S.dogs[id].name)}</b><button data-p="pat">🤚 Pat</button><button data-p="praise">⭐ Praise</button><button data-p="treat">🦴 Treat</button><button data-p="play">🎾 Play</button><button data-p="dress">🎩 Dress</button><button data-p="x">✕</button>`;petEl.classList.add('on');sfx.blip();e.hop=.25}
+function openPet(e,id){if(!S.dogs[id])return;G.pet={e,id};petEl.innerHTML=`<b>${esc(S.dogs[id].name)}</b><button data-p="pat">${im(SPR.heart,2)} Pat</button><button data-p="praise">${im(SPR.iStar,1.5)} Praise</button><button data-p="treat">${im(SPR.bone,1.5)} Treat</button><button data-p="play">${im(SPR.ball,2)} Play</button><button data-p="dress">${im(SPR.iHat,1.5)} Dress</button><button data-p="x">X</button>`;petEl.classList.add('on');sfx.blip();e.hop=.25}
 function closePet(){G.pet=null;petEl.classList.remove('on')}
 petEl.addEventListener('click',ev=>{const t=ev.target.closest('[data-p]');if(!t||!G.pet)return;audioInit();const{e,id}=G.pet,d=S.dogs[id],k=t.dataset.p;
  if(k==='x')return closePet();
- if(k==='pat'){emote(e,'❤️');sfx.pop();const n=Date.now();if(n-(d.lp||0)>60000){d.bond=(d.bond||0)+1;d.lp=n;save()}}
+ if(k==='pat'){emote(e,'heart');sfx.pop();const n=Date.now();if(n-(d.lp||0)>60000){d.bond=(d.bond||0)+1;d.lp=n;save()}}
  else if(k==='praise'){emote(e,pick(PRAISE));sfx.bark(BY[id].sz)}
- else if(k==='treat'){if(S.treats<1){toast('No treats left. Play a game to earn some!');sfx.buzz();return}S.treats--;d.bond=(d.bond||0)+1;save();emote(e,'😋');sfx.coin()}
+ else if(k==='treat'){if(S.treats<1){toast('No treats left. Play a game to earn some!');sfx.buzz();return}S.treats--;d.bond=(d.bond||0)+1;save();emote(e,'iYum');sfx.coin()}
  else if(k==='play'){closePet();playMenu(id)}else if(k==='dress'){closePet();dress(id)}});
 let ACTI=['',''];
 function setNear(n,pt){if(n===G.near&&pt===G.nearPet)return;G.near=n;G.nearPet=pt;actB.classList.toggle('on',!!(n||pt));actB.innerHTML=ACTI[n?0:1]}
@@ -975,7 +983,7 @@ function silB(c){let s=SILS.get(c);if(!s){s=mk(c.width,c.height);s.x.drawImage(c
 function cast(c,x,y,s,LV){const w=c.width*s,h=c.height*s;g.save();g.globalAlpha=LV.sa;g.transform(1,0,LV.sc,-LV.sd,sn(x),sn(y));g.drawImage(silB(c),-w/2,-h+s,w,h);g.restore()}
 function vignette(a){const gr=g.createRadialGradient(vw/2,vh/2,Math.min(vw,vh)*.42,vw/2,vh/2,Math.max(vw,vh)*.72);gr.addColorStop(0,'rgba(8,10,30,0)');gr.addColorStop(1,`rgba(8,10,30,${a})`);g.fillStyle=gr;g.fillRect(0,0,vw,vh)}
 function emoB(e,x,y){const a=clamp(e.emo.t,0,1),yy=sn(y-(3.2-e.emo.t)*1.5),X=sn(x);g.globalAlpha=a;px(g,X-8,yy-15,16,14,OUT);px(g,X-9,yy-14,18,12,OUT);px(g,X-1,yy-2,3,3,OUT);px(g,X-7,yy-14,14,12,'#fff');px(g,X-8,yy-13,16,10,'#fff');px(g,X,yy-2,1,2,'#fff');
- g.font='8.5px system-ui,"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillStyle='#d83a5a';g.fillText(e.emo.txt,X,yy-7.5);g.globalAlpha=1}
+ const ic=SPR[e.emo.txt]||SPR.heart;g.drawImage(ic,sn(X-ic.width/2),sn(yy-8-ic.height/2));g.globalAlpha=1}
 function drawJoy(){if(ptr.id!==null&&ptr.drag&&G.state==='world'){g.strokeStyle='rgba(255,255,255,.5)';g.lineWidth=1;g.beginPath();g.arc(ptr.sx,ptr.sy,14,0,6.283);g.stroke();g.fillStyle='rgba(255,255,255,.55)';const dx=ptr.x-ptr.sx,dy=ptr.y-ptr.sy,m=Math.max(1,Math.hypot(dx,dy)),k=Math.min(14,m)/m;g.beginPath();g.arc(ptr.sx+dx*k,ptr.sy+dy*k,5,0,6.283);g.fill()}}
 const headTop=e=>([27,32,37][e.b.sz]+(e.b.tall?3:0))*dsc(e.v);
 function buildHome(){const W=HOME.w*16,H=HOME.h*16,c=mk(W,H),x=c.x;
