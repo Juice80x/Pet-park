@@ -112,7 +112,7 @@ body[data-s=world] #pet.on{display:flex}
 <button id="dexB" aria-label="Dogdex"></button>
 <div id="mh"></div>
 <div id="pet"></div>
-<div id="title"><div id="burst"></div><div class="logo"><div><span>P</span><span>U</span><span>P</span></div><div><span>P</span><span>A</span><span>R</span><span>K</span></div></div><div class="tagl">Snap every dog. Fill your Dogdex!</div><button id="playB"><i></i>PLAY</button><button id="charB">My character</button><div class="tagl" id="tsub"></div></div>
+<div id="title"><div class="logo"><div><span>P</span><span>U</span><span>P</span></div><div><span>P</span><span>A</span><span>R</span><span>K</span></div></div><div class="tagl">Snap every dog. Fill your Dogdex!</div><button id="playB"><i></i>PLAY</button><button id="charB">My character</button><div class="tagl" id="tsub"></div></div>
 <div id="ui"></div>
 <script>
 'use strict';
@@ -1171,7 +1171,7 @@ function render(){
   g.globalAlpha=1;g.globalCompositeOperation='source-over';
   for(let i=0;i<14;i++){const fx=(Math.sin(i*12.9)*.5+.5)*vw+Math.sin(G.time*.7+i)*14,fy=(Math.cos(i*7.3)*.5+.5)*vh+Math.cos(G.time*.9+i*2)*10;if(Math.sin(G.time*2+i*1.7)>-.2)px(g,fx|0,fy|0,1,1,'#f8ff9a')}}
  const per=period(LV.h);
- if(per==='M'||per==='E'){g.globalCompositeOperation='lighter';g.fillStyle='rgba(255,214,140,.07)';const dir=per==='M'?1:-1;for(let i=0;i<4;i++){const bx=((i*83+G.time*3)%(vw+140))-70;g.beginPath();g.moveTo(bx,0);g.lineTo(bx+28,0);g.lineTo(bx+28-dir*vh*.45,vh);g.lineTo(bx-dir*vh*.45,vh);g.fill()}g.globalCompositeOperation='source-over'}
+ if(per==='M'||per==='E'){const sx=per==='M'?0:vw,k=per==='M'?clamp(1-Math.abs(LV.h-7)/3,0,1):clamp(1-Math.abs(LV.h-18.3)/2.2,0,1),R2=Math.max(vw,vh)*.9,gr=g.createRadialGradient(sx,0,0,sx,0,R2);gr.addColorStop(0,`rgba(255,214,140,${.2*k})`);gr.addColorStop(.5,`rgba(255,200,120,${.07*k})`);gr.addColorStop(1,'rgba(255,190,110,0)');g.globalCompositeOperation='lighter';g.fillStyle=gr;g.fillRect(0,0,vw,vh);g.globalCompositeOperation='source-over'}
  vignette(.14+LV.night*.3);
  {const hx=HOUSE.x-cam.x,hy=HOUSE.y-34-cam.y;if(hx<-14||hx>vw+14||hy<-30||hy>vh+30){const cx=vw/2,cy=vh/2,a=Math.atan2(hy-cy,hx-cx),k=Math.min((cx-9)/Math.abs(Math.cos(a)||1e-6),(cy-10)/Math.abs(Math.sin(a)||1e-6));let ax=sn(cx+Math.cos(a)*k),ay=sn(cy+Math.sin(a)*k);if(ay<30&&(ax>vw-64||ax<50))ay=30;
   const hd=Math.hypot(HOUSE.x-P.x,HOUSE.y-P.y),sc=clamp(1.15-hd/1000,.5,1);g.save();g.translate(ax,ay);g.rotate(a);g.scale(sc,sc);g.globalAlpha=.85+Math.sin(G.time*4)*.15;g.lineJoin='round';g.fillStyle='#ffd84a';g.strokeStyle='#5a2a0a';g.lineWidth=2;g.beginPath();g.moveTo(8,0);g.lineTo(-3,-6);g.lineTo(-.5,0);g.lineTo(-3,6);g.closePath();g.stroke();g.fill();g.restore()}}
