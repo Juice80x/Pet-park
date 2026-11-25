@@ -71,9 +71,12 @@ input{font:inherit;font-size:16px;text-align:center;background:#fff7e0;border:3p
 .c{margin:4px 0}
 .tr{font-size:14px;margin:4px 0}
 .logo,#playB,.tagl{font-family:"Arial Rounded MT Bold","Chalkboard SE","Baloo 2","Trebuchet MS",system-ui,sans-serif;font-weight:900}
-#title{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:min(2.4vh,14px);z-index:8;padding:0 10px 24vh}
+#title{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:min(2.4vh,14px);z-index:8;padding:0 0 16vh;overflow:hidden;text-align:center}
 body[data-s=title] #title{display:flex}
-.logo{font-size:min(25vw,19vh);line-height:.92;text-align:center;letter-spacing:.02em}
+.logo{font-size:min(27vw,20vh);line-height:.92;text-align:center;width:100%;position:relative;filter:drop-shadow(.035em 0 0 #fff) drop-shadow(-.035em 0 0 #fff) drop-shadow(0 .035em 0 #fff) drop-shadow(0 -.035em 0 #fff) drop-shadow(0 .08em .06em rgba(0,0,0,.35))}
+.logo div{display:flex;justify-content:center}
+#burst{position:absolute;left:50%;top:50%;width:150vmax;height:150vmax;margin:-75vmax 0 0 -75vmax;background:repeating-conic-gradient(rgba(255,255,255,.16) 0 9deg,rgba(255,255,255,0) 9deg 18deg);-webkit-mask-image:radial-gradient(closest-side,#000 0,#000 18%,transparent 55%);mask-image:radial-gradient(closest-side,#000 0,#000 18%,transparent 55%);animation:spin 40s linear infinite;pointer-events:none;z-index:-1}
+@keyframes spin{to{rotate:360deg}}
 .logo span{display:inline-block;-webkit-text-stroke:.16em #4a1f04;paint-order:stroke fill;text-shadow:0 .1em 0 #4a1f04,0 .17em 0 rgba(0,0,0,.28);animation:bobl 1.5s ease-in-out infinite}
 .logo span:nth-child(odd){color:#ffd23a;transform:rotate(-5deg)}.logo span:nth-child(even){color:#ff8a2a;transform:rotate(4deg)}
 .logo div:nth-child(2) span:nth-child(odd){color:#fff}.logo div:nth-child(2) span:nth-child(even){color:#7fe04a}
@@ -86,6 +89,12 @@ body[data-s=title] #title{display:flex}
 #playB i{width:0;height:0;border-left:.62em solid #fff;border-top:.4em solid transparent;border-bottom:.4em solid transparent;filter:drop-shadow(.05em .05em 0 #1f5a1a)}
 @keyframes pulse{0%,100%{scale:1}50%{scale:1.07}}
 #tsub{min-height:1em}
+#pet{position:fixed;top:calc(54px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);display:none;align-items:center;gap:4px;flex-wrap:wrap;justify-content:center;max-width:96vw;
+ background:#f6d79b;border:3px solid #7a3e12;box-shadow:0 0 0 2px #d98a3a,0 3px 0 2px rgba(0,0,0,.3);padding:5px 6px;font-size:13px;z-index:6}
+body[data-s=world] #pet.on{display:flex}
+#pet b{padding:0 4px;width:100%;text-align:center}
+#pet button{font:inherit;font-size:12px;color:#4a1f04;background:#e8923a;border:2px solid #7a3e12;box-shadow:inset -2px -2px 0 #c06a1e,inset 2px 2px 0 #ffb866;padding:6px 6px;cursor:pointer;white-space:nowrap}
+#act img{image-rendering:pixelated}
 </style>
 </head>
 <body data-s="title">
@@ -94,7 +103,8 @@ body[data-s=title] #title{display:flex}
 <button id="act" aria-label="Take photo"></button>
 <div id="toast"></div>
 <div id="mh"></div>
-<div id="title"><div class="logo"><div><span>P</span><span>U</span><span>P</span></div><div><span>P</span><span>A</span><span>R</span><span>K</span></div></div><div class="tagl">Snap every dog. Fill your Dogdex!</div><button id="playB"><i></i>PLAY</button><div class="tagl" id="tsub"></div></div>
+<div id="pet"></div>
+<div id="title"><div id="burst"></div><div class="logo"><div><span>P</span><span>U</span><span>P</span></div><div><span>P</span><span>A</span><span>R</span><span>K</span></div></div><div class="tagl">Snap every dog. Fill your Dogdex!</div><button id="playB"><i></i>PLAY</button><div class="tagl" id="tsub"></div></div>
 <div id="ui"></div>
 <script>
 'use strict';
@@ -121,8 +131,11 @@ function im(c,s,cls){let u=URLS.get(c);if(!u){u=c.toDataURL();URLS.set(c,u)}retu
 
 /* ================= save ================= */
 const SAVE_KEY='pupPark.save.v1';
-let S={v:1,started:false,player:{skin:1,hair:0,hairC:0,beard:1,shirt:7,pants:0},dogs:{},treats:0,owned:['party','bandana'],buddy:'',music:true,sound:true,pos:null,tips:0};
-function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}}
+let S={v:1,started:false,player:{name:'',skin:1,hair:0,hairC:0,beard:1,shirt:7,pants:0},dogs:{},treats:0,owned:['party','bandana'],buddy:'',music:true,sound:true,pos:null,tips:0};
+let IDB=null;
+function idbOpen(){return new Promise(r=>{try{const q=indexedDB.open('pupPark',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>{IDB=q.result;r(IDB)};q.onerror=()=>r(null)}catch(e){r(null)}})}
+function idbGet(){return new Promise(r=>{if(!IDB)return r(null);try{const q=IDB.transaction('kv').objectStore('kv').get('save');q.onsuccess=()=>r(q.result||null);q.onerror=()=>r(null)}catch(e){r(null)}})}
+function save(){S.ts=Date.now();const j=JSON.stringify(S);try{localStorage.setItem(SAVE_KEY,j)}catch(e){}if(IDB)try{IDB.transaction('kv','readwrite').objectStore('kv').put(j,'save')}catch(e){}}
 function load(){try{const d=JSON.parse(localStorage.getItem(SAVE_KEY));if(d&&d.v===1){Object.assign(S,d)}}catch(e){}}
 
 /* ================= time ================= */
@@ -165,6 +178,30 @@ const BR=[
 {id:'dingo',n:'Dingo',sz:1,c:'#d99a4e',s:'#f6e4c2',e:'point',t:'fluff',p:'chest',nocol:1,z:['sand'],h:'N',r:3,d:'A wild local, only seen after dark. Blink and it is gone.'},
 {id:'wolf',n:'Irish Wolfhound',sz:2,tall:1,c:'#77706a',s:'#9a938c',e:'fold',beard:1,t:'long',p:'solid',f:1,z:['woods'],h:'N',r:3,d:'An ancient giant that wanders the woods at night.'},
 {id:'afghan',n:'Afghan Hound',sz:2,slim:1,c:'#e8d2a0',s:'#f6e8c8',m:'#5a4634',e:'long',top:1,t:'curl',p:'solid',f:1,col:'#8a4fd8',z:['meadow'],h:'M',r:3,d:'Glides through the morning mist like a shampoo ad.'}];
+BR.push(
+{id:'staffy',n:'Staffy',sz:1,c:'#7a8088',s:'#f0f0f0',e:'fold',t:'long',p:'chest',flat:1,z:['lawn','sand'],h:'MDE',r:0,d:"Australia's favourite cuddle tank."},
+{id:'cavoodle',n:'Cavoodle',sz:0,c:'#d99a5a',s:'#f0c890',e:'long',t:'pom',top:1,p:'solid',f:1,col:'#3ac2c2',z:['lawn','meadow'],h:'MD',r:0,d:'Every second dog in Sydney. For good reason.'},
+{id:'maltese',n:'Maltese',sz:0,c:'#ffffff',s:'#f0f0f4',e:'long',t:'fluff',top:1,p:'solid',f:1,col:'#e86aa8',z:['lawn'],h:'DE',r:0,d:'A tiny mop with a big heart.'},
+{id:'cocker',n:'Cocker Spaniel',sz:1,c:'#b8742c',s:'#d99a4e',e:'long',t:'stub',p:'solid',f:1,col:'#3aa655',z:['pond'],h:'MD',r:0,d:'Those ears have their own postcode.'},
+{id:'cav',n:'Cavalier',sz:0,c:'#f8f2ea',s:'#b0562a',ec:'#b0562a',e:'long',t:'fluff',p:'eyepatch',z:['meadow'],h:'DE',r:1,d:'Professional lap warmer.'},
+{id:'westie',n:'Westie',sz:0,c:'#ffffff',s:'#f4f4f4',e:'point',t:'long',p:'solid',f:1,col:'#d83a3a',z:['woods','lawn'],h:'M',r:1,d:'Small, white, and absolutely in charge.'},
+{id:'schnauzer',n:'Schnauzer',sz:1,c:'#6a6e76',s:'#d8dade',e:'fold',t:'stub',p:'mask',beard:1,brow:'#d8dade',z:['lawn'],h:'E',r:1,d:'Distinguished gentleman with a magnificent beard.'},
+{id:'basset',n:'Basset Hound',sz:1,long:1,c:'#a8642a',s:'#f5efe0',e:'long',t:'long',p:'patch',z:['meadow'],h:'E',r:1,d:'Low rider. Trips over its own ears.'},
+{id:'aussie',n:'Aussie Shepherd',sz:1,c:'#7a8494',s:'#f4f0ea',eye:'#5aa8e8',e:'fold',t:'stub',p:'speckle',f:1,z:['meadow'],h:'MD',r:1,d:'Not actually Australian. Do not tell it.'},
+{id:'whippet',n:'Whippet',sz:1,slim:1,c:'#c8a880',s:'#f4ece0',e:'fold',t:'long',p:'chest',z:['sand'],h:'E',r:1,d:'Zero to zoom in one second, then a nap.'},
+{id:'vizsla',n:'Vizsla',sz:1,slim:1,c:'#b8622a',s:'#c87a3a',e:'flop',t:'long',p:'solid',col:'#3aa655',z:['meadow','pond'],h:'M',r:1,d:'Velcro dog. Will follow you to the bathroom.'},
+{id:'bullt',n:'Bull Terrier',sz:1,c:'#f8f8f4',s:'#3a2a22',e:'point',t:'long',p:'eyepatch',z:['sand'],h:'D',r:1,d:'Egg-shaped head, clown-shaped heart.'},
+{id:'rott',n:'Rottweiler',sz:2,c:'#1e1a1a',s:'#a85e2a',e:'fold',t:'stub',p:'tan',z:['woods'],h:'E',r:2,d:'Fifty kilos of teddy bear.'},
+{id:'akita',n:'Akita',sz:2,c:'#c8783a',s:'#fff4e4',e:'point',t:'curl',p:'mask',f:1,z:['woods'],h:'M',r:2,d:'Quiet, noble, and loyal to the end.'},
+{id:'bernard',n:'St Bernard',sz:2,c:'#a8562a',s:'#f8f4ec',e:'flop',t:'fluff',p:'patch',f:1,z:['pond'],h:'E',r:2,d:'Drool level: biblical.'},
+{id:'newf',n:'Newfoundland',sz:2,c:'#1c1818',s:'#2a2424',e:'flop',t:'fluff',p:'solid',f:1,col:'#f2c230',z:['pond'],h:'N',r:2,d:'A swimming bear that loves you.'},
+{id:'weim',n:'Weimaraner',sz:2,slim:1,c:'#8a8684',s:'#a8a4a0',eye:'#6aa8d8',e:'flop',t:'stub',p:'solid',col:'#3a6fd8',z:['meadow'],h:'E',r:2,d:'The grey ghost with the pale blue stare.'},
+{id:'papillon',n:'Papillon',sz:0,c:'#f8f4ee',s:'#8a4a22',ec:'#8a4a22',e:'bat',t:'fluff',p:'eyepatch',f:1,z:['lawn'],h:'M',r:2,d:'Butterfly ears. Flutters when excited.'},
+{id:'mastiff',n:'Tibetan Mastiff',sz:2,c:'#3a2218',s:'#a8622a',e:'flop',t:'curl',p:'tan',f:1,z:['woods'],h:'D',r:3,d:'A lion in a dog suit. Seen deep in the woods by day.'});
+BR.push({id:'bulldog',n:'Bulldog',sz:1,c:'#f4ece0',s:'#c8843a',ec:'#c8843a',m:'#f4ece0',e:'fold',t:'stub',p:'eyepatch',flat:1,z:['lawn'],h:'D',r:1,d:'Naps hard. Snores harder.'});
+const TP={},TPN={feisty:'Feisty',fast:'Speedy',sleepy:'Sleepy',friendly:'Friendly',shy:'Shy',calm:'Calm'};
+[['feisty','chi jack pom dachs westie papillon schnauzer'],['fast','kelpie collie grey whippet heeler aussie vizsla husky dalm weim'],['sleepy','bulldog french pug basset bernard newf dane mastiff sheep'],['friendly','lab golden cavoodle staffy cav cocker beagle boxer corgi mutt samo bern bullt'],['shy','shiba afghan dingo wolf akita']].forEach(([t,l])=>l.split(' ').forEach(id=>TP[id]=t));
+const TQ={feisty:{v:1.6,p0:.15,p1:.4,pc:.15},fast:{v:1.9,p0:.2,p1:.5,pc:.25},sleepy:{v:.5,p0:1.5,p1:2.6,pc:.6},friendly:{v:.9,p0:.8,p1:1.4,pc:.5},shy:{v:1.15,p0:.2,p1:.5,pc:.1,edge:1},calm:{v:1,p0:.35,p1:1,pc:.3}};
 const BY={};BR.forEach(b=>BY[b.id]=b);
 const RAR=[['Common','#6a8a3a'],['Uncommon','#2a7fd8'],['Rare','#a04fd8'],['Legendary','#e0851a']],RW=[60,22,7,1.6];
 const ZNAME={lawn:'the Lawns',woods:'the Woods',pond:'the Pond',sand:'Sandy Paws Beach',meadow:'the Meadow',any:'all over the park'};
@@ -215,7 +252,7 @@ function hatSide(x,id,cx,T,hr){
  else if(id==='bow'){tri(x,cx,T-1,cx-4,cx-4,T+1,'#e86aa8');tri(x,cx-4,T-4,cx-4,cx,T-1,'#e86aa8');tri(x,cx,T-1,cx+4,cx+4,T+1,'#e86aa8');tri(x,cx+4,T-4,cx,cx+4,T-1,'#e86aa8');px(x,cx-1,T-2,2,2,'#b83a78')}}
 function dogFront(b,fr,o,happy){ // fr 0/1 tail wag, 2 blink
  const key=b.id+'F'+fr+(happy?1:0)+okey(o);if(SC[key])return SC[key];
- const c=mk(FW,FH),sz=b.sz,{B,S2,E,M,P,IN,SEP}=dogCols(b),cx=16,base=42,wag=fr===1?1:0,blink=fr===2,seed=hash(b.id);
+ const c=mk(FW,FH),sz=b.sz,{B,S2,E,M,P,IN,SEP}=dogCols(b),cx=16,base=42,wag=fr===1?1:0,blink=fr===2,joy=fr===3,seed=hash(b.id);if(joy)happy=true;
  const rx=[6,7,8][sz],ry=[5,6,7][sz],brx=[5,6,7][sz]-(b.slim?1:0),bh=[10,13,16][sz]+(b.tall?3:0),top=base-bh,hy=top-ry+3,T=hy-ry,L=cx-rx;
  const part=()=>mk(FW,FH);let p,x;
  // tail
@@ -246,7 +283,7 @@ function dogFront(b,fr,o,happy){ // fr 0/1 tail wag, 2 blink
  if(nk==='bandana'||nk==='bandanab'){const K2=NECKC[nk];px(x,cl-1,yc,cw+2,2,K2);for(let i=0;i<4;i++)px(x,cx-3+i,yc+2+i,7-2*i,1,i===3?shade(K2,.75):K2);px(x,cx-1,yc+2,1,1,'#fff');px(x,cx+1,yc+3,1,1,'#fff');px(x,cl-1,yc,cw+2,1,shade(K2,1.25))}
  else if(nk==='bowtie'){tri(x,cx-1,yc+1,cx-5,cx-5,yc+3,'#d83a3a');tri(x,cx-5,yc-1,cx-5,cx-1,yc+1,'#d83a3a');tri(x,cx+1,yc+1,cx+5,cx+5,yc+3,'#d83a3a');tri(x,cx+5,yc-1,cx+1,cx+5,yc+1,'#d83a3a');px(x,cx-1,yc,3,3,'#8a1a1a');px(x,cx-4,yc,1,1,'#ff8a8a');px(x,cx+3,yc,1,1,'#ff8a8a')}
  else if(nk==='scarf'){px(x,cl-1,yc,cw+2,3,'#3aa655');px(x,cl-1,yc,cw+2,1,'#5ac878');px(x,cl-1,yc+2,cw+2,1,'#2a8040');px(x,cx+1,yc+3,3,6,'#3aa655');px(x,cx+1,yc+5,3,1,'#f4f4f4');px(x,cx+1,yc+7,3,1,'#f4f4f4');px(x,cx+1,yc+3,1,6,'#2a8040')}
- else if(!b.nocol){const col=b.col||'#d83a3a';px(x,cl,yc,cw,2,col);px(x,cl,yc+1,cw,1,shade(col,.72));px(x,cx-1,yc+2,3,2,'#f4d03f');px(x,cx-1,yc+2,1,1,'#fff6c0');px(x,cx+1,yc+3,1,1,'#c89a1a')}
+ else if(o&&!b.nocol){const col=b.col||'#d83a3a';px(x,cl,yc,cw,2,col);px(x,cl,yc+1,cw,1,shade(col,.72));px(x,cx-1,yc+2,3,2,'#f4d03f');px(x,cx-1,yc+2,1,1,'#fff6c0');px(x,cx+1,yc+3,1,1,'#c89a1a')}
  // ears
  const earL=(x,t)=>{
   if(t==='point'){tri(x,L+1,T-5,L-1,L+5,T+2,E);tri(x,L+2,T-2,L+1,L+4,T+2,IN)}
@@ -278,8 +315,9 @@ function dogFront(b,fr,o,happy){ // fr 0/1 tail wag, 2 blink
  else{px(x,cx-1,my+1,1,1,shade(M,.5));px(x,cx+1,my+1,1,1,shade(M,.5))}
  if(b.beard){for(let i=-2;i<=2;i++)px(x,cx+i,my+2,1,2+(i&1),shade(B,.9))}
  if(b.shag){px(x,L+1,ey-1,rx*2-1,eh+1,S2);for(let i=0;i<rx*2-1;i+=2)px(x,L+1+i,ey+eh,1,1,S2)}
- else for(const X of[cx-ex-1,cx+ex]){if(blink)px(x,X,ey+1,2,1,EC);else{px(x,X,ey,2,eh,EC);px(x,X,ey,1,1,'#fff')}
+ else for(const X of[cx-ex-1,cx+ex]){if(joy){px(x,X,ey,2,1,EC);px(x,X-1,ey+1,1,1,EC);px(x,X+2,ey+1,1,1,EC)}else if(blink)px(x,X,ey+1,2,1,EC);else{px(x,X,ey,2,eh,EC);px(x,X,ey,1,1,'#fff')}
   if(b.p==='tan'||b.brow)px(x,X,ey-2,2,1,b.brow||S2)}
+ if(joy){px(x,L+1,my-1,2,1,'#ff9ab0');px(x,cx+rx-2,my-1,2,1,'#ff9ab0')}
  comp(c,p,SEP);
  ears(true);
  x=c.x;const ee=o&&o.eyes;
@@ -290,58 +328,64 @@ const GAIT={nf:[[0,0],[2,0],[0,0],[-2,0],[0,1]],ff:[[0,0],[-2,0],[0,1],[2,0],[0,
 function dogSide(b,fr,o,tongue){ // fr 0 stand, 1-4 walk cycle
  const key=b.id+'S'+fr+(tongue?1:0)+okey(o);if(SC[key])return SC[key];
  const c=mk(SW,SH),sz=b.sz,{B,S2,D,E,M,P,IN,SEP}=dogCols(b),base=38,bob=(fr===2||fr===4)?1:0,wag=fr&1,seed=hash(b.id);
- const L=[12,15,18][sz]+(b.long?5:0),h=[6,7,9][sz]-(b.slim?2:0),lg=(b.long?2:[3,5,7][sz])+(b.slim?1:0)+(b.tall?2:0),lw=[2,3,3][sz];
- const bx=9,by=base-lg-h-bob,hr=[4,5,5][sz],hry=[4,4,5][sz],hcx=bx+L+1,hcy=by-(sz?2:1)-(b.tall?1:0),T=hcy-hry,sl=b.flat?2:[3,4,5][sz];
+ const L=[13,16,19][sz]+(b.long?5:0),h=[5,7,8][sz]-(b.slim?1:0),lg=(b.long?2:[3,5,7][sz])+(b.slim?1:0)+(b.tall?2:0),lw=2;
+ const bx=10,by=base-lg-h-bob,rr=[3,4,4][sz],cr=[3,4,5][sz],ryR=h>>1,ryC=(h>>1)+1;
+ const hr=[4,5,5][sz],hry=[3,4,4][sz],hcx=bx+L+(sz?2:1),hcy=by-(sz?3:2)-(b.tall?1:0)-(b.slim?1:0),T=hcy-hry,sl=b.flat?2:[3,4,5][sz];
  const part=()=>mk(SW,SH);let p,x;
+ // tail
  p=part();x=p.x;const TC=B;
- if(b.t==='long')[[-1,1],[-2,0],[-3,-1-wag],[-4,-3-wag],[-5,-5-wag*2]].forEach(([a,d])=>px(x,bx+a,by+d,2,2,TC));
- else if(b.t==='curl'){ell(x,bx,by-3,3,3,TC);x.clearRect(bx-1,by-4,2,2)}
- else if(b.t==='fluff'){ell(x,bx-3,by-1-wag,3,5,TC);px(x,bx-2,by,3,3,TC);if(b.p!=='solid')atop(p,x=>ell(x,bx-4,by-5-wag,2,2,S2))}
- else if(b.t==='pom'){px(x,bx-2,by-3,2,5,TC);ell(x,bx-2,by-5-wag,2,2,TC)}
+ if(b.t==='long'){px(x,bx-1,by+1,3,2,TC);px(x,bx-3,by,3,2,TC);px(x,bx-4,by-2-wag,2,2,TC);px(x,bx-5,by-4-wag,2,2,TC);px(x,bx-5,by-6-wag*2,1,2,TC)}
+ else if(b.t==='curl'){ell(x,bx+1,by-3,3,3,TC);x.clearRect(bx,by-4,2,2);px(x,bx+1,by-1,3,2,TC)}
+ else if(b.t==='fluff'){ell(x,bx-2,by-2-wag,3,5,TC);px(x,bx-1,by,4,3,TC);if(b.p!=='solid')atop(p,x=>ell(x,bx-3,by-6-wag,2,2,S2))}
+ else if(b.t==='pom'){px(x,bx-1,by-3,2,5,TC);ell(x,bx-1,by-5-wag,2,2,TC)}
  else ell(x,bx,by+1-wag,1,1,TC);
  if(b.f)fuzz(p,seed+1,.4);shadeC(p);c.x.drawImage(p,0,0);
- const LC=b.p==='patch'?S2:B,ly=by+h-2;
- const leg=(x,lx,gt,col,paw)=>{const[of,lf]=gt[fr];px(x,lx+of,ly,lw,base-lf-ly,col);px(x,lx+of,base-1-lf,lw+1,1,paw)};
- p=part();x=p.x;leg(x,bx+3,GAIT.fb,D,shade(P,.7));leg(x,bx+L-lw-4,GAIT.ff,D,shade(P,.7));c.x.drawImage(p,0,0);
- p=part();x=p.x;px(x,bx+1,by,L-2,h,B);px(x,bx,by+1,L,h-2,B);ell(x,bx+L-3,by+(h>>1)+1,3,h>>1,B);
- if(b.slim){x.clearRect(bx,by+h-1,L-7,1);x.clearRect(bx,by+h-2,L-11,1)}
+ const LC=b.p==='patch'?S2:B,ly=by+h-2,fx=bx+L-cr-2,hx=bx+1;
+ const fleg=(x,lx,gt,col,paw,near)=>{const[of,lf]=gt[fr],bt=base-lf;if(near)px(x,lx+of,ly-1,lw+1,Math.min(4,bt-ly),col);px(x,lx+of,ly,lw,bt-ly,col);px(x,lx+of,bt-1,lw+1,1,paw)};
+ const hleg=(x,lx,gt,col,paw,near)=>{const[of,lf]=gt[fr],bt=base-lf,kn=Math.min(bt-1,ly+3);if(near)ell(x,lx+2+(of>>1),ly,3,sz===2?4:3,col);px(x,lx+1+of,ly,lw,kn-ly,col);px(x,lx+of,kn,lw,bt-kn,col);px(x,lx+of,bt-1,lw+1,1,paw)};
+ p=part();x=p.x;hleg(x,hx+2,GAIT.fb,D,shade(P,.7));fleg(x,fx-2,GAIT.ff,D,shade(P,.7));c.x.drawImage(p,0,0);
+ // torso
+ p=part();x=p.x;ell(x,bx+rr,by+ryR,rr,ryR,B);ell(x,bx+L-cr-1,by+ryC,cr,ryC,B);px(x,bx+rr,by,L-rr-cr,h-(b.slim?2:1),B);px(x,bx+L-cr-4,by-1,5,1,B);
  atop(p,x=>{
-  if(b.p==='chest'||b.p==='mask'||b.p==='patch'){ell(x,bx+L-2,by+h-1,3,h>>1,S2);px(x,bx+3,by+h-1,L-6,1,S2)}
-  if(b.p==='tan')ell(x,bx+L-2,by+h-1,2,2,S2);
-  if(b.p==='mask')px(x,bx+L-3,by-1,3,3,S2);
-  if(b.p==='saddle')px(x,bx,by,L-4,(h>>1)+1,S2);
-  if(b.p==='eyepatch')ell(x,bx+5,by+2,3,2,S2);
-  speck(x,b,bx,by,L,h)});
+  if(b.p==='chest'||b.p==='mask'||b.p==='patch'){ell(x,bx+L-cr+1,by+ryC+2,cr-1,ryC-1,S2);px(x,bx+rr,by+h-2,L-rr-cr,2,S2)}
+  if(b.p==='tan')ell(x,bx+L-cr+1,by+ryC+2,2,2,S2);
+  if(b.p==='saddle')px(x,bx,by-1,L-cr+1,ryR+2,S2);
+  if(b.p==='eyepatch')ell(x,bx+rr+3,by+2,3,2,S2);
+  speck(x,b,bx,by,L,h+2)});
  if(b.f)fuzz(p,seed+2,.45);shadeC(p);comp(c,p,SEP);
- p=part();x=p.x;ell(x,bx+2+GAIT.nb[fr][0]/2,by+h-3,3,3,B);leg(x,bx+1,GAIT.nb,LC,P);leg(x,bx+L-lw-2,GAIT.nf,LC,P);
- if(b.p==='tan')atop(p,x=>px(x,0,base-(lg>>1)-1,SW,lg,S2));
+ // near legs
+ p=part();x=p.x;hleg(x,hx,GAIT.nb,LC,P,1);fleg(x,fx,GAIT.nf,LC,P,1);
+ if(b.p==='tan')atop(p,x=>px(x,0,base-Math.max(2,lg>>1),SW,lg,S2));
  shadeC(p);comp(c,p,SEP);
  // neck + head
- p=part();x=p.x;px(x,bx+L-4,by-2,5,5,B);px(x,bx+L-3,by-4,4,3,B);ell(x,hcx,hcy,hr,hry,B);if(b.top)ell(x,hcx-1,T,2,2,B);
- px(x,hcx+hr-1,hcy,sl+1,3,M);px(x,hcx+hr-1,hcy-1,sl-1,1,B);
- atop(p,x=>{if(b.p==='mask'){px(x,hcx-2,hcy+1,hr+3,hry,S2);px(x,bx+L-3,by-2,4,5,S2)}
-  if(b.p==='tan')px(x,hcx-1,hcy+2,hr,hry-1,S2);
+ p=part();x=p.x;const n0x=bx+L-cr-2,n0y=by+2,nn=Math.max(1,n0y-hcy);
+ for(let i=0;i<=nn;i++){const t=i/nn;px(x,Math.round(lerp(n0x,hcx-hr+1,t)),n0y-i,Math.round(lerp(cr+3,hr+2,t)),1,B)}
+ ell(x,hcx,hcy,hr,hry,B);if(b.top)ell(x,hcx-1,T,2,2,B);
+ const mx0=hcx+hr-1;px(x,mx0,hcy-1,Math.max(1,sl-1),1,B);px(x,mx0,hcy,sl+1,2,M);if(sz||b.flat)px(x,mx0,hcy+2,sl,1,shade(M,.88));
+ atop(p,x=>{if(b.p==='mask'){px(x,hcx-1,hcy+1,hr+2,hry,S2);for(let i=0;i<=nn;i++){const t=i/nn;px(x,Math.round(lerp(n0x,hcx-hr+1,t))+2,n0y-i,Math.round(lerp(cr+1,hr,t)),1,S2)}}
+  if(b.p==='tan')px(x,hcx,hcy+2,hr,hry-1,S2);
   if(b.p==='eyepatch')ell(x,hcx+1,hcy-1,2,3,S2);
   speck(x,b,hcx-hr,T,hr*2,hry*2)});
  if(b.f)fuzz(p,seed+4,.45);shadeC(p);
- px(x,hcx+hr+sl-1,hcy,2,2,'#241614');px(x,hcx+hr+sl-1,hcy,1,1,'#8a7a78');px(x,hcx+hr,hcy+2,sl-1,1,shade(M,.5));
- if(tongue){px(x,hcx+hr+1,hcy+3,2,2,'#f0708a');px(x,hcx+hr+1,hcy+3,1,1,'#ffa8ba')}
- if(b.beard)for(let i=0;i<sl;i++)px(x,hcx+hr+i,hcy+3,1,1+(i&1),shade(B,.9));
- if(b.shag)px(x,hcx,hcy-3,hr+1,4,S2);
- else{px(x,hcx+1,hcy-2,2,2,b.eye||'#1a1210');px(x,hcx+1,hcy-2,1,1,'#fff');if(b.p==='tan'||b.brow)px(x,hcx+1,hcy-4,2,1,b.brow||S2)}
+ px(x,mx0+sl,hcy-1,2,2,'#241614');px(x,mx0+sl,hcy-1,1,1,'#8a7a78');px(x,mx0+1,hcy+(sz||b.flat?2:1),sl-1,1,shade(M,.5));
+ if(tongue){px(x,mx0+2,hcy+(sz||b.flat?3:2),2,2,'#f0708a');px(x,mx0+2,hcy+(sz||b.flat?3:2),1,1,'#ffa8ba')}
+ if(b.beard)for(let i=0;i<sl;i++)px(x,mx0+1+i,hcy+2,1,2+(i&1),shade(B,.9));
+ if(b.shag)px(x,hcx-1,hcy-2,hr+1,3,S2);
+ else{px(x,hcx+1,hcy-1,2,2,b.eye||'#1a1210');px(x,hcx+1,hcy-1,1,1,'#fff');if(b.p==='tan'||b.brow)px(x,hcx+1,hcy-3,2,1,b.brow||S2)}
  comp(c,p,SEP);
- p=part();x=p.x;const e=b.e==='mix'?'point':b.e,fl=bob;
- if(e==='flop'){px(x,hcx-3,T+1,4,3,E);ell(x,hcx-2,hcy+2-fl,2,hry,E)}
- else if(e==='long'){px(x,hcx-3,T+1,4,3,E);ell(x,hcx-2,hcy+4-fl,2,hry+2,E);if(b.t==='pom')ell(x,hcx-2,hcy+hry+5-fl,3,3,E)}
- else if(e==='point'){tri(x,hcx-2,T-5,hcx-4,hcx,T+1,E);px(x,hcx-2,T-2,1,3,IN)}
- else if(e==='bat'){tri(x,hcx-2,T-7,hcx-5,hcx,T+1,E);tri(x,hcx-2,T-4,hcx-3,hcx-1,T+1,IN)}
- else if(e==='fold'){px(x,hcx-4,T-1,5,3,E);px(x,hcx-1,T+2,3,1,shade(E,.8));px(x,hcx,T+3,2,1,shade(E,.8))}
- else if(e==='crop'){tri(x,hcx-2,T-7,hcx-3,hcx-1,T+1,E)}
+ // ear
+ p=part();x=p.x;const e=b.e==='mix'?'point':b.e,fl=bob,ex=hcx-hr;
+ if(e==='flop'){px(x,ex,T+1,4,2,E);ell(x,ex+1,hcy+2-fl,2,hry+(sz?1:0),E)}
+ else if(e==='long'){px(x,ex,T+1,4,2,E);ell(x,ex+1,hcy+3-fl,2,hry+2,E);if(b.t==='pom')ell(x,ex+1,hcy+hry+4-fl,3,3,E)}
+ else if(e==='point'){tri(x,hcx-2,T-4,ex,hcx-1,T+1,E);px(x,hcx-2,T-1,1,2,IN)}
+ else if(e==='bat'){tri(x,hcx-3,T-6,ex-1,hcx-1,T+1,E);tri(x,hcx-3,T-3,hcx-3,hcx-2,T+1,IN)}
+ else if(e==='fold'){px(x,ex,T-1,4,3,E);px(x,ex+2,T+2,3,1,shade(E,.8));px(x,ex+3,T+3,2,1,shade(E,.8))}
+ else if(e==='crop'){tri(x,hcx-2,T-6,hcx-3,hcx-1,T+1,E)}
  if(b.f)fuzz(p,seed+3,.3);shadeC(p);comp(c,p,SEP);
- x=c.x;const nk=o&&o.neck,nx=bx+L-3;
- if(nk){const K2=NECKC[nk];px(x,nx,by-1,3,h>5?5:4,K2);px(x,nx,by-1,1,5,shade(K2,1.25));if(nk!=='bowtie'){px(x,nx+1,by+4,3,2,K2);px(x,nx+2,by+6,2,1,K2)}}
- else if(!b.nocol){const col=b.col||'#d83a3a';px(x,nx,by-1,2,5,col);px(x,nx+1,by-1,1,5,shade(col,.72));px(x,nx+1,by+4,2,2,'#f4d03f')}
- if(o&&o.eyes){const lc=o.eyes==='hearts'?'#e84a8a':'#16161c';px(x,hcx,hcy-3,4,3,lc);px(x,hcx-hr+1,hcy-2,hr,1,lc);px(x,hcx+1,hcy-3,1,1,o.eyes==='hearts'?'#ffc0dc':'#6a7a9a')}
+ x=c.x;const nk=o&&o.neck,nx=n0x+2;
+ if(nk){const K2=NECKC[nk];px(x,nx,by-2,3,5,K2);px(x,nx,by-2,1,5,shade(K2,1.25));if(nk!=='bowtie'){px(x,nx+1,by+3,3,2,K2);px(x,nx+2,by+5,2,1,K2)}}
+ else if(o&&!b.nocol){const col=b.col||'#d83a3a';px(x,nx,by-2,2,5,col);px(x,nx+1,by-2,1,5,shade(col,.72));px(x,nx+1,by+3,2,2,'#f4d03f')}
+ if(o&&o.eyes){const lc=o.eyes==='hearts'?'#e84a8a':'#16161c';px(x,hcx,hcy-2,4,3,lc);px(x,hcx-hr+1,hcy-1,hr,1,lc);px(x,hcx+1,hcy-2,1,1,o.eyes==='hearts'?'#ffc0dc':'#6a7a9a')}
  if(o&&o.hat)hatSide(x,o.hat,hcx,T,hr);
  return SC[key]=outline(c)}
 function sil(c){const k=mk(c.width,c.height);k.x.drawImage(c,0,0);k.x.globalCompositeOperation='source-in';px(k.x,0,0,c.width,c.height,'#8a6a40');return k}
@@ -391,7 +435,7 @@ function playerSpr(dir,fr){ // dir 0 down 1 up 2 side(right)
 /* ================= world ================= */
 const map=new Uint8Array(MW*MH),solid=new Uint8Array(MW*MH),reach=new Uint8Array(MW*MH),fence=new Uint8Array(MW*MH);
 const objs=[],lamps=[],decor=[],reachList=[];let ground;
-const BASE=['#4aa63c','#e6b64c','#3e9fd8','#d8c8a2','#3c8c38','#58b446'];
+const BASE=['#4aa63c','#e6b64c','#3e9fd8','#d8c8a2','#3c8c38','#58b446','#b9803e'],HOUSE={x:1000,y:736},beds=[];
 const I=(x,y)=>y*MW+x;
 function zoneAt(tx,ty){return tx<38&&ty<38?'woods':tx>=56&&ty<40?'pond':tx>=56&&ty>=56?'sand':tx<40&&ty>=56?'meadow':'lawn'}
 const SPR={};
@@ -418,7 +462,22 @@ function mkSprites(){
  c=mk(9,8);x=c.x;px(x,1,1,3,2,'#e84a6a');px(x,5,1,3,2,'#e84a6a');px(x,1,3,7,1,'#e84a6a');px(x,2,4,5,1,'#e84a6a');px(x,3,5,3,1,'#e84a6a');px(x,4,6,1,1,'#e84a6a');px(x,2,1,1,1,'#ffb0c0');SPR.heart=outline(c);
  c=mk(16,13);x=c.x;px(x,1,3,14,9,'#3a3f4a');px(x,5,1,5,2,'#3a3f4a');disc(x,8,7,3,'#16161c');disc(x,8,7,2,'#9ad0ff');px(x,7,6,1,1,'#fff');px(x,12,4,2,1,'#f4d03f');SPR.cam=outline(c);
  c=mk(8,12);x=c.x;px(x,3,2,1,10,'#7a4a24');px(x,4,2,4,3,'#e84a6a');SPR.flag=outline(c);
- c=mk(7,17);x=c.x;px(x,2,2,3,14,'#f4f4f4');px(x,2,5,3,2,'#d83a3a');px(x,2,11,3,2,'#d83a3a');px(x,1,1,5,1,'#f2c230');SPR.post=outline(c)}
+ c=mk(7,17);x=c.x;px(x,2,2,3,14,'#f4f4f4');px(x,2,5,3,2,'#d83a3a');px(x,2,11,3,2,'#d83a3a');px(x,1,1,5,1,'#f2c230');SPR.post=outline(c);
+ c=mk(96,96);x=c.x;{const gr=x.createRadialGradient(48,48,2,48,48,48);gr.addColorStop(0,'rgba(255,210,130,.6)');gr.addColorStop(.5,'rgba(255,190,100,.2)');gr.addColorStop(1,'rgba(255,180,90,0)');x.fillStyle=gr;x.fillRect(0,0,96,96)}SPR.glow=c;
+ c=mk(88,85);x=c.x;px(x,6,39,76,41,'#d9a25a');for(let i=6;i<82;i+=6)px(x,i,39,1,41,'#b9803e');px(x,6,75,76,5,'#8a8f98');px(x,6,75,76,1,'#b4bac4');
+ px(x,2,4,84,34,'#c8442a');for(let j=0;j<6;j++){px(x,2,4+j*6+5,84,1,'#8a2a1a');for(let i=0;i<14;i++)px(x,4+i*6+(j%2)*3,4+j*6,1,5,'#a83622')}px(x,2,4,84,2,'#e8684a');px(x,2,36,84,3,'#7a2a18');px(x,6,39,76,2,'rgba(0,0,0,.25)');
+ px(x,66,0,9,9,'#9aa0aa');px(x,65,0,11,2,'#6a6f78');
+ px(x,37,50,15,30,'#5e3618');px(x,38,51,13,29,'#8a5a2a');px(x,40,54,9,8,'#9ad8ff');px(x,44,54,1,8,'#5e3618');px(x,48,66,2,2,'#f4d03f');
+ for(const wx of[14,60]){px(x,wx-1,49,16,15,'#f4ead8');px(x,wx,50,14,13,'#9ad8ff');px(x,wx+6,50,2,13,'#f4ead8');px(x,wx,56,14,1,'#f4ead8');px(x,wx-2,64,18,2,'#b9753a');px(x,wx,65,3,3,'#e84a6a');px(x,wx+6,65,3,3,'#f2c230');px(x,wx+11,65,3,3,'#e86aa8')}
+ px(x,35,41,19,8,'#f4ead8');px(x,43,45,4,3,'#8a5a2a');px(x,42,43,2,2,'#8a5a2a');px(x,45,42,2,2,'#8a5a2a');px(x,48,43,2,2,'#8a5a2a');SPR.house=outline(c);
+ c=mk(14,12);x=c.x;ell(x,7,7,5,3,'#7a4a24');ell(x,7,5,5,2,'#d9a868');ell(x,7,5,2,1,'#b9803e');SPR.stump=outline(c);
+ c=mk(34,40);x=c.x;px(x,16,14,2,24,'#f4f4f4');ell(x,17,11,15,9,'#e84a4a');x.clearRect(0,13,34,10);px(x,16,14,2,24,'#f4f4f4');for(let i=0;i<34;i+=8)for(let j=0;j<12;j++){const a=x.getImageData(i+2,j,1,1).data;if(a[3]){}}px(x,7,3,4,10,'#fff4f0');px(x,15,2,4,11,'#fff4f0');px(x,23,3,4,10,'#fff4f0');px(x,16,0,2,2,'#f2c230');SPR.umbrella=outline(c);
+ c=mk(34,22);x=c.x;px(x,4,3,26,6,'#d99a52');px(x,4,3,26,1,'#f0c07a');px(x,6,9,2,10,'#7a4a24');px(x,26,9,2,10,'#7a4a24');px(x,0,13,34,3,'#b9753a');px(x,0,13,34,1,'#d99a52');px(x,2,16,2,5,'#7a4a24');px(x,30,16,2,5,'#7a4a24');SPR.table=outline(c);
+ c=mk(16,21);x=c.x;px(x,7,8,2,12,'#7a4a24');px(x,1,1,14,9,'#d99a52');px(x,1,1,14,1,'#f0c07a');px(x,6,5,4,3,'#7a4a24');px(x,5,3,2,2,'#7a4a24');px(x,9,3,2,2,'#7a4a24');SPR.sign=outline(c);
+ c=mk(12,16);x=c.x;px(x,2,4,8,11,'#3a8a4a');px(x,2,4,2,11,'#5aaa6a');px(x,1,2,10,3,'#2a6a3a');px(x,5,0,2,2,'#2a6a3a');SPR.bin=outline(c);
+ c=mk(34,22);x=c.x;px(x,2,6,30,14,'#3a8ad8');ell(x,17,7,15,5,'#5aaaf0');for(let i=6;i<32;i+=8)px(x,i,3,2,17,'#2a6ab8');ell(x,5,14,3,6,'#16161c');SPR.tunnel=outline(c);
+ c=mk(26,40);x=c.x;px(x,3,30,20,9,'#8a8f98');px(x,1,28,24,3,'#b4bac4');px(x,3,36,20,1,'#6a6f78');{const d=dogFront(BY.lab,0,null,false),t=mk(33,44);t.x.drawImage(d,0,0);t.x.globalCompositeOperation='source-atop';px(t.x,0,0,33,44,'rgba(150,158,170,.82)');x.drawImage(t,-3,-13)}SPR.statue=c;
+ c=mk(13,12);x=c.x;ell(x,6,8,3,2,'#7a4a24');ell(x,2,4,1,1,'#7a4a24');ell(x,5,2,1,1,'#7a4a24');ell(x,8,2,1,1,'#7a4a24');ell(x,11,4,1,1,'#7a4a24');SPR.paw=c}
 function genWorld(){
  const r=rng(8675309);
  for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){const z=zoneAt(x,y);map[I(x,y)]=z==='woods'?4:z==='meadow'?5:0}
@@ -439,6 +498,14 @@ function genWorld(){
  [[23,23],[74,23],[23,74],[74,74],[41,41],[54,41],[41,54],[54,54]].forEach(([x,y])=>{put('lamp',x,y);lamps.push([x*16+8,y*16-12])});
  [[44,39],[50,39],[44,56],[50,56],[66,23],[60,27],[30,70],[20,74]].forEach(([x,y])=>put('bench',x,y,0,2));
  [[22,66],[27,66],[32,66],[27,62]].forEach(([x,y])=>put('hurdle',x,y,0,2));
+ for(let y=42;y<=45;y++)for(let x=60;x<=64;x++){solid[I(x,y)]=1;occ[I(x,y)]=1}
+ for(let y=39;y<=41;y++)for(let x=59;x<=65;x++)occ[I(x,y)]=1;
+ rect(61,46,63,46,1);objs.push({k:'house',x:HOUSE.x,y:HOUSE.y-1});
+ rect(73,24,79,25,1);for(let y=12;y<=23;y++)for(let x=78;x<=79;x++)map[I(x,y)]=map[I(x,y)]===2?6:1;
+ [[37,40],[56,40],[56,54],[37,54]].forEach(([x,y])=>{for(let j=0;j<2;j++)for(let i=0;i<3;i++){solid[I(x+i,y+j)]=1;occ[I(x+i,y+j)]=1}beds.push([x,y])});
+ [[49,23],[49,74],[23,49],[74,49]].forEach(([x,y])=>put('sign',x,y));
+ [[52,39],[43,56],[68,23]].forEach(([x,y])=>put('bin',x,y));
+ put('statue',36,45);[[27,86],[34,81]].forEach(([x,y])=>put('table',x,y,0,2));put('tunnel',31,62,0,2);
  const pathy=t=>t===1||t===3;
  for(let y=3;y<MH-3;y++)for(let x=3;x<MW-3;x++){const t=map[I(x,y)];if(t===1||t===2||t===3||occ[I(x,y)])continue;
   const z=zoneAt(x,y),near=pathy(map[I(x-1,y)])||pathy(map[I(x+1,y)])||pathy(map[I(x,y-1)])||pathy(map[I(x,y+1)])||occ[I(x-1,y)]||occ[I(x+1,y)]||occ[I(x,y+1)];
@@ -446,19 +513,27 @@ function genWorld(){
   if(q<pt)put('tree',x,y,z==='woods'?(r()<.5?1:0):(r()<.18?2:r()<.2?1:0));
   else if(!near&&q<pt+.012)put('bush',x,y);
   else if(!near&&q<pt+.018)put('rock',x,y);
-  else{const fq=r(),fp={meadow:.2,lawn:.04,pond:.07,woods:.03,sand:.03}[z];if(fq<fp)decor.push({x:x*16+2+(r()*10|0),y:y*16+2+(r()*10|0),k:0,c:pick2(r,['#ffffff','#f2c230','#f08ab8','#6a9af0','#b07ae8'])});else if(fq<fp+.004&&z==='lawn')decor.push({x:x*16+5,y:y*16+6,k:1})}}
+  else if(!near&&z==='woods'&&q<pt+.032)put('stump',x,y);
+  else{const fq=r(),fp={meadow:.2,lawn:.04,pond:.07,woods:.03,sand:.03}[z];if(fq<fp)decor.push({x:x*16+2+(r()*10|0),y:y*16+2+(r()*10|0),k:0,c:pick2(r,['#ffffff','#f2c230','#f08ab8','#6a9af0','#b07ae8'])});else if(fq<fp+.004&&z==='lawn')decor.push({x:x*16+5,y:y*16+6,k:1});
+   else if(z==='woods'&&fq<fp+.08)decor.push({x:x*16+3+(r()*8|0),y:y*16+5+(r()*8|0),k:r()<.45?2:10});
+   else if((z==='meadow'&&fq<fp+.18)||fq<fp+.035)decor.push({x:x*16+2+(r()*10|0),y:y*16+7+(r()*7|0),k:3});
+   else if(fq>.985)decor.push({x:x*16+4+(r()*6|0),y:y*16+6+(r()*6|0),k:4})}}
+ for(let y=3;y<MH-3;y++)for(let x=3;x<MW-3;x++){const t=map[I(x,y)],z=zoneAt(x,y);if(occ[I(x,y)])continue;
+  if(t===1&&z==='sand'&&x!==72&&x!==73&&y!==72&&y!==73&&x<91&&y<91&&x>60&&y>60){const q=r();if(q<.009)put('umbrella',x,y);else if(q<.05)decor.push({x:x*16+4+(r()*8|0),y:y*16+4+(r()*8|0),k:7});else if(q<.06)decor.push({x:x*16+3,y:y*16+4,k:8});else if(q<.07)decor.push({x:x*16+1,y:y*16+3,k:9,c:pick2(r,['#e84a6a','#3a6fd8','#f2c230'])})}
+  if(t===2){const land=[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>map[I(x+a,y+b)]!==2),q=r();if(land&&q<.3)decor.push({x:x*16+3+(r()*8|0),y:y*16+3,k:6});else if(!land&&q<.07)decor.push({x:x*16+3,y:y*16+4,k:5})}}
  for(let i=0;i<MW*MH;i++)if(map[i]===2)solid[i]=1;
  // reachability
  const st=[I(47,52)];reach[st[0]]=1;
  while(st.length){const i=st.pop(),x=i%MW,y=i/MW|0;reachList.push(i);for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const j=I(x+dx,y+dy);if(!reach[j]&&!solid[j]){reach[j]=1;st.push(j)}}}
  // ground layer
  ground=mk(MW*TS,MH*TS);const x=ground.x,gr=rng(42);
- for(let ty=0;ty<MH;ty++)for(let tx=0;tx<MW;tx++){const t=map[I(tx,ty)],X=tx*16,Y=ty*16,b=BASE[t];px(x,X,Y,16,16,b);
+ for(let ty=0;ty<MH;ty++)for(let tx=0;tx<MW;tx++){const t=map[I(tx,ty)],X=tx*16,Y=ty*16;let b=BASE[t];if(t===0||t===4||t===5){const n=Math.sin(tx*.37+ty*.21)+Math.cos(tx*.19-ty*.33);b=shade(b,n>1.2?1.03:n<-1.2?.97:1)}px(x,X,Y,16,16,b);
   if(t===0||t===4||t===5){const dk=shade(b,.86),lt=shade(b,1.2);for(let i=0;i<4;i++)px(x,X+(gr()*15|0),Y+(gr()*15|0),1+(gr()*2|0),1,dk);
    if(gr()<.3){const a=X+2+(gr()*11|0),c=Y+3+(gr()*10|0);px(x,a,c,1,2,lt);px(x,a+2,c,1,2,lt);px(x,a+1,c+1,1,1,lt)}}
   else if(t===1){for(let i=0;i<3;i++)px(x,X+(gr()*14|0),Y+(gr()*15|0),2,1,gr()<.5?'#d19c3c':'#f3cf70');if(gr()<.07){px(x,X+5,Y+6,4,3,'#a8a096');px(x,X+5,Y+6,3,1,'#d8d2c6')}}
   else if(t===2){for(let i=0;i<2;i++)px(x,X+(gr()*11|0),Y+(gr()*15|0),3+(gr()*2|0),1,'#62b8e8')}
-  else{px(x,X,Y+7,16,1,'#bfae86');px(x,X,Y+15,16,1,'#bfae86');px(x,X+7,Y,1,7,'#bfae86');px(x,X+15,Y+8,1,7,'#bfae86')}}
+  else if(t===3){px(x,X,Y+7,16,1,'#bfae86');px(x,X,Y+15,16,1,'#bfae86');px(x,X+7,Y,1,7,'#bfae86');px(x,X+15,Y+8,1,7,'#bfae86')}
+  else{for(let i=0;i<16;i+=4){px(x,X,Y+i+3,16,1,'#8a5a2a');px(x,X+(i%8?3:11),Y+i,1,3,'#9a6a32')}if(tx===78)px(x,X,Y,2,16,'#7a4a24');else px(x,X+14,Y,2,16,'#7a4a24')}}
  const green=t=>t===0||t===4||t===5;
  for(let ty=1;ty<MH-1;ty++)for(let tx=1;tx<MW-1;tx++){const t=map[I(tx,ty)],X=tx*16,Y=ty*16;if(green(t))continue;
   [[0,-1],[0,1],[-1,0],[1,0]].forEach(([dx,dy])=>{const n=map[I(tx+dx,ty+dy)];if(n===t||(t!==2&&!green(n)))return;
@@ -469,16 +544,26 @@ function genWorld(){
   if(f===1){px(x,X,Y+5,16,2,'#d99a52');px(x,X,Y+10,16,2,'#d99a52');px(x,X,Y+7,16,1,'#8a5a2a');px(x,X,Y+12,16,1,'#8a5a2a');px(x,X+6,Y+2,4,13,'#b9753a');px(x,X+6,Y+2,4,1,'#e8b06a');px(x,X+5,Y+3,1,12,OUT);px(x,X+10,Y+3,1,12,OUT)}
   else{px(x,X+4,Y,2,16,'#d99a52');px(x,X+10,Y,2,16,'#d99a52');px(x,X+3,Y+4,10,3,'#b9753a');px(x,X+3,Y+12,10,3,'#b9753a');px(x,X+3,Y+7,10,1,'#8a5a2a')}}
  for(const d of decor){if(d.k===0){px(x,d.x,d.y+1,3,1,d.c);px(x,d.x+1,d.y,1,3,d.c);px(x,d.x+1,d.y+1,1,1,d.c==='#f2c230'?'#e8662a':'#f2c230');px(x,d.x+1,d.y+3,1,2,'#2c7a30')}
-  else{disc(x,d.x,d.y,2,'#c8e63a');px(x,d.x-1,d.y-1,1,1,'#f0ff9a')}}
+  else if(d.k===1){disc(x,d.x,d.y,2,'#c8e63a');px(x,d.x-1,d.y-1,1,1,'#f0ff9a')}
+  else if(d.k===2){px(x,d.x+1,d.y+2,2,3,'#f4ead8');px(x,d.x-1,d.y,6,2,'#d83a3a');px(x,d.x,d.y-1,4,1,'#d83a3a');px(x,d.x,d.y,1,1,'#fff');px(x,d.x+3,d.y+1,1,1,'#fff')}
+  else if(d.k===3){px(x,d.x,d.y-4,1,5,'#2f8a34');px(x,d.x+2,d.y-6,1,7,'#3a9a3c');px(x,d.x+4,d.y-3,1,4,'#2f8a34');px(x,d.x+2,d.y-6,1,1,'#7ad058')}
+  else if(d.k===4){px(x,d.x,d.y,3,2,'#9a9fa8');px(x,d.x,d.y,2,1,'#c8ccd4');px(x,d.x+4,d.y+2,2,1,'#8a8f98')}
+  else if(d.k===5){ell(x,d.x+3,d.y+2,4,2,'#3a9a4a');px(x,d.x+3,d.y+2,4,1,'#3e9fd8');px(x,d.x+1,d.y+1,2,1,'#6ac87a');if(d.x%3===0){px(x,d.x+2,d.y,2,2,'#ffb0d4');px(x,d.x+3,d.y+1,1,1,'#fff')}}
+  else if(d.k===6){px(x,d.x,d.y-3,1,9,'#3a7a3a');px(x,d.x+2,d.y-5,1,11,'#4a8a44');px(x,d.x+4,d.y-2,1,8,'#3a7a3a');px(x,d.x+1,d.y-7,3,3,'#7a4a24')}
+  else if(d.k===7){px(x,d.x,d.y,3,2,'#fff4e8');px(x,d.x+1,d.y,1,2,'#f0a0b0')}
+  else if(d.k===8){px(x,d.x,d.y+3,10,4,'#d19c3c');px(x,d.x+1,d.y,3,4,'#d8a444');px(x,d.x+6,d.y+1,3,3,'#d8a444');px(x,d.x,d.y+3,10,1,'#f3cf70');px(x,d.x+2,d.y-3,1,3,'#7a4a24');px(x,d.x+3,d.y-3,2,2,'#e84a6a')}
+  else if(d.k===9){px(x,d.x,d.y,13,9,d.c);for(let i=1;i<13;i+=4)px(x,d.x+i,d.y,2,9,'#fff4f0')}
+  else if(d.k===10){for(let i=0;i<4;i++){px(x,d.x+i*2,d.y-i%2*2,1,3+i%2*2,'#2a7a3a')}px(x,d.x+3,d.y-3,1,1,'#5aba6a')}}
+ for(const[bx0,by0]of beds){const X=bx0*16,Y=by0*16;px(x,X,Y,48,32,'#9aa0aa');px(x,X,Y,48,1,'#c8ced8');px(x,X+2,Y+2,44,28,'#6a4424');for(let i=0;i<46;i++){const fx=X+3+(gr()*40|0),fy=Y+3+(gr()*24|0),c=pick2(gr,['#ffffff','#f2c230','#f08ab8','#e84a4a','#b07ae8','#ff9a3a']);px(x,fx,fy+1,3,1,c);px(x,fx+1,fy,1,3,c);px(x,fx+1,fy+1,1,1,'#fff6a0');px(x,fx+1,fy+3,1,2,'#2c7a30')}}
  // picnic rug + bowls
  for(let i=0;i<6;i++)for(let j=0;j<4;j++)px(x,30*16+i*6,84*16+j*6,6,6,(i+j)%2?'#e84a4a':'#fff4f0');
  [[51*16,45*16+4,'#3a6fd8'],[44*16+4,51*16,'#d83a3a']].forEach(([a,b,c])=>{px(x,a,b+2,10,4,c);px(x,a+1,b,8,3,shade(c,.7));px(x,a+2,b+1,6,1,'#62b8e8')});
- for(const o of objs){const rx=o.k==='tree'?11:o.k==='fountain'?26:o.k==='bench'||o.k==='hurdle'?14:6;ell(x,o.x,o.y-1,rx,o.k==='fountain'?6:3,'rgba(0,0,0,.2)')}
+ for(const o of objs){const rx=o.k==='tree'?11:o.k==='fountain'?26:o.k==='bench'||o.k==='hurdle'?14:6;if(o.k!=='house')ell(x,o.x,o.y-1,rx,o.k==='fountain'?6:3,o.k==='fountain'||o.k==='bench'||o.k==='hurdle'?'rgba(0,0,0,.2)':'rgba(0,0,0,.1)')}
  objs.sort((a,b)=>a.y-b.y)}
 function pick2(r,a){return a[r()*a.length|0]}
 
 /* ================= state ================= */
-const G={state:'title',time:0,paused:false,near:null,per:'',zone:'',cam:{x:0,y:0},cur:'',ph:null,tr:null,fx:[]};
+const G={scene:'park',pet:null,nearPet:null,state:'title',time:0,paused:false,near:null,per:'',zone:'',cam:{x:0,y:0},cur:'',ph:null,tr:null,fx:[]};
 const P={x:47.5*16+8,y:53*16,dir:0,flip:false,anim:0,moving:false,vx:0,vy:0};
 const BUD={x:0,y:0,dir:1,moving:false,on:false,hop:0};
 const dogs=[];let MINI=null;
@@ -490,7 +575,7 @@ function spawnDog(d,far){const per=period(hourNow());let b=BY.mutt,x=P.x,y=P.y;
   const z=zoneAt(tx,ty),c=BR.filter(q=>(q.z.includes(z)||q.z[0]==='any')&&q.h.includes(per));if(!c.length)continue;
   let tot=0;for(const q of c)tot+=q.w||RW[q.r];let n=R()*tot;b=c[0];for(const q of c){n-=q.w||RW[q.r];if(n<=0){b=q;break}}
   if(dogs.filter(o=>o!==d&&o.b===b).length>2)continue;break}
- return Object.assign(d,{b,x,y,st:'sit',t:1+R()*3,dir:R()<.5?1:-1,life:70+R()*130,leave:false,near:false,tx:x,ty:y,happy:0,seed:R()*10,hop:0})}
+ return Object.assign(d,{b,x,y,st:'sit',t:1+R()*3,dir:R()<.5?1:-1,life:70+R()*130,leave:false,fast:false,near:false,tx:x,ty:y,happy:0,seed:R()*10,hop:0,v:.82+R()*.36})}
 const solidAt=(x,y)=>{const tx=x>>4,ty=y>>4;return tx<0||ty<0||tx>=MW||ty>=MH||solid[I(tx,ty)]===1};
 function blocked(x,y){return solidAt(x-4,y-5)||solidAt(x+3,y-5)||solidAt(x-4,y-1)||solidAt(x+3,y-1)}
 
@@ -547,17 +632,18 @@ const count=()=>Object.keys(S.dogs).length;
 const stars=n=>'★'.repeat(n)+'☆'.repeat(3-n);
 const hearts=d=>{const n=Math.min(5,(d.bond||0)/2|0);return'♥'.repeat(n)+'<span style="color:#d9b98a">'+'♥'.repeat(5-n)+'</span>'};
 const TD=[];
-function titleInit(){TD.length=0;const ids=Object.keys(S.dogs);for(let i=0;i<5;i++){const id=ids[i]||pick(BR).id;TD.push({b:BY[id],o:S.dogs[id]||{hat:pick(['','party','cowboy','','bow']),neck:pick(['','bandana','']),eyes:''},x:R()*400,v:36+R()*34,l:i})}
- $('#tsub').textContent=S.started?`Dogdex ${count()}/${BR.length}`:''}
-function drawTitle(){drawScene(G.time*14);const gy=gY(),sp=(vh-gy-16)/5;for(const d of TD){const X=((d.x+G.time*d.v)%(vw+100))-50,Y=gy+10+d.l*sp;shadow(X,Y,10);spr(dogSide(d.b,1+((G.time*d.v/5|0)%4),d.o,1),X,Y,1.5)}}
+function titleInit(){TD.length=0;const ids=Object.keys(S.dogs);for(let i=0;i<5;i++){const id=ids[i]||pick(BR).id;TD.push({b:BY[id],o:S.dogs[id]||null,x:R()*400,v:36+R()*34,l:i})}
+ $('#tsub').textContent=S.started?`${S.player.name?'Welcome back, '+S.player.name+'! · ':''}Dogdex ${count()}/${BR.length}`:''}
+function drawTitle(){drawScene(G.time*14);const gy=gY(),sp=(vh-gy-16)/5;for(const d of TD){const X=((d.x+G.time*d.v)%(vw+100))-50,Y=gy+10+d.l*sp;shadow(X,Y,10);spr(dogSide(d.b,1+((G.time*d.v/5|0)%4),d.o,1),X,Y,1.25)}}
 $('#playB').addEventListener('click',()=>{audioInit();sfx.jingle();setState('world');if(!S.started)charEdit()});
 function menu(){openPanel(`<h2>Pup Park</h2><div class="tr">${bone()} ${S.treats} treats</div>
  <button class="btn" data-a="dex">Dogdex ${count()}/${BR.length}</button>
  <button class="btn" data-a="char">My character</button>
  <div class="two"><button class="btn alt" data-a="music">Music: ${S.music?'on':'off'}</button><button class="btn alt" data-a="sound">Sounds: ${S.sound?'on':'off'}</button></div>
  <button class="btn alt" data-a="how">How to play</button>
- <button class="btn" data-a="close">Back to the park</button>`)}
-function how(){openPanel(`<h2>How to play</h2><p style="text-align:left">• Drag anywhere to walk (or arrow keys).<br>• Walk up to a dog and tap it, or tap the camera button.<br>• In camera mode, tap when the dog is inside the frame. Dead centre = 3 stars. You get 3 shots.<br>• Different dogs hang out in different parts of the park, and at different real-world times: morning, daytime, evening and night.<br>• Tap the clock to open your Dogdex. Dress your dogs up, play mini games to earn treats, and pick a buddy to walk with you.</p><button class="btn" data-a="menu">Back</button><button class="btn lock sm" data-a="reset" data-v="0">Erase save</button>`)}
+ <button class="btn" data-a="close">Back to the game</button>
+ <button class="btn alt" data-a="leave">Leave game</button>`)}
+function how(){openPanel(`<h2>How to play</h2><p style="text-align:left">• Drag anywhere to walk (or arrow keys).<br>• Walk into the red-roofed cottage by the plaza to visit your pups. Tap any dog of yours to pat, praise or play.<br>• Progress saves automatically on this device.<br>• Walk up to a dog and tap it, or tap the camera button.<br>• In camera mode, tap when the dog is inside the frame. Dead centre = 3 stars. You get 3 shots.<br>• Different dogs hang out in different parts of the park, and at different real-world times: morning, daytime, evening and night.<br>• Tap the clock to open your Dogdex. Dress your dogs up, play mini games to earn treats, and pick a buddy to walk with you.</p><button class="btn" data-a="menu">Back</button><button class="btn lock sm" data-a="reset" data-v="0">Erase save</button>`)}
 function dex(){let h=`<h2>Dogdex ${count()}/${BR.length}</h2><div class="grid">`;
  for(const b of BR){const d=S.dogs[b.id];
   h+=d?`<button class="cell" style="border-color:${RAR[b.r][1]}" data-a="dog" data-v="${b.id}">${im(dogFront(b,0,d,true),2)}<br>${esc(d.name)}<i>${b.n}</i></button>`
@@ -566,7 +652,7 @@ function dex(){let h=`<h2>Dogdex ${count()}/${BR.length}</h2><div class="grid">`
 function hint(id){const b=BY[id];openPanel(`<h2>???</h2><div class="c">${im(sil(dogFront(b,0,null,false)),3)}</div><p><span class="tag" style="background:${RAR[b.r][1]}">${RAR[b.r][0]}</span></p><p>Seen around ${b.z.map(z=>ZNAME[z]).join(' and ')}<br>in the ${b.h.split('').map(c=>PNAME[c]).join(', ')}.</p><button class="btn" data-a="dex">Back</button>`)}
 function dogPage(id){G.cur=id;const b=BY[id],d=S.dogs[id];
  openPanel(`<div class="c">${im(dogFront(b,0,d,true),3)}</div><input id="nm" maxlength="12" value="${esc(d.name)}" aria-label="Name">
- <p>${b.n} · <span class="tag" style="background:${RAR[b.r][1]}">${RAR[b.r][0]}</span></p>
+ <p>${b.n} · <span class="tag" style="background:${RAR[b.r][1]}">${RAR[b.r][0]}</span> · ${TPN[TP[id]||'calm']}</p>
  <p><span class="stars" style="font-size:16px">${stars(d.stars)}</span> &nbsp; <span style="color:#d83a5a">${hearts(d)}</span></p><p><i>${b.d}</i></p>
  <div class="two"><button class="btn" data-a="dress" data-v="${id}">Dress up</button><button class="btn" data-a="playm" data-v="${id}">Play</button></div>
  <button class="btn ${S.buddy===id?'on':'alt'}" data-a="buddy" data-v="${id}">${S.buddy===id?'Walking with you ✓':'Walk with me'}</button>
@@ -582,15 +668,16 @@ function playMenu(id){G.cur=id;const d=S.dogs[id];openPanel(`<h2>Play with ${esc
  <button class="btn" data-a="game" data-v="fetch">Fetch<br><small>Charge your throw and land it on the target.</small></button>
  <button class="btn alt" data-a="dog" data-v="${id}">Back</button>`)}
 const CY=[['skin','Skin',SKIN.length],['hair','Hair',HAIRS.length],['hairC','Hair colour',HAIRC.length],['beard','Beard',2],['shirt','Top',SHIRT.length],['pants','Pants',PANTS.length]];
-function charEdit(){PS={};const p=S.player;let h=`<h2>Your character</h2><div class="c">${im(playerSpr(0,0),5)} ${im(playerSpr(2,1),5)}</div>`;
+function charEdit(){PS={};const p=S.player;let h=`<h2>${S.started?'Your character':'Welcome to Pup Park!'}</h2><p>What should we call you?</p><input id="pn" maxlength="12" placeholder="Your name" value="${esc(p.name||'')}" autocomplete="off"><div class="c">${im(playerSpr(0,0),5)} ${im(playerSpr(2,1),5)}</div>`;
  for(const[k,n]of CY){const v=k==='hair'?HAIRS[p.hair]:k==='beard'?(p.beard?'Yes':'No'):(p[k]+1);h+=`<div class="cy"><button class="btn" data-a="cyc" data-v="${k}:-1">◀</button><span>${n}: ${v}</span><button class="btn" data-a="cyc" data-v="${k}:1">▶</button></div>`}
  openPanel(h+`<button class="btn" data-a="chardone">${S.started?'Done':'Let\'s go!'}</button>`)}
 const ACT={
+ leave(){closePanel();if(G.scene==='home')exitHome();closePet();setNear(null,null);S.pos=[P.x,P.y];save();titleInit();setState('title')},
  menu,close:closePanel,dex,how,hint,dog:dogPage,dress,playm:playMenu,char:charEdit,
- chardone(){PS={};const first=!S.started;S.started=true;save();closePanel();setState('world');if(first)toast('Drag anywhere to walk. Go find a dog!',4500)},
+ chardone(){PS={};const first=!S.started,pn=$('#pn');if(pn)S.player.name=pn.value.trim().slice(0,12);S.started=true;save();closePanel();setState('world');if(first)toast('Drag anywhere to walk. Go find a dog!',4500)},
  cyc(v){const[k,d]=v.split(':'),n=CY.find(c=>c[0]===k)[2];S.player[k]=(S.player[k]+ +d+n)%n;save();charEdit()},
  music(){S.music=!S.music;applyVol();save();menu()},sound(){S.sound=!S.sound;applyVol();save();menu()},
- reset(v,t){if(t.dataset.v==='0'){t.dataset.v='1';t.textContent='Tap again to erase everything'}else{try{localStorage.removeItem(SAVE_KEY)}catch(e){}location.reload()}},
+ reset(v,t){if(t.dataset.v==='0'){t.dataset.v='1';t.textContent='Tap again to erase everything'}else{try{localStorage.removeItem(SAVE_KEY)}catch(e){}try{IDB.transaction('kv','readwrite').objectStore('kv').delete('save')}catch(e){}setTimeout(()=>location.reload(),200)}},
  equip(v){const[sl,id]=v.split(':'),d=S.dogs[G.cur];
   if(id&&!S.owned.includes(id)){const o=OUTFITS.find(q=>q.id===id);if(S.treats<o.cost){sfx.buzz();toast(`You need ${o.cost-S.treats} more treats. Play a mini game!`);return}S.treats-=o.cost;S.owned.push(id);sfx.coin()}
   d[sl]=id;save();dress(G.cur)},
@@ -599,9 +686,27 @@ const ACT={
  again(v){startMini(v,G.cur)},
  ok(){const i=$('#nm');if(i&&S.dogs[G.cur]){S.dogs[G.cur].name=i.value.trim().slice(0,12)||S.dogs[G.cur].name;save()}closePanel();endPhoto()}};
 ui.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t)return;audioInit();sfx.blip();const f=ACT[t.dataset.a];if(f)f(t.dataset.v,t)});
+ui.addEventListener('input',e=>{if(e.target.id==='pn')S.player.name=e.target.value.trim().slice(0,12)});
 ui.addEventListener('change',e=>{if(e.target.id==='nm'&&S.dogs[G.cur]){S.dogs[G.cur].name=e.target.value.trim().slice(0,12)||BY[G.cur].n;save()}});
 $('#clock').addEventListener('click',()=>{audioInit();sfx.blip();if(G.state==='world'&&!G.paused)menu()});
-actB.addEventListener('click',()=>{audioInit();if(G.near&&G.state==='world'&&!G.paused)startEncounter(G.near)});
+const petEl=$('#pet'),PRAISE=['😄','🥰','⭐','🎉','😊','💖','👏'];
+function emote(e,t){e.emo={txt:t,t:3.2};e.joy=3.2;e.hop=.3}
+function openPet(e,id){if(!S.dogs[id])return;G.pet={e,id};petEl.innerHTML=`<b>${esc(S.dogs[id].name)}</b><button data-p="pat">🤚 Pat</button><button data-p="praise">⭐ Praise</button><button data-p="treat">🦴 Treat</button><button data-p="play">🎾 Play</button><button data-p="dress">🎩 Dress</button><button data-p="x">✕</button>`;petEl.classList.add('on');sfx.blip();e.hop=.25}
+function closePet(){G.pet=null;petEl.classList.remove('on')}
+petEl.addEventListener('click',ev=>{const t=ev.target.closest('[data-p]');if(!t||!G.pet)return;audioInit();const{e,id}=G.pet,d=S.dogs[id],k=t.dataset.p;
+ if(k==='x')return closePet();
+ if(k==='pat'){emote(e,'❤️');sfx.pop();const n=Date.now();if(n-(d.lp||0)>60000){d.bond=(d.bond||0)+1;d.lp=n;save()}}
+ else if(k==='praise'){emote(e,pick(PRAISE));sfx.bark(BY[id].sz)}
+ else if(k==='treat'){if(S.treats<1){toast('No treats left. Play a game to earn some!');sfx.buzz();return}S.treats--;d.bond=(d.bond||0)+1;save();emote(e,'😋');sfx.coin()}
+ else if(k==='play'){closePet();playMenu(id)}else if(k==='dress'){closePet();dress(id)}});
+let ACTI=['',''];
+function setNear(n,pt){if(n===G.near&&pt===G.nearPet)return;G.near=n;G.nearPet=pt;actB.classList.toggle('on',!!(n||pt));actB.innerHTML=ACTI[n?0:1]}
+actB.addEventListener('click',()=>{audioInit();if(G.state!=='world'||G.paused)return;if(G.near)startEncounter(G.near);else if(G.nearPet)openPet(G.nearPet,G.nearPet.id)});
+const whose=()=>S.player.name?S.player.name+"'s":'Your';
+function enterHome(){G.ret=[HOUSE.x,HOUSE.y+12];G.scene='home';closePet();keysClear();P.vx=P.vy=0;const W=HOME.w*16,H=HOME.h*16;P.x=W/2;P.y=H-14;P.dir=1;
+ HOME.dogs=Object.keys(S.dogs).filter(id=>BY[id]).map(id=>({id,b:BY[id],o:S.dogs[id],owned:true,v:S.dogs[id].v||1,x:24+R()*(W-48),y:58+R()*(H-84),st:'sit',t:R()*3,dir:R()<.5?1:-1,seed:R()*10,hop:0,joy:0}));
+ sfx.pop();const n=HOME.dogs.length;toast(n?`${whose()} Kennel · ${n} pup${n>1?'s':''}. Tap one to pat it!`:`${whose()} Kennel. Catch a dog and it will live here!`,3600)}
+function exitHome(){G.scene='park';closePet();keysClear();setNear(null,null);P.x=G.ret[0];P.y=G.ret[1];P.dir=0;P.vx=P.vy=0;G.cam.fx=undefined;sfx.pop()}
 mh.addEventListener('click',()=>{if(G.state==='photo'&&G.ph&&!G.ph.done){G.ph.done=true;endPhoto()}else if(G.state==='mini'&&MINI)endMini(MINI,true)});
 function updClock(){const d=new Date(),h=hourNow(),per=period(h);let hh=HO!==null&&HO!==''?Math.floor(h):d.getHours(),mm=HO!==null&&HO!==''?Math.round((h%1)*60):d.getMinutes();
  $('#cd').textContent=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]+'. '+d.getDate();
@@ -614,8 +719,8 @@ function updClock(){const d=new Date(),h=hourNow(),per=period(h);let hh=HO!==nul
 
 /* ================= encounters & photo ================= */
 function startEncounter(d){if(G.state!=='world'||d.leave)return;keysClear();G.tr={t:0,d};d.hop=.35;sfx.bark(d.b.sz);setState('trans');actB.classList.remove('on')}
-function beginPhoto(d){const b=d.b;G.ph={d,b,x:-vw/2-50,tx:0,v:[44,58,74,92][b.r],pause:0,film:3,t:0,flash:0,done:false,stars:0,dir:1,first:true};setState('photo');updMh();
- toast(S.dogs[b.id]?`It's a ${b.n}! Tap to snap it in the frame.`:`A new dog! Tap to snap it inside the frame.`,3000)}
+function beginPhoto(d){const b=d.b;G.ph={d,b,x:-vw/2-50,tx:0,v:[44,54,64,76][b.r]*(TQ[TP[b.id]||'calm'].v),q:TQ[TP[b.id]||'calm'],pause:0,film:3,t:0,flash:0,done:false,stars:0,dir:1,first:true};setState('photo');updMh();
+ toast(`${S.dogs[b.id]?'':'New! '}${TPN[TP[b.id]||'calm']} ${b.n}. Tap to snap it inside the frame.`,3000)}
 function updMh(){if(G.state==='photo'&&G.ph)mh.textContent='Film '+'●'.repeat(G.ph.film)+'○'.repeat(3-G.ph.film)+'   ✕ leave';
  else if(G.state==='mini'&&MINI)mh.textContent=MINI.hud()+'   ✕'}
 function snap(){const p=G.ph;if(!p||p.done||p.t<.6)return;p.film--;p.flash=1;sfx.shutter();updMh();const a=Math.abs(p.x),st=a<7?3:a<18?2:a<33?1:0;
@@ -623,14 +728,14 @@ function snap(){const p=G.ph;if(!p||p.done||p.t<.6)return;p.film--;p.flash=1;sfx
  else if(p.film<=0){p.done=true;toast('Out of film! It trotted off…');setTimeout(endPhoto,1000)}
  else toast('Missed! Wait for it to reach the middle.')}
 function photoResult(p){const b=p.b,old=S.dogs[b.id],isNew=!old;let tr;
- if(isNew){tr=10*p.stars+[0,10,25,60][b.r];S.dogs[b.id]={name:pick(NAMES),stars:p.stars,bond:0,hat:'',neck:'',eyes:'',n:1}}
+ if(isNew){tr=10*p.stars+[0,10,25,60][b.r];S.dogs[b.id]={name:pick(NAMES),stars:p.stars,bond:0,hat:'',neck:'',eyes:'',n:1,v:p.d.v}}
  else{tr=2*p.stars+(p.stars>old.stars?5:0);old.n=(old.n||1)+1;if(p.stars>old.stars)old.stars=p.stars}
  S.treats+=tr;let extra='';
  if(!S.buddy){S.buddy=b.id;BUD.on=false;extra='<p>It wants to walk with you!</p>'}
  if(count()===BR.length&&isNew)extra+='<p>DOGDEX COMPLETE! You legend.</p>';
  save();sfx.jingle();
  const c=mk(80,72),x=c.x,per=period(hourNow());px(x,0,0,80,50,{M:'#ffd6a0',D:'#8fd3ff',E:'#f7a66b',N:'#232c66'}[per]);px(x,0,46,80,26,'#4aa63c');for(let i=0;i<10;i++)disc(x,i*9+2,45,5,'#2f7d32');px(x,0,50,80,1,'#3c8c38');
- x.drawImage(dogFront(b,0,S.dogs[b.id],true),7,-16,66,88);
+ x.drawImage(dogFront(b,0,null,true),7,-16,66,88);
  if(per==='N'){x.globalCompositeOperation='multiply';px(x,0,0,80,72,'#9aa4e0');x.globalCompositeOperation='source-over'}
  G.cur=b.id;
  openPanel(`<h2>${isNew?'New Dogdex entry!':'Nice shot!'}</h2><div class="card">${im(c,3)}<p style="margin:4px 0 0;color:#333">${b.n}</p></div>
@@ -749,64 +854,89 @@ cv.addEventListener('pointermove',e=>{const p=pos(e);if(G.state==='mini'&&MINI){
  if(e.pointerId!==ptr.id)return;ptr.x=p.x;ptr.y=p.y;if(Math.hypot(p.x-ptr.sx,p.y-ptr.sy)>4)ptr.drag=true});
 const pup=e=>{if(e.pointerId!==ptr.id)return;const p=pos(e);if(!ptr.drag&&performance.now()-ptr.t<400)tapWorld(p.x,p.y);ptr.id=null};
 cv.addEventListener('pointerup',e=>{if(G.state==='mini'&&MINI)MINI.up();pup(e)});cv.addEventListener('pointercancel',e=>{if(e.pointerId===ptr.id)ptr.id=null});
-function tapWorld(x,y){const wx=x+G.cam.x,wy=y+G.cam.y;
- for(const d of dogs)if(!d.leave&&Math.abs(wx-d.x)<16&&wy>d.y-38&&wy<d.y+6&&Math.hypot(d.x-P.x,d.y-P.y)<40)return startEncounter(d);
- if(BUD.on&&S.buddy&&Math.abs(wx-BUD.x)<14&&wy>BUD.y-32&&wy<BUD.y+6){sfx.bark(BY[S.buddy].sz);BUD.hop=.3;G.fx.push({x:BUD.x,y:BUD.y-26,t:1})}}
+function tapWorld(x,y){
+ if(G.scene==='home'){const wx=x-G.hox,wy=y-G.hoy;let best=null,bd=99;for(const d of HOME.dogs){const dd=Math.hypot(wx-d.x,wy-(d.y-10));if(dd<22&&dd<bd){bd=dd;best=d}}if(best)openPet(best,best.id);return}
+ const wx=x+G.cam.x,wy=y+G.cam.y;
+ for(const d of dogs)if(!d.leave&&Math.abs(wx-d.x)<14&&wy>d.y-30&&wy<d.y+6&&Math.hypot(d.x-P.x,d.y-P.y)<40)return startEncounter(d);
+ if(BUD.on&&S.buddy&&Math.abs(wx-BUD.x)<14&&wy>BUD.y-30&&wy<BUD.y+6)openPet(BUD,S.buddy)}
 addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;keys[e.key.toLowerCase()]=true;audioInit();
- if(G.state==='world'&&!G.paused){if((e.key===' '||e.key==='e'||e.key==='Enter')&&G.near)startEncounter(G.near);if(e.key==='m'||e.key==='Escape')menu()}
+ if(G.state==='world'&&!G.paused){if(e.key===' '||e.key==='e'||e.key==='Enter')actB.click();if(e.key==='m'||e.key==='Escape')menu()}
  else if(G.state==='photo'&&(e.key===' '||e.key==='Enter'))snap();
  else if(G.state==='mini'&&MINI&&e.key===' '&&!e.repeat)MINI.down(vw/2,0);
  else if(G.paused&&e.key==='Escape'&&S.started&&G.state==='world')closePanel();
  if(e.key.startsWith('Arrow')||e.key===' ')e.preventDefault()});
 addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false;if(e.key===' '&&G.state==='mini'&&MINI)MINI.up()});
 ['gesturestart','contextmenu'].forEach(n=>addEventListener(n,e=>e.preventDefault()));
-document.addEventListener('visibilitychange',()=>{if(document.hidden){S.pos=[P.x,P.y];save();if(AU.c)AU.c.suspend()}else if(AU.c)AU.c.resume()});
+addEventListener('pagehide',()=>{if(S.started){if(G.scene==='park')S.pos=[P.x,P.y];save()}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){if(G.scene==='park')S.pos=[P.x,P.y];if(S.started)save();if(AU.c)AU.c.suspend()}else if(AU.c)AU.c.resume()});
 function resize(){const iw=innerWidth,ih=innerHeight,dpr=Math.min(3,devicePixelRatio||1);K=Math.max(2,Math.round(Math.min(iw,ih)*dpr/150));
  cv.width=Math.round(iw*dpr);cv.height=Math.round(ih*dpr);cv.style.width=iw+'px';cv.style.height=ih+'px';vw=cv.width/K;vh=cv.height/K;G.cam.fx=undefined}
 addEventListener('resize',resize);addEventListener('orientationchange',()=>setTimeout(resize,200));
 
 /* ================= update ================= */
-let saveT=0;
-function update(dt){G.time+=dt;
- G.dt=dt;if(G.state==='mini'){miniUpdate(dt);return}
+let saveT=0,fpD=0,fpS=1,FP=[];
+const dsc=v=>Math.max(.5,sn(.72*(v||1)));
+const PARKOK=(x,y)=>!solidAt(x,y-2)&&reach[I(x>>4,y>>4)]===1;
+const HOME={w:18,h:12,ground:null,dogs:[]};
+HOME.blk=(x,y)=>{const W=HOME.w*16,H=HOME.h*16;return x<9||x>W-9||y<42||(y>H-5&&(Math.abs(x-W/2)>8||y>H+3))};
+HOME.ok=(x,y)=>x>14&&x<HOME.w*16-14&&y>50&&y<HOME.h*16-12;
+function movePlayer(dt,blk){let mx=0,my=0;
+ if(keys.arrowleft||keys.a)mx--;if(keys.arrowright||keys.d)mx++;if(keys.arrowup||keys.w)my--;if(keys.arrowdown||keys.s)my++;
+ let str=1;
+ if(ptr.id!==null&&ptr.drag){const dx=ptr.x-ptr.sx,dy=ptr.y-ptr.sy,m=Math.hypot(dx,dy);if(m>3){mx=dx/m;my=dy/m;str=clamp(m/16,.35,1);if(m>24){ptr.sx=ptr.x-mx*24;ptr.sy=ptr.y-my*24}}}
+ const m=Math.hypot(mx,my),kk=Math.min(1,dt*13),tvx=m>0?mx/m*62*str:0,tvy=m>0?my/m*62*str:0;
+ P.vx+=(tvx-P.vx)*kk;P.vy+=(tvy-P.vy)*kk;const spd=Math.hypot(P.vx,P.vy);P.moving=spd>5;
+ const nx=P.x+P.vx*dt,ny=P.y+P.vy*dt;if(!blk(nx,P.y))P.x=nx;else P.vx=0;if(!blk(P.x,ny))P.y=ny;else P.vy=0;
+ if(m>0){if(Math.abs(mx)>Math.abs(my)){P.dir=2;P.flip=mx<0}else P.dir=my<0?1:0}
+ if(P.moving)P.anim+=spd*dt;else P.anim=0;P.my=m>0?my/m:0;return spd}
+function wander(d,dt,ok,sp){d.t-=dt;
+ if(d.st==='sit'){if(d.t<=0){const tx=d.x+(R()*2-1)*56,ty=d.y+(R()*2-1)*56;if(ok(tx,ty)){d.tx=tx;d.ty=ty;d.st='walk';d.t=4}else d.t=.5}}
+ else{const ax=d.tx-d.x,ay=d.ty-d.y,am=Math.hypot(ax,ay);if(am<2||d.t<=0){d.st='sit';d.t=1.5+R()*4}else{const s=sp*dt,nx=d.x+ax/am*s,ny=d.y+ay/am*s;if(!ok(nx,ny)){d.st='sit';d.t=1}else{d.x=nx;d.y=ny;if(Math.abs(ax)>1)d.dir=ax>0?1:-1}}}}
+function emoTick(e,dt){if(e.emo){e.emo.t-=dt;if(e.emo.t<=0)e.emo=null}e.joy=Math.max(0,(e.joy||0)-dt);e.hop=Math.max(0,(e.hop||0)-dt)}
+function updateHome(dt){const W=HOME.w*16,H=HOME.h*16;movePlayer(dt,HOME.blk);
+ if(P.y>H-4&&Math.abs(P.x-W/2)<10&&P.my>.3)return exitHome();
+ let np=null,nd=28;for(const d of HOME.dogs){emoTick(d,dt);const dx=P.x-d.x,dy=P.y-d.y,dist=Math.hypot(dx,dy);
+  if(dist<26||(G.pet&&G.pet.e===d)){d.st='sit';d.near=true;d.dir=dx>0?1:-1;if(dist<nd){nd=dist;np=d}}else{d.near=false;wander(d,dt,HOME.ok,d.b.sz===0?26:20)}}
+ setNear(null,np);if(G.pet&&Math.hypot(G.pet.e.x-P.x,G.pet.e.y-P.y)>70)closePet()}
+function update(dt){G.time+=dt;G.dt=dt;
+ if(G.state==='mini'){miniUpdate(dt);return}
  if(G.state==='title')return;
  if(G.state==='photo'){updPhoto(dt);return}
  if(G.state==='trans'){const t=G.tr;t.t+=dt;t.d.hop=Math.max(0,t.d.hop-dt);if(t.t>.95)beginPhoto(t.d);return}
  if(G.state!=='world'||G.paused){P.moving=false;P.vx=P.vy=0;return}
- // player
- let mx=0,my=0;
- if(keys.arrowleft||keys.a)mx--;if(keys.arrowright||keys.d)mx++;if(keys.arrowup||keys.w)my--;if(keys.arrowdown||keys.s)my++;
- let str=1;
- if(ptr.id!==null&&ptr.drag){const dx=ptr.x-ptr.sx,dy=ptr.y-ptr.sy,m=Math.hypot(dx,dy);if(m>3){mx=dx/m;my=dy/m;str=clamp(m/16,.35,1);if(m>24){ptr.sx=ptr.x-mx*24;ptr.sy=ptr.y-my*24}}}
- const m=Math.hypot(mx,my),kk=Math.min(1,dt*13),tvx=m>0?mx/m*76*str:0,tvy=m>0?my/m*76*str:0;
- P.vx+=(tvx-P.vx)*kk;P.vy+=(tvy-P.vy)*kk;const spd=Math.hypot(P.vx,P.vy);P.moving=spd>5;
- const nx=P.x+P.vx*dt,ny=P.y+P.vy*dt;if(!blocked(nx,P.y))P.x=nx;else P.vx=0;if(!blocked(P.x,ny))P.y=ny;else P.vy=0;
- if(m>0){if(Math.abs(mx)>Math.abs(my)){P.dir=2;P.flip=mx<0}else P.dir=my<0?1:0}
- if(P.moving)P.anim+=spd*dt;else P.anim=0;
- // zone
+ if(G.scene==='home')return updateHome(dt);
+ const spd=movePlayer(dt,blocked);
+ if(P.moving){fpD+=spd*dt;if(fpD>7){fpD=0;fpS=-fpS;const t=map[I(P.x>>4,P.y>>4)],life=[2.2,9,0,1,3,2.6,1.4][t];if(life)FP.push({x:P.x-P.vy/spd*2.5*fpS,y:P.y-1+P.vx/spd*1.5*fpS,t:life,l:life,k:t})}}
+ for(const f of FP)f.t-=dt;if(FP.length&&(FP[0].t<=0||FP.length>200))FP=FP.filter(f=>f.t>0).slice(-200);
+ if(P.my<-.3&&P.y<HOUSE.y+10&&Math.abs(P.x-HOUSE.x)<8)return enterHome();
  const z=zoneAt(P.x>>4,P.y>>4);if(z!==G.zone){if(G.zone)toast('~ '+ZNAME[z].replace(/^the /,'The ')+' ~',1800);G.zone=z}
- // dogs
  let near=null,nd=30;
- for(const d of dogs){d.life-=dt;d.hop=Math.max(0,d.hop-dt);const dx=P.x-d.x,dy=P.y-d.y,dist=Math.hypot(dx,dy);
-  const on=Math.abs(dx)<vw/2+20&&Math.abs(dy)<vh/2+30;
-  if(d.leave){d.t-=dt;d.happy=Math.max(0,d.happy-dt);if(d.happy<=0){d.st='walk';const a=Math.atan2(-dy,-dx),nx=d.x+Math.cos(a)*85*dt,ny=d.y+Math.sin(a)*85*dt;d.dir=Math.cos(a)>0?1:-1;if(!solidAt(nx,d.y-2))d.x=nx;if(!solidAt(d.x,ny-2))d.y=ny}
+ for(const d of dogs){d.life-=dt;d.hop=Math.max(0,d.hop-dt);const dx=P.x-d.x,dy=P.y-d.y,dist=Math.hypot(dx,dy),on=Math.abs(dx)<vw/2+20&&Math.abs(dy)<vh/2+30;
+  if(d.leave){d.fast=true;d.t-=dt;d.happy=Math.max(0,d.happy-dt);if(d.happy<=0){d.st='walk';const a=Math.atan2(-dy,-dx),nx=d.x+Math.cos(a)*85*dt,ny=d.y+Math.sin(a)*85*dt;d.dir=Math.cos(a)>0?1:-1;if(!solidAt(nx,d.y-2))d.x=nx;if(!solidAt(d.x,ny-2))d.y=ny}
    if(d.t<=0&&(!on||d.t<-4))spawnDog(d,true);continue}
-  if(dist<30){if(!d.near){d.near=true;d.hop=.25;if(on)sfx.pop()}d.st='sit';d.dir=dx>0?1:-1;if(dist<nd){nd=dist;near=d}}
-  else{d.near=false;d.t-=dt;
-   if(d.st==='sit'){if(d.t<=0){const tx=d.x+(R()*2-1)*56,ty=d.y+(R()*2-1)*56;if(!solidAt(tx,ty-2)&&reach[I(tx>>4,ty>>4)]){d.tx=tx;d.ty=ty;d.st='walk';d.t=4}else d.t=.5}}
-   else{const ax=d.tx-d.x,ay=d.ty-d.y,am=Math.hypot(ax,ay);if(am<2||d.t<=0){d.st='sit';d.t=1.5+R()*4}else{const sp=(d.b.sz===0?30:24)*dt,nx=d.x+ax/am*sp,ny=d.y+ay/am*sp;if(solidAt(nx,ny-2)){d.st='sit';d.t=1}else{d.x=nx;d.y=ny;if(Math.abs(ax)>1)d.dir=ax>0?1:-1}}}}
+  if(dist<30&&!(d.flee>0)){if(!d.near){d.near=true;d.hop=.25;d.sleep=false;d.fast=false;if(on)sfx.pop()}d.st='sit';d.dir=dx>0?1:-1;if(dist<nd){nd=dist;near=d}}
+  else{d.near=false;const tp=TP[d.b.id]||'calm';d.flee=Math.max(0,(d.flee||0)-dt);
+   if((tp==='feisty'||tp==='shy')&&dist<(tp==='shy'?58:48)&&spd>44&&d.flee<=0&&on){d.flee=1.1;if(tp==='feisty')sfx.bark(d.b.sz);if(!S.tip2){S.tip2=1;toast('A skittish one! Walk up slowly (drag gently).',4000)}}
+   if(d.flee>0){const a=Math.atan2(-dy,-dx),sp=(tp==='shy'?70:84)*dt,nx=d.x+Math.cos(a)*sp,ny=d.y+Math.sin(a)*sp;d.st='walk';d.fast=true;d.sleep=false;d.dir=Math.cos(a)>0?1:-1;if(PARKOK(nx,d.y))d.x=nx;if(PARKOK(d.x,ny))d.y=ny;if(d.flee<=dt){d.st='sit';d.t=1}}
+   else{d.fast=tp==='fast';
+    if(tp==='friendly'&&dist<72&&on){d.st='walk';d.dir=dx>0?1:-1;const sp=30*dt,nx=d.x+dx/dist*sp,ny=d.y+dy/dist*sp;if(PARKOK(nx,ny)){d.x=nx;d.y=ny}}
+    else{const was=d.st;wander(d,dt,PARKOK,(d.b.sz===0?30:24)*(tp==='fast'?2.3:tp==='feisty'?1.5:tp==='sleepy'?.5:1));if(was==='walk'&&d.st==='sit'){if(tp==='sleepy')d.t+=6+R()*8;else if(tp==='fast')d.t*=.3}}
+    d.sleep=tp==='sleepy'&&d.st==='sit'&&d.t>2}}
   if(d.life<=0&&!on)spawnDog(d,true)}
- if(near!==G.near){G.near=near;actB.classList.toggle('on',!!near)}
- // buddy
- if(S.buddy&&S.dogs[S.buddy]){if(!BUD.on){BUD.on=true;BUD.x=P.x-14;BUD.y=P.y+2}
-  BUD.hop=Math.max(0,BUD.hop-dt);const dx=P.x-BUD.x,dy=P.y-BUD.y,dist=Math.hypot(dx,dy);
-  if(dist>160){BUD.x=P.x-12;BUD.y=P.y}else if(dist>20){const sp=Math.min(95,dist*3.2)*dt;BUD.x+=dx/dist*sp;BUD.y+=dy/dist*sp;BUD.moving=true;if(Math.abs(dx)>2)BUD.dir=dx>0?1:-1}else BUD.moving=false}else BUD.on=false;
+ let np=null;
+ if(S.buddy&&S.dogs[S.buddy]&&BY[S.buddy]){const dd=S.dogs[S.buddy];if(!BUD.on||BUD.id!==S.buddy){BUD.on=true;BUD.id=S.buddy;BUD.x=P.x-14;BUD.y=P.y+2;BUD.emo=null;BUD.pd=0}
+  BUD.b=BY[S.buddy];BUD.o=dd;BUD.owned=true;BUD.v=dd.v||1;emoTick(BUD,dt);
+  const dx=P.x-BUD.x,dy=P.y-BUD.y,dist=Math.hypot(dx,dy);
+  if(dist>160){BUD.x=P.x-12;BUD.y=P.y}else if(dist>20&&!(G.pet&&G.pet.e===BUD)){const s=Math.min(95,dist*3.2)*dt;BUD.x+=dx/dist*s;BUD.y+=dy/dist*s;BUD.st='walk';if(Math.abs(dx)>2)BUD.dir=dx>0?1:-1;
+   BUD.pd+=s;if(BUD.pd>6){BUD.pd=0;const t=map[I(BUD.x>>4,BUD.y>>4)];if(t===1)FP.push({x:BUD.x+(R()*3-1.5),y:BUD.y-1,t:6,l:6,k:1,p:1})}}else BUD.st='sit';
+  }else BUD.on=false;
+ setNear(near,np);if(G.pet&&(!BUD.on||Math.hypot(BUD.x-P.x,BUD.y-P.y)>80))closePet();
  for(const f of G.fx)f.t-=dt;G.fx=G.fx.filter(f=>f.t>0);
  saveT+=dt;if(saveT>10){saveT=0;S.pos=[P.x,P.y];save()}}
 function updPhoto(dt){const p=G.ph;if(!p)return;p.t+=dt;p.flash=Math.max(0,p.flash-dt*3);if(p.done)return;
  const Rg=Math.min(vw/2-14,80);
- if(p.pause>0){p.pause-=dt;if(p.pause<=0){p.tx=R()<.3?(R()*2-1)*8:(R()*2-1)*Rg;p.first=false}}
- else{const d=p.tx-p.x,st=p.v*dt;if(Math.abs(d)<=st){p.x=p.tx;p.pause=p.first?1.1:.25+R()*(.9-p.b.r*.15)}else{p.x+=Math.sign(d)*st;p.dir=Math.sign(d)}}}
+ if(p.pause>0){p.pause-=dt;if(p.pause<=0){const q=p.q;p.tx=R()<q.pc?(R()*2-1)*8:q.edge?(R()<.5?-1:1)*Rg*(.6+R()*.4):(R()*2-1)*Rg;p.first=false}}
+ else{const d=p.tx-p.x,st=p.v*dt;if(Math.abs(d)<=st){p.x=p.tx;p.pause=p.first?Math.min(1.1,p.q.p1+.3):p.q.p0+R()*(p.q.p1-p.q.p0)}else{p.x+=Math.sign(d)*st;p.dir=Math.sign(d)}}}
 
 /* ================= render ================= */
 function spr(c,x,y,s,flip){const w=c.width*s,h=c.height*s,X=sn(x-w/2),Y=sn(y-(c.height-1)*s);
@@ -833,60 +963,101 @@ function drawPhoto(){const p=G.ph;drawScene();if(!p)return;const gy=gY()+12,cx=v
  if(p.flash>0){g.fillStyle=`rgba(255,255,255,${p.flash})`;g.fillRect(0,0,vw,vh)}
  if(p.t<.4)iris(cx,vh/2,p.t/.4)}
 function iris(x,y,k){const r=Math.max(vw,vh)*k;g.fillStyle='#000';g.beginPath();g.rect(0,0,vw,vh);g.arc(x,y,Math.max(0,r),0,6.283,true);g.fill('evenodd')}
+function dogSpr(e){const b=e.b,o=e.owned?e.o:null,act=e.near||e.happy>0||e.joy>0;
+ if(e.st==='walk')return{c:dogSide(b,1+(((G.time*(e.fast?13:8)+(e.seed||0))|0)%4),o,e.fast||e.owned?1:0),flip:e.dir<0};
+ const tt=G.time+(e.seed||0);if(e.sleep&&!act)return{c:dogFront(b,2,o,false),flip:false};return{c:dogFront(b,e.joy>0?3:act?(G.time*6&1):(tt%4<.15?2:tt%3<.3?1:0),o,!!(act||e.owned)),flip:false}}
+function drawDogEnt(e,x,y){const s=dogSpr(e),hop=e.hop>0?Math.abs(Math.sin(e.hop*12))*4:0;spr(s.c,x,y-hop,dsc(e.v),s.flip)}
+function drawPlayer(x,y){const i=(P.anim/8|0)%4,f=P.moving?[1,0,2,0][i]:0;spr(playerSpr(P.dir,f),x,y-(P.moving&&(i&1)?1:0),1,P.dir===2&&P.flip)}
+function lightVals(){const h=hourNow(),tc=tint(h),night=clamp((255-(tc[0]+tc[1])/2)/150,0,1),t=clamp((h-6)/12,0,1),day=h>6&&h<18;
+ return{h,tc,night,sc:day?(.5-t)*2.4:.5,sd:day?.26+Math.abs(.5-t)*.5:.3,sa:day?.2*(1-night*.5):.07}}
+const SILS=new WeakMap();
+function silB(c){let s=SILS.get(c);if(!s){s=mk(c.width,c.height);s.x.drawImage(c,0,0);s.x.globalCompositeOperation='source-in';px(s.x,0,0,c.width,c.height,'#000');SILS.set(c,s)}return s}
+function cast(c,x,y,s,LV){const w=c.width*s,h=c.height*s;g.save();g.globalAlpha=LV.sa;g.transform(1,0,LV.sc,-LV.sd,sn(x),sn(y));g.drawImage(silB(c),-w/2,-h+s,w,h);g.restore()}
+function vignette(a){const gr=g.createRadialGradient(vw/2,vh/2,Math.min(vw,vh)*.42,vw/2,vh/2,Math.max(vw,vh)*.72);gr.addColorStop(0,'rgba(8,10,30,0)');gr.addColorStop(1,`rgba(8,10,30,${a})`);g.fillStyle=gr;g.fillRect(0,0,vw,vh)}
+function emoB(e,x,y){const a=clamp(e.emo.t,0,1),yy=sn(y-(3.2-e.emo.t)*1.5),X=sn(x);g.globalAlpha=a;px(g,X-8,yy-15,16,14,OUT);px(g,X-9,yy-14,18,12,OUT);px(g,X-1,yy-2,3,3,OUT);px(g,X-7,yy-14,14,12,'#fff');px(g,X-8,yy-13,16,10,'#fff');px(g,X,yy-2,1,2,'#fff');
+ g.font='8.5px system-ui,"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillStyle='#d83a5a';g.fillText(e.emo.txt,X,yy-7.5);g.globalAlpha=1}
+function drawJoy(){if(ptr.id!==null&&ptr.drag&&G.state==='world'){g.strokeStyle='rgba(255,255,255,.5)';g.lineWidth=1;g.beginPath();g.arc(ptr.sx,ptr.sy,14,0,6.283);g.stroke();g.fillStyle='rgba(255,255,255,.55)';const dx=ptr.x-ptr.sx,dy=ptr.y-ptr.sy,m=Math.max(1,Math.hypot(dx,dy)),k=Math.min(14,m)/m;g.beginPath();g.arc(ptr.sx+dx*k,ptr.sy+dy*k,5,0,6.283);g.fill()}}
+const headTop=e=>([27,32,37][e.b.sz]+(e.b.tall?3:0))*dsc(e.v);
+function buildHome(){const W=HOME.w*16,H=HOME.h*16,c=mk(W,H),x=c.x;
+ for(let ty=0;ty<HOME.h;ty++)for(let tx=0;tx<HOME.w;tx++){const X=tx*16,Y=ty*16;px(x,X,Y,16,16,(tx+ty)%2?'#c48a48':'#cc9654');px(x,X,Y+15,16,1,'#a8703a');px(x,X+((ty%2)*8+3),Y,1,15,'#b47c40')}
+ px(x,0,0,W,30,'#f0dcae');for(let i=0;i<W;i+=12)px(x,i,0,1,22,'#e6cc96');px(x,0,22,W,8,'#b9753a');px(x,0,22,W,1,'#d99a52');px(x,0,30,W,3,'#7a4a24');px(x,0,33,W,3,'rgba(0,0,0,.16)');
+ for(const wx of[40,W-72]){px(x,wx-1,3,34,18,'#7a4a24');px(x,wx,4,32,16,'#9ad8ff');px(x,wx+15,4,2,16,'#f4ead8');px(x,wx,11,32,2,'#f4ead8');px(x,wx+2,6,5,2,'#fff');g2(x,wx)}
+ function g2(x,wx){x.fillStyle='rgba(255,240,180,.16)';x.beginPath();x.moveTo(wx,36);x.lineTo(wx+32,36);x.lineTo(wx+56,110);x.lineTo(wx-6,110);x.fill()}
+ for(const fx of[92,W/2-7,W-106]){px(x,fx,5,14,12,'#7a4a24');px(x,fx+1,6,12,10,'#fff4d8');px(x,fx+5,11,4,3,'#b9753a');px(x,fx+4,8,2,2,'#b9753a');px(x,fx+8,8,2,2,'#b9753a')}
+ ell(x,W/2,H/2+18,54,26,'#b83a3a');ell(x,W/2,H/2+18,48,22,'#e8c46a');ell(x,W/2,H/2+18,42,18,'#c84a4a');ell(x,W/2,H/2+18,20,8,'#e8c46a');
+ const cols=['#3a6fd8','#e86aa8','#3aa655','#f2c230','#8a4fd8'];for(let i=0;i<5;i++){const bx=Math.round(30+i*((W-60)/4)),by=50;ell(x,bx,by,13,6,shade(cols[i],.7));ell(x,bx,by-1,10,4,cols[i]);ell(x,bx-2,by-2,5,2,shade(cols[i],1.25))}
+ [[18,H-30,'#d83a3a'],[34,H-30,'#3a6fd8']].forEach(([a,b,k])=>{px(x,a,b+2,10,4,k);px(x,a+1,b,8,3,shade(k,.7));px(x,a+2,b+1,6,1,k==='#3a6fd8'?'#62b8e8':'#8a5a2a')});
+ x.drawImage(SPR.ball,W-40,H-44);x.drawImage(SPR.bone,W-70,H-28);x.drawImage(SPR.ball,70,96);x.drawImage(SPR.bone,W/2+70,70);
+ px(x,W/2-13,H-14,26,9,'#8a6a3a');px(x,W/2-11,H-12,22,5,'#a8864a');px(x,0,H-4,W,4,'#5e3618');px(x,W/2-10,H-4,20,4,'#2a1a10');px(x,0,0,3,H,'#7a4a24');px(x,W-3,0,3,H,'#7a4a24');
+ HOME.ground=c}
+function renderHome(){const W=HOME.w*16,H=HOME.h*16;px(g,0,0,vw,vh,'#120a06');
+ const ox=sn(vw>=W?(vw-W)/2:-clamp(P.x-vw/2,0,W-vw)),oy=sn(vh>=H?(vh-H)/2:-clamp(P.y-12-vh/2,0,H-vh));G.hox=ox;G.hoy=oy;
+ g.drawImage(HOME.ground,ox,oy);const LV=lightVals();
+ if(LV.night>.4)for(const wx of[40,W-72]){px(g,ox+wx,oy+4,32,16,'rgba(14,20,66,.82)');px(g,ox+wx+15,oy+4,2,16,'#f4ead8');px(g,ox+wx,oy+11,32,2,'#f4ead8')}
+ const L=[P,...HOME.dogs].sort((a,b)=>a.y-b.y);
+ for(const o of L){shadow(o.x+ox,o.y+oy,o===P?6:(o.b.sz*2+6)*dsc(o.v))}
+ for(const o of L){const x=o.x+ox,y=o.y+oy;if(o===P)drawPlayer(x,y);else drawDogEnt(o,x,y)}
+ g.globalCompositeOperation='multiply';g.fillStyle=LV.night>.4?'rgb(255,206,150)':'rgb(255,244,224)';g.fillRect(ox,oy,W,H);g.globalCompositeOperation='source-over';
+ if(LV.night>.4){g.globalCompositeOperation='lighter';g.globalAlpha=.5;g.drawImage(SPR.glow,ox+W/2-110,oy+H/2-100,220,220);g.globalAlpha=1;g.globalCompositeOperation='source-over'}
+ vignette(.3+LV.night*.2);
+ for(const d of HOME.dogs){const x=d.x+ox,y=d.y+oy;if(d.emo)emoB(d,x,y-headTop(d)-1);else if(d.near)txt(S.dogs[d.id]?S.dogs[d.id].name:'',x,y-headTop(d)-5,5,'#fff')}
+ drawJoy()}
+const OCC={tree:[15,42],house:[44,82],umbrella:[15,36],statue:[10,34],fountain:[26,46],lamp:[5,30]},CASTK={tree:1,bush:1,lamp:1,house:1,umbrella:1,statue:1,sign:1,bin:1,stump:1,table:1,rock:1};
+const OSPR=o=>o.k==='tree'?SPR.tree[o.v]:SPR[o.k];
 function render(){
  g.setTransform(K,0,0,K,0,0);g.imageSmoothingEnabled=false;
  if(G.state==='title')return drawTitle();
  if(G.state==='photo')return drawPhoto();
  if(G.state==='mini'&&MINI)return miniDraw();
+ if(G.scene==='home')return renderHome();
  const cam=G.cam,ctx2=clamp(P.x-vw/2,0,MW*TS-vw),cty=clamp(P.y-12-vh/2,0,MH*TS-vh);
  if(cam.fx===undefined||Math.abs(ctx2-cam.fx)>90||Math.abs(cty-cam.fy)>90){cam.fx=ctx2;cam.fy=cty}else{const q=Math.min(1,(G.dt||.016)*9);cam.fx+=(ctx2-cam.fx)*q;cam.fy+=(cty-cam.fy)*q}
  cam.x=clamp(sn(cam.fx),0,MW*TS-vw);cam.y=clamp(sn(cam.fy),0,MH*TS-vh);
  g.drawImage(ground,cam.x,cam.y,vw,vh,0,0,vw,vh);
- // water sparkle
  for(let i=0;i<24;i++){const hsh=Math.sin(i*91.7+Math.floor(G.time*2+i*.37)*13.1)*43758.5,fx=(hsh-Math.floor(hsh))*vw|0,h2=hsh*1.7,fy=(h2-Math.floor(h2))*vh|0;if(map[I((fx+cam.x)>>4,(fy+cam.y)>>4)]===2)px(g,fx,fy,3,1,'#bfe8ff')}
- const L=[];
- for(const o of objs){if(o.y<cam.y-6)continue;if(o.y>cam.y+vh+56)break;if(o.x>cam.x-32&&o.x<cam.x+vw+32)L.push(o)}
+ for(const f of FP){if(f.t<=0)continue;g.globalAlpha=clamp(f.t/f.l*1.6,0,1)*(f.k===1?.55:.3);g.fillStyle=f.k===1?'#9a6e28':f.k===3?'#7a6a4a':f.k===6?'#5a3a1a':'#1c5220';g.fillRect(sn(f.x-cam.x-1.5),sn(f.y-cam.y-1),f.p?1.5:3,f.p?1.5:2)}g.globalAlpha=1;
+ const LV=lightVals(),L=[];
+ for(const o of objs){if(o.y<cam.y-6)continue;if(o.y>cam.y+vh+90)break;if(o.x>cam.x-50&&o.x<cam.x+vw+50)L.push(o)}
  for(const d of dogs)if(Math.abs(d.x-P.x)<vw+40&&Math.abs(d.y-P.y)<vh+40)L.push(d);
  L.push(P);if(BUD.on)L.push(BUD);
+ for(const o of L){const x=o.x-cam.x,y=o.y-cam.y;if(o===P)cast(playerSpr(P.dir,0),x,y,1,LV);else if(o.b)cast(dogSpr(o).c,x,y,dsc(o.v),LV);else if(CASTK[o.k])cast(OSPR(o),x,y,1,LV)}
  L.sort((a,b)=>a.y-b.y);
  for(const o of L){const x=o.x-cam.x,y=o.y-cam.y;
-  if(o===P){shadow(x,y,6);const i=(P.anim/8|0)%4,f=P.moving?[1,0,2,0][i]:0;spr(playerSpr(P.dir,f),x,y-(P.moving&&(i&1)?1:0),1,P.dir===2&&P.flip)}
-  else if(o===BUD){const b=BY[S.buddy],dd=S.dogs[S.buddy];shadow(x,y,b.sz*2+7);spr(BUD.moving?dogSide(b,1+((G.time*11|0)%4),dd,1):dogFront(b,(G.time+1.3)%4<.15?2:(G.time*3&1),dd,true),x,y-(BUD.hop>0?4:0),1,BUD.moving&&BUD.dir<0)}
-  else if(o.b){const b=o.b,hop=o.hop>0?Math.sin(o.hop*12)*4:0;shadow(x,y,b.sz*2+7);
-   spr(o.st==='walk'?dogSide(b,1+(((G.time*(o.leave?14:8)+o.seed)|0)%4),null,o.leave):dogFront(b,(o.near||o.happy>0)?(G.time*6&1):((G.time+o.seed)%4<.15?2:(G.time+o.seed)%3<.3?1:0),null,o.near||o.happy>0),x,y-Math.abs(hop),1,o.st==='walk'&&o.dir<0)}
-  else if(o.k==='tree')g.drawImage(SPR.tree[o.v],x-17,y-44);
-  else if(o.k==='bush')g.drawImage(SPR.bush,x-9,y-14);
-  else if(o.k==='rock')g.drawImage(SPR.rock,x-7,y-10);
-  else if(o.k==='bench')g.drawImage(SPR.bench,x-17,y-19);
-  else if(o.k==='hurdle')g.drawImage(SPR.hurdle,x-15,y-16);
-  else if(o.k==='lamp')g.drawImage(SPR.lamp,x-6,y-34);
-  else if(o.k==='fountain'){g.drawImage(SPR.fountain,x-29,y-52);const t=G.time*6|0;for(let i=0;i<5;i++){const a=(i*1.3+t*.7)%6.28;px(g,x+Math.cos(a)*(6+(t+i)%5)|0,y-36+((t*3+i*7)%14),1,2,'#dff4ff')}}}
- // day / night
- const h=hourNow(),tc=tint(h),night=clamp((255-(tc[0]+tc[1])/2)/150,0,1);
- if(night>0.01){g.globalCompositeOperation='multiply';g.fillStyle=`rgb(${tc[0]},${tc[1]},${tc[2]})`;g.fillRect(0,0,vw,vh);g.globalCompositeOperation='source-over'}
- if(night>.25){g.globalCompositeOperation='lighter';
-  for(const[lx,ly]of lamps){const x=lx-cam.x,y=ly-cam.y;if(x<-50||y<-50||x>vw+50||y>vh+50)continue;for(const rr of[48,42,36,30,24,18,12,6])disc(g,x|0,y|0,rr,`rgba(255,206,120,${.065*night})`)}
-  g.globalCompositeOperation='source-over';
+  if(o===P)drawPlayer(x,y);
+  else if(o.b)drawDogEnt(o,x,y);
+  else{const oc=OCC[o.k];let ta=1;if(oc&&P.y<o.y&&P.y>o.y-oc[1]&&Math.abs(P.x-o.x)<oc[0])ta=.36;o.a=o.a===undefined?1:o.a+(ta-o.a)*Math.min(1,(G.dt||.016)*10);
+   g.globalAlpha=o.a;spr(OSPR(o),x,y,1);g.globalAlpha=1;
+   if(o.k==='fountain'){const t=G.time*6|0;for(let i=0;i<5;i++){const a=(i*1.3+t*.7)%6.28;px(g,sn(x)+(Math.cos(a)*(6+(t+i)%5)|0),sn(y)-36+((t*3+i*7)%14),1,2,'#dff4ff')}}}}
+ if(LV.night>.01){g.globalCompositeOperation='multiply';g.fillStyle=`rgb(${LV.tc[0]},${LV.tc[1]},${LV.tc[2]})`;g.fillRect(0,0,vw,vh);g.globalCompositeOperation='source-over'}
+ if(LV.night>.2){const hx=HOUSE.x-44-cam.x,hy=HOUSE.y-84-cam.y;g.globalAlpha=LV.night*.9;for(const wx of[14,60])px(g,hx+wx,hy+50,14,13,'#ffdc7a');px(g,hx+40,hy+54,9,8,'#ffdc7a');g.globalAlpha=1;
+  g.globalCompositeOperation='lighter';g.globalAlpha=LV.night;
+  for(const[lx,ly]of lamps){const x=lx-cam.x,y=ly-cam.y;if(x<-50||y<-50||x>vw+50||y>vh+50)continue;g.drawImage(SPR.glow,sn(x-48),sn(y-48))}
+  g.drawImage(SPR.glow,sn(hx-4),sn(hy+10));g.drawImage(SPR.glow,sn(hx-4),sn(hy+10));
+  g.globalAlpha=LV.night*.55;g.drawImage(SPR.glow,sn(P.x-cam.x-40),sn(P.y-cam.y-52),80,80);
+  g.globalAlpha=1;g.globalCompositeOperation='source-over';
   for(let i=0;i<14;i++){const fx=(Math.sin(i*12.9)*.5+.5)*vw+Math.sin(G.time*.7+i)*14,fy=(Math.cos(i*7.3)*.5+.5)*vh+Math.cos(G.time*.9+i*2)*10;if(Math.sin(G.time*2+i*1.7)>-.2)px(g,fx|0,fy|0,1,1,'#f8ff9a')}}
- // bubbles
- for(const d of dogs){if(!d.near&&d.happy<=0)continue;const x=d.x-cam.x,y=d.y-cam.y-[27,32,37][d.b.sz]-(d.b.tall?3:0);
+ const per=period(LV.h);
+ if(per==='M'||per==='E'){g.globalCompositeOperation='lighter';g.fillStyle='rgba(255,214,140,.07)';const dir=per==='M'?1:-1;for(let i=0;i<4;i++){const bx=((i*83+G.time*3)%(vw+140))-70;g.beginPath();g.moveTo(bx,0);g.lineTo(bx+28,0);g.lineTo(bx+28-dir*vh*.45,vh);g.lineTo(bx-dir*vh*.45,vh);g.fill()}g.globalCompositeOperation='source-over'}
+ vignette(.14+LV.night*.3);
+ for(const d of dogs){if(d.sleep&&!d.near){const q=(G.time+d.seed)%2;g.globalAlpha=1-q/2;txt('z',d.x-cam.x+5+q*2,d.y-cam.y-headTop(d)-q*4,4+q,'#fff');g.globalAlpha=1}if(!d.near&&d.happy<=0)continue;const x=d.x-cam.x,y=d.y-cam.y-headTop(d);
   if(d.happy>0)g.drawImage(SPR.heart,sn(x-4),sn(y-4-(2-d.happy)*6));
   else g.drawImage(S.dogs[d.b.id]?SPR.heartB:SPR.bang,sn(x-5),sn(y-12+(d===G.near?Math.sin(G.time*6)*1.5:0)))}
- for(const f of G.fx)g.drawImage(SPR.heart,Math.round(f.x-cam.x-4),Math.round(f.y-cam.y-(1-f.t)*14));
- // joystick
- if(ptr.id!==null&&ptr.drag&&G.state==='world'){g.strokeStyle='rgba(255,255,255,.5)';g.lineWidth=1;g.beginPath();g.arc(ptr.sx,ptr.sy,14,0,6.283);g.stroke();g.fillStyle='rgba(255,255,255,.55)';const dx=ptr.x-ptr.sx,dy=ptr.y-ptr.sy,m=Math.max(1,Math.hypot(dx,dy)),k=Math.min(14,m)/m;g.beginPath();g.arc(ptr.sx+dx*k,ptr.sy+dy*k,5,0,6.283);g.fill()}
+ if(BUD.on&&BUD.emo)emoB(BUD,BUD.x-cam.x,BUD.y-cam.y-headTop(BUD)-1);
+ for(const f of G.fx)g.drawImage(SPR.heart,sn(f.x-cam.x-4),sn(f.y-cam.y-(1-f.t)*14));
+ drawJoy();
  if(G.state==='trans'){const t=G.tr.t,d=G.tr.d;if(t<.4){if((t*20&1)){g.fillStyle='rgba(255,255,255,.35)';g.fillRect(0,0,vw,vh)}}else iris(d.x-cam.x,d.y-cam.y-10,1-(t-.4)/.5)}}
 
 /* ================= boot ================= */
 let last=0;
 function frame(t){const dt=Math.min(.05,(t-last)/1000||0);last=t;update(dt);render();requestAnimationFrame(frame)}
-function boot(){load();mkSprites();genWorld();resize();
+function boot(){load();mkSprites();genWorld();buildHome();resize();ACTI=[im(SPR.cam,3),im(SPR.paw,4)];
  if(S.pos&&!blocked(S.pos[0],S.pos[1])){P.x=S.pos[0];P.y=S.pos[1]}
  for(let i=0;i<44;i++)dogs.push(spawnDog({},false));
- actB.innerHTML=im(SPR.cam,3);
  updClock();setInterval(updClock,1000);titleInit();requestAnimationFrame(frame);
+ idbOpen().then(idbGet).then(j=>{if(j){try{const d=JSON.parse(j);if(d&&d.v===1&&(d.ts||0)>(S.ts||0)&&G.state==='title'){Object.assign(S,d);PS={};if(S.pos&&!blocked(S.pos[0],S.pos[1])){P.x=S.pos[0];P.y=S.pos[1]}titleInit()}}catch(e){}}
+  if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{})});
  if('serviceWorker'in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
- window.__pp={G,P,S,dogs,BR,BY,startEncounter,snap,startMini,dogFront,dogSide,playerSpr,SPR,get MINI(){return MINI},menu,dex,zoneAt,spr,save}}
+ window.__pp={HOME,BUD,enterHome,exitHome,openPet,G,P,get S(){return S},dogs,BR,BY,startEncounter,snap,startMini,dogFront,dogSide,playerSpr,SPR,get MINI(){return MINI},menu,dex,zoneAt,spr,save}}
 boot();
 })();
 </script>
