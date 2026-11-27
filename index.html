@@ -216,7 +216,7 @@ const TP={},TPN={feisty:'Feisty',fast:'Speedy',sleepy:'Sleepy',friendly:'Friendl
 [['feisty','chi jack pom dachs westie papillon schnauzer'],['fast','kelpie collie grey whippet heeler aussie vizsla husky dalm weim'],['sleepy','bulldog french pug basset bernard newf dane mastiff sheep'],['friendly','lab golden cavoodle staffy cav cocker beagle boxer corgi mutt samo bern bullt'],['shy','shiba afghan dingo wolf akita']].forEach(([t,l])=>l.split(' ').forEach(id=>TP[id]=t));
 const TQ={feisty:{v:1.6,p0:.15,p1:.4,pc:.15},fast:{v:1.9,p0:.2,p1:.5,pc:.25},sleepy:{v:.5,p0:1.5,p1:2.6,pc:.6},friendly:{v:.9,p0:.8,p1:1.4,pc:.5},shy:{v:1.15,p0:.2,p1:.5,pc:.1,edge:1},calm:{v:1,p0:.35,p1:1,pc:.3}};
 const BY={};BR.forEach(b=>BY[b.id]=b);
-BR.push({id:'yorkie',n:'Yorkshire Terrier',sz:0,c:'#3a3842',s:'#c07a3a',hc:'#c07a3a',lc:'#c07a3a',m:'#d08a4a',ec:'#a8622a',e:'point',t:'long',p:'solid',f:1,z:['lawn','meadow'],h:'MD',r:1,d:'Three kilos of pure attitude.'});BY.yorkie=BR[BR.length-1];TP.yorkie='feisty';BS.yorkie=.8;BY.beagle.sd='#2a2220';BY.beagle.e='long';BY.dobe.e='flop';BY.dane.e='flop';BY.rott.e='flop';const earSz=b=>{const v=ES[b.id.replace('~','')];return v===undefined?1:v};
+BR.push({id:'yorkie',n:'Yorkshire Terrier',sz:0,c:'#3a3842',s:'#c07a3a',hc:'#c07a3a',lc:'#c07a3a',m:'#d08a4a',ec:'#a8622a',e:'point',t:'long',p:'solid',f:1,z:['lawn','meadow'],h:'MD',r:1,d:'Three kilos of pure attitude.'});BY.yorkie=BR[BR.length-1];TP.yorkie='feisty';BS.yorkie=.8;BY.beagle.sd='#2a2220';BY.french.m='#5e544c';BY.beagle.e='long';BY.dobe.e='flop';BY.dane.e='flop';BY.rott.e='flop';const earSz=b=>{const v=ES[b.id.replace('~','')];return v===undefined?1:v};
 const BALI={id:'bali',n:'Aussie Shepherd',sz:1,c:'#7a4630',s:'#f8f2ea',ec:'#94603e',lc:'#c8824a',brow:'#d08a48',eye:'#d89a30',nose:'#6a4038',e:'fold',t:'fluff',p:'mask',f:1,r:3,z:['any'],h:'MDEN',d:'The tornado herself. Only the one who caught every other dog could ever catch Bali.'};BY.bali=BALI;TP.bali='fast';
 const SHALL=new URLSearchParams(location.search).get('shiny');
 function hueShift(hex){const n=parseInt(hex.slice(1),16);let r=(n>>16)/255,g=(n>>8&255)/255,b=(n&255)/255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h=0,s=0,l=(mx+mn)/2;
@@ -252,7 +252,7 @@ const OUTFITS=[
 {id:'shades',slot:'eyes',n:'Sunnies',cost:45},{id:'hearts',slot:'eyes',n:'Heart Specs',cost:55}];
 
 /* ================= dog sprites ================= */
-const SC={},FW=33,FH=44,SW=44,SH=40;
+const SC={},FW=33,FH=44,SW=44,SH=40;const lum=h=>{const n=parseInt(h.slice(1),16);return(n>>16)*.3+(n>>8&255)*.59+(n&255)*.11};
 const okey=o=>o?'|'+(o.hat||'')+'|'+(o.neck||'')+'|'+(o.eyes||''):'';
 function dogCols(b){const solid=['solid','spots','speckle','saddle','eyepatch'].includes(b.p);
  return{B:b.c,S2:b.s,D:shade(b.c,.7),E:b.ec||shade(b.c,.74),M:b.m||(solid?shade(b.c,1.14):b.s),P:solid?shade(b.c,1.12):b.s,IN:b.ec?shade(b.ec,1.6):'#e9a0a0',SEP:shade(b.c,.48)}}
@@ -275,7 +275,7 @@ function fuzz(c,seed,p){const x=c.x,w=c.width,h=c.height,d=x.getImageData(0,0,w,
 function fur(p,seed){atop(p,x=>{const r=rng(seed);for(let i=0;i<150;i++){const a=r()*p.width|0,c=r()*p.height|0;px(x,a,c,1,r()<.5?2:1,r()<.6?'rgba(0,0,0,.1)':'rgba(255,255,255,.14)')}})}
 const atop=(p,f)=>{p.x.globalCompositeOperation='source-atop';f(p.x);p.x.globalCompositeOperation='source-over'};
 function speck(x,b,X,Y,W,H){const r=rng(hash(b.id));
- if(b.p==='spots')for(let i=0;i<W*H/11;i++){const a=X+(r()*W|0),c=Y+(r()*H|0);px(x,a,c,2,r()<.5?2:1,b.s);if(r()<.4)px(x,a+1,c+1,2,1,b.s)}
+ if(b.p==='spots')for(let i=0;i<W*H/10;i++){const a=X+(r()*W|0),c=Y+(r()*H|0);px(x,a,c,r()<.5?2:1,1,b.s)}
  if(b.p==='speckle')for(let i=0;i<W*H/4;i++)px(x,X+(r()*W|0),Y+(r()*H|0),1,1,r()<.55?shade(b.c,1.32):shade(b.c,.68))}
 const NECKC={bandana:'#d83a3a',bandanab:'#3a6fd8',bowtie:'#d83a3a',scarf:'#3aa655'};
 function hatFront(x,id,cx,T,rx){
@@ -371,70 +371,83 @@ function dogFront(b,fr,o,happy){ // fr 0/1 tail wag, 2 blink
  if(o&&o.hat)hatFront(x,o.hat,cx,T,rx);
  return SC[key]=outline(c)}
 const GAIT={nf:[[0,0],[2,0],[0,0],[-2,0],[0,1]],ff:[[0,0],[-2,0],[0,1],[2,0],[0,0]],nb:[[0,0],[-2,0],[0,1],[2,0],[0,0]],fb:[[0,0],[2,0],[0,0],[-2,0],[0,1]]};
-function dogSide(b,fr,o,tongue){ // fr 0 stand, 1-4 walk cycle
+function dogSide(b,fr,o,tongue){ // fr 0 stand, 1-4 walk cycle. Side body, 3/4 head, faces right
  const key=b.id+'S'+fr+(tongue?1:0)+okey(o);if(SC[key])return SC[key];
- const c=mk(SW,SH),sz=b.sz,{B,S2,D,E,M,P,IN,SEP}=dogCols(b),base=38,bob=(fr===2||fr===4)?1:0,wag=fr&1,seed=hash(b.id);
- const ID=bid(b),L=[12,14,17][sz]+(b.long?5:0),h=[6,8,9][sz]-(b.slim?1:0)+(BULK.has(ID)?1:0),lg=Math.max(2,(b.long?2:[3,5,6][sz])+(b.slim?1:0)+(b.tall?2:0)-(SHORT.has(ID)&&!b.long?1:0)),lw=sz?3:2;
- const bx=10,by=base-lg-h-bob,rr=[3,4,4][sz],cr=[3,4,5][sz],ryR=h>>1,ryC=(h>>1)+1;
- const hr=[5,6,6][sz],hry=[4,5,5][sz],hcx=bx+L+1,hcy=by-(sz?2:1)-(b.tall?1:0)-(b.slim?1:0),T=hcy-hry,sl=(b.flat?1:[2,3,3][sz])+((HW[ID]||0)<0?1:0),HB=b.hc||B;
+ const c=mk(SW,SH),sz=b.sz,{B,S2,E,M,P,IN,SEP}=dogCols(b),base=38,bob=(fr===2||fr===4)?1:0,wag=fr&1,seed=hash(b.id),ID=bid(b),pt=b.p;
+ const L=[13,16,19][sz]+(b.long?5:0),h=[7,8,10][sz]-(b.slim?2:0)+(BULK.has(ID)?1:0),lg=Math.max(2,[3,5,6][sz]+(b.slim?2:0)+(b.tall?2:0)-(SHORT.has(ID)?(sz?2:1):0)),lw=sz?3:2,fw=sz===2?3:2;
+ const bx=9,by=base-lg-h-bob,hw=[9,11,12][sz]+(HW[ID]||0),hh=[8,9,10][sz],up=(b.tall?3:0)+(b.slim?2:0),hx0=bx+L-hw+[4,5,5][sz],T=by+[3,3,4][sz]-hh-up,hcx=hx0+(hw>>1),HB=b.hc||B,dark=lum(HB)<70;
  const part=()=>mk(SW,SH);let p,x;
  // tail
- p=part();x=p.x;const TC=B;
- if(b.t==='long'){px(x,bx-1,by+1,3,2,TC);px(x,bx-3,by,3,2,TC);px(x,bx-4,by-2-wag,2,2,TC);px(x,bx-5,by-4-wag,2,2,TC);px(x,bx-5,by-6-wag*2,1,2,TC)}
- else if(b.t==='curl'){ell(x,bx+1,by-3,3,3,TC);x.clearRect(bx,by-4,2,2);px(x,bx+1,by-1,3,2,TC)}
- else if(b.t==='fluff'){ell(x,bx-2,by-2-wag,3,5,TC);px(x,bx-1,by,4,3,TC);if(b.p!=='solid')atop(p,x=>ell(x,bx-3,by-6-wag,2,2,S2))}
- else if(b.t==='pom'){px(x,bx-1,by-3,2,5,TC);ell(x,bx-1,by-5-wag,2,2,TC)}
- else ell(x,bx,by+1-wag,1,1,TC);
+ p=part();x=p.x;{const TC=B,tx=bx,ty=by+1;
+ if(b.t==='long'){px(x,tx-1,ty,3,2,TC);px(x,tx-2,ty-2,2,3,TC);px(x,tx-3,ty-4-wag,2,3,TC);px(x,tx-3,ty-6-wag,1,2,TC)}
+ else if(b.t==='curl'){ell(x,tx,ty-3,3,3,TC);x.clearRect(tx-1,ty-4,2,2);px(x,tx,ty-1,3,3,TC)}
+ else if(b.t==='fluff'){ell(x,tx-2,ty-1-wag,3,4,TC);px(x,tx-1,ty,4,3,TC);if(pt!=='solid'&&pt!=='saddle')atop(p,x=>ell(x,tx-3,ty-4-wag,2,1,S2))}
+ else if(b.t==='pom'){px(x,tx-1,ty-3,2,5,TC);ell(x,tx-1,ty-5-wag,2,2,TC)}
+ else px(x,tx-2,ty-wag,3,2,TC)}
  if(b.f)fuzz(p,seed+1,.4);shadeD(p);c.x.drawImage(p,0,0);
- const LC=b.lc||(b.p==='patch'?S2:B),ly=by+h-2,fx=bx+L-cr-2,hx=bx+1;
- const fleg=(x,lx,gt,col,paw,near)=>{const[of,lf]=gt[fr],bt=base-lf;if(near)px(x,lx+of,ly-1,lw+1,Math.min(4,bt-ly),col);px(x,lx+of,ly,lw,bt-ly,col);px(x,lx+of,bt-1,lw+1,1,paw)};
- const hleg=(x,lx,gt,col,paw,near)=>{const[of,lf]=gt[fr],bt=base-lf,kn=Math.min(bt-1,ly+3);if(near)ell(x,lx+2+(of>>1),ly,3,sz===2?4:3,b.lc?B:col);px(x,lx+1+of,ly,lw,kn-ly,col);px(x,lx+of,kn,lw,bt-kn,col);px(x,lx+of,bt-1,lw+1,1,paw)};
- p=part();x=p.x;hleg(x,hx+3,GAIT.fb,D,shade(P,.7));fleg(x,fx-3,GAIT.ff,D,shade(P,.7));c.x.drawImage(p,0,0);
- // torso
- p=part();x=p.x;ell(x,bx+rr,by+ryR,rr,ryR,B);ell(x,bx+L-cr-1,by+ryC,cr,ryC,B);px(x,bx+rr,by,L-rr-cr,h-(b.slim?2:1),B);px(x,bx+L-cr-4,by-1,5,1,B);
+ // legs
+ const LC=b.lc||(pt==='patch'?S2:B),ly=by+h-2,nbx=bx+1,nfx=bx+L-lw-2,fbx=nbx+lw+1,ffx=nfx-fw-1,FD=shade(LC,.72),FP=shade(P,.72);
+ const leg=(x,lx,w,gt,col,paw)=>{const[of,lf]=gt[fr],bt=base-lf;px(x,lx+of,ly,w,bt-ly,col);px(x,lx+of,bt-1,w+1,1,paw)};
+ p=part();x=p.x;leg(x,fbx,fw,GAIT.fb,FD,FP);leg(x,ffx,fw,GAIT.ff,FD,FP);if(pt==='tan')atop(p,x=>px(x,0,base-Math.max(2,lg>>1),SW,lg,shade(S2,.72)));c.x.drawImage(p,0,0);
+ // torso (+ neck for tall breeds)
+ p=part();x=p.x;px(x,bx+1,by,L-2,h,B);px(x,bx,by+1,L,h-2,B);if(b.slim)px(x,bx+L-7,by+h,6,2,B);
+ if(up)px(x,hx0+1,T+hh-2,hw-4,by-(T+hh)+4,B);
  atop(p,x=>{
-  if(b.p==='chest'||b.p==='mask'||b.p==='patch'){ell(x,bx+L-cr+1,by+ryC+2,cr-1,ryC-1,S2);px(x,bx+rr,by+h-2,L-rr-cr,2,S2)}
-  if(b.p==='tan')ell(x,bx+L-cr+1,by+ryC+2,2,2,S2);
-  if(b.p==='saddle')px(x,bx,by-1,L-cr+1,ryR+2,S2);if(b.sd)px(x,bx+1,by-1,L-cr-1,ryR+2,b.sd);
-  if(b.p==='eyepatch')ell(x,bx+rr+3,by+2,3,2,S2);
+  if(pt==='chest'||pt==='mask'||pt==='patch'){px(x,bx+L-4,T+hh,4,SH,S2);px(x,bx+L-6,by+h-3,2,5,S2)}
+  if(pt==='mask'||pt==='patch')px(x,bx+2,by+h-2,L-6,2,S2);
+  if(pt==='tan')px(x,bx+L-3,by+3,3,SH,S2);
+  if(pt==='saddle')px(x,bx,by,L-4,(h>>1)+1,S2);if(b.sd)px(x,bx,by,L-5,(h>>1)+1,b.sd);
+  if(pt==='eyepatch')ell(x,bx+4,by+2,3,2,S2);
   speck(x,b,bx,by,L,h+2)});
  if(b.f)fuzz(p,seed+2,.45);shadeD(p);comp(c,p,SEP);
  // near legs
- p=part();x=p.x;hleg(x,hx,GAIT.nb,LC,P,1);fleg(x,fx,GAIT.nf,LC,P,1);
- if(b.p==='tan')atop(p,x=>px(x,0,base-Math.max(2,lg>>1),SW,lg,S2));
+ p=part();x=p.x;leg(x,nbx,lw,GAIT.nb,LC,P);leg(x,nfx,lw,GAIT.nf,LC,P);
+ if(pt==='tan')atop(p,x=>px(x,0,base-Math.max(2,lg>>1),SW,lg,S2));
  shadeD(p);comp(c,p,SEP);
  if(COAT.has(ID)){p=part();x=p.x;px(x,bx+1,by+h-2,L-2,lg+1,B);for(let i=0;i<L-2;i+=2)px(x,bx+1+i,by+h,1,lg-1,'rgba(0,0,0,.12)');fuzz(p,seed+9,.4);shadeD(p);comp(c,p,SEP)}
- // neck + head
- p=part();x=p.x;const n0x=bx+L-cr-2,n0y=by+2,nn=Math.max(1,n0y-hcy);
- for(let i=0;i<=nn;i++){const t=i/nn;px(x,Math.round(lerp(n0x,hcx-hr+1,t)),n0y-i,Math.round(lerp(cr+3,hr+2,t)),1,B)}
- ell(x,hcx,hcy,hr,hry,HB);px(x,hcx-hr+1,hcy-hry+1,hr*2-1,hry*2-1,HB);if(b.top)ell(x,hcx-1,T,2,2,HB);
- const mx0=hcx+hr-1;px(x,mx0,hcy,Math.max(1,sl),1,HB);px(x,mx0,hcy+1,sl+1,2,M);px(x,mx0,hcy+3,sl,1,shade(M,.88));
- atop(p,x=>{if(b.p==='mask'){px(x,hcx-2,hcy+1,hr+3,hry,S2);for(let i=0;i<=nn;i++){const t=i/nn;px(x,Math.round(lerp(n0x,hcx-hr+1,t))+2,n0y-i,Math.round(lerp(cr+1,hr,t)),1,S2)}}
-  if(b.p==='tan')px(x,hcx,hcy+2,hr,hry-1,S2);
-  if(b.p==='eyepatch')ell(x,hcx+1,hcy-1,2,3,S2);
-  speck(x,b,hcx-hr,T,hr*2,hry*2)});
- if(b.f)fuzz(p,seed+4,.45);shadeD(p);
- px(x,mx0+sl,hcy,2,2,b.nose||'#1a1210');px(x,mx0+1,hcy+3,Math.max(1,sl-1),1,shade(M,.5));
- if(tongue){px(x,mx0+1,hcy+4,2,2,'#f0708a');px(x,mx0+1,hcy+4,1,1,'#ffa8ba')}
- if(b.beard)for(let i=0;i<=sl;i++)px(x,mx0+i,hcy+3,1,2+(i&1),shade(HB,.9));
- if(b.shag)px(x,hcx-1,hcy-2,hr+1,3,S2);
- else{px(x,hcx+1,hcy-2,2,2,'#1a1210');if(b.eye)px(x,hcx+1,hcy-1,2,1,b.eye);if(b.p==='tan'||b.brow)px(x,hcx+1,hcy-4,2,1,b.brow||S2)}
+ // ears
+ const e=b.e,es=earSz(b),ED=shade(E,.82),fl=bob;
+ const ear=(x,near)=>{const t=e==='mix'?(near?'point':'fold'):e,a=near?hx0:hx0+hw-5,col=near?E:ED;
+  if(t==='point'){const ph=[3,4,5,7][es];tri(x,a+2,T-ph,a,a+4,T+1,col);if(near)tri(x,a+2,T-ph+2,a+2,a+3,T+1,IN)}
+  else if(t==='bat'){const ph=[5,6,7,9][es];tri(x,a+1,T-ph,a-1,a+4,T+1,col);px(x,a,T-ph+1,2,2,col);if(near)tri(x,a+1,T-ph+3,a+1,a+3,T+1,IN)}
+  else if(t==='crop'){tri(x,a+2,T-7,a+1,a+3,T+1,col);if(near)px(x,a+2,T-4,1,4,IN)}
+  else if(t==='fold'){if(near){px(x,a,T-1,4,2,col);px(x,a+1,T+1,4,1,col);px(x,a+3,T+2,2,1,ED)}else px(x,a+1,T-1,4,2,col)}
+  else if(near){const lng=t==='long',ew=es>=2||lng?4:3,len=[4,5,7,9][es]+(lng?2:0)+(sz?1:0)-fl;px(x,a-1,T+1,ew,len-1,col);px(x,a,T,ew-1,1,col);px(x,a,T+len,ew-2,1,col);px(x,a+ew-2,T+2,1,len-3,ED);if(b.t==='pom'&&lng)ell(x,a,T+len,2,2,col)}};
+ p=part();ear(p.x,false);if(b.f)fuzz(p,seed+5,.3);comp(c,p,SEP);
+ // head
+ p=part();x=p.x;{const i2=sz?2:1;px(x,hx0+i2,T,hw-i2*2,1,HB);px(x,hx0+i2-1,T+1,hw-i2*2+2,1,HB);px(x,hx0,T+2,hw,hh-3,HB);px(x,hx0+1,T+hh-1,hw-1,1,HB);if(b.top)ell(x,hcx-1,T-1,3,2,HB)}
+ const mw=[4,5,5][sz]-(b.flat?1:0),mh=[3,4,4][sz],sl=b.flat?1:[1,2,2][sz]+((HW[ID]||0)<0?1:0),mxR=hx0+hw-1+sl,mxL=mxR-mw+1,my0=T+hh-mh,eN=hx0+Math.round(hw*.42),eF=hx0+hw-2,ey=T+Math.round(hh*.36);
+ atop(p,x=>{
+  if(pt==='mask'){px(x,hx0+2,T+(hh>>1)+1,hw,hh,S2);px(x,eN+2,T,Math.max(1,eF-eN-2),hh,S2)}
+  if(pt==='patch'){px(x,eN+2,T,Math.max(1,eF-eN-2),hh,S2);px(x,eN+1,my0,hw,mh,S2)}
+  if(pt==='chest')px(x,eN+1,my0+1,hw,mh,S2);
+  if(pt==='tan')px(x,eN,my0+1,hw,mh,S2);
+  if(pt==='eyepatch')px(x,hx0,T,eN-hx0+3,hh-2,S2);
+  speck(x,b,hx0,T,hw,hh)});
+ px(x,mxL,my0,mw,mh-1,M);px(x,mxL,my0+mh-1,mw-1,1,M);
+ if(b.f)fuzz(p,seed+4,.22);shadeD(p);
+ px(x,mxR-1,my0,2,2,b.nose||'#16100e');if(lum(M)<70)px(x,mxR-1,my0,1,1,'#6a5a58');
+ px(x,mxR-2,my0+2,2,1,shade(M,.5));
+ 
+ if(tongue){px(x,mxR-2,my0+mh-1,2,3,'#f0708a');px(x,mxR-2,my0+mh-1,1,2,'#ffa8ba')}
+ if(b.beard)for(let i=0;i<mw;i++)px(x,mxL+i,my0+mh-1,1,2+(i&1),shade(M,.92));
+ if(b.shag){px(x,eN-1,ey-1,hx0+hw-eN+1,3,S2);for(let i=0;i<hx0+hw-eN+1;i+=2)px(x,eN-1+i,ey+2,1,1,S2)}
+ else{const EC='#16100e';if(dark){px(x,eN,ey,2,2,'#efe8dc');px(x,eN+1,ey,1,2,EC);px(x,eF-1,ey,2,2,'#efe8dc');px(x,eF,ey,1,2,EC)}else{px(x,eN,ey,2,2,EC);px(x,eF,ey,1,2,EC)}
+  if(b.eye){px(x,eN,ey+1,dark?1:2,1,b.eye);if(!dark)px(x,eF,ey+1,1,1,b.eye)}
+  if(pt==='tan'||b.brow){px(x,eN,ey-2,2,1,b.brow||S2);px(x,eF-1,ey-2,2,1,b.brow||S2)}}
  comp(c,p,SEP);
- // ear
- p=part();x=p.x;const e=b.e==='mix'?'point':b.e,fl=bob,ex=hcx-hr,es=earSz(b);
- if(e==='flop'){px(x,ex,T+1,4,2,E);ell(x,ex+1,hcy+1+es-fl,es>=2?3:2,Math.max(2,hry-1+es+(sz?1:0)),E)}
- else if(e==='long'){px(x,ex,T+1,4,2,E);ell(x,ex+1,hcy+2+es-fl,es>=2?3:2,hry+es*2,E);if(b.t==='pom')ell(x,ex+1,hcy+hry+4-fl,3,3,E)}
- else if(e==='point'){tri(x,hcx-2,T-[2,4,7,9][es],ex-(es>2?1:0),hcx-1+(es>2?1:0),T+1,E);px(x,hcx-2,T-1,1,2,IN)}
- else if(e==='bat'){tri(x,hcx-3,T-(es>2?9:6),ex-1-(es>2?2:0),hcx-1,T+1,E);tri(x,hcx-3,T-3,hcx-3,hcx-2,T+1,IN)}
- else if(e==='fold'){px(x,ex,T-1,4,3,E);px(x,ex+2,T+2,3,1,shade(E,.8));px(x,ex+3,T+3,2,1,shade(E,.8))}
- else if(e==='crop'){tri(x,hcx-2,T-6,hcx-3,hcx-1,T+1,E)}
- if(b.f)fuzz(p,seed+3,.3);shadeD(p);comp(c,p,SEP);
- x=c.x;const nk=o&&o.neck,nx=n0x+2;
- if(nk){const K2=NECKC[nk];px(x,nx,by-2,3,5,K2);px(x,nx,by-2,1,5,shade(K2,1.25));if(nk!=='bowtie'){px(x,nx+1,by+3,3,2,K2);px(x,nx+2,by+5,2,1,K2)}}
- else if(o&&!b.nocol){const col=b.col||'#d83a3a';px(x,nx,by-2,2,5,col);px(x,nx+1,by-2,1,5,shade(col,.72));px(x,nx+1,by+3,2,2,'#f4d03f')}
- if(o&&o.eyes){const lc=o.eyes==='hearts'?'#e84a8a':'#16161c';px(x,hcx,hcy-2,4,3,lc);px(x,hcx-hr+1,hcy-1,hr,1,lc);px(x,hcx+1,hcy-2,1,1,o.eyes==='hearts'?'#ffc0dc':'#6a7a9a')}
- if(o&&o.hat)hatSide(x,o.hat,hcx,T,hr);
- return SC[key]=outline(c)}
+ // collar / neckwear sits under the jaw, on the chest
+ {const nk=o&&o.neck,cy=T+hh,cx0=hx0+1,cx1=Math.min(mxL-1,bx+L-1),cw=cx1-cx0+1;
+ if(nk)atop(c,x=>{const K2=NECKC[nk],KL=shade(K2,1.25),KD=shade(K2,.72);
+  if(nk==='scarf'){px(x,cx0,cy,cw,3,K2);px(x,cx0,cy,cw,1,KL);px(x,cx1-3,cy+3,3,5,K2);px(x,cx1-3,cy+3,1,5,KD);px(x,cx1-3,cy+5,3,1,'#f4f4f4')}
+  else if(nk==='bowtie'){px(x,cx0,cy,cw,1,KD);px(x,cx1-4,cy,2,3,K2);px(x,cx1,cy,2,3,K2);px(x,cx1-2,cy+1,2,1,'#8a1a1a');px(x,cx1-4,cy,1,1,'#ff8a8a')}
+  else{px(x,cx0,cy,cw,2,K2);px(x,cx0,cy,cw,1,KL);for(let i=0;i<4;i++)px(x,cx1-6+i,cy+2+i,7-2*i,1,i===3?KD:K2);px(x,cx1-3,cy+2,1,1,'#fff');px(x,cx1-4,cy+3,1,1,'#fff')}});
+ else if(o&&!b.nocol)atop(c,x=>{const col=b.col||'#d83a3a';px(x,cx0,cy,cw,2,col);px(x,cx0,cy,cw,1,shade(col,1.2));px(x,cx0,cy+1,cw,1,shade(col,.72));px(x,cx1-2,cy+2,2,2,'#f4d03f');px(x,cx1-2,cy+2,1,1,'#fff6c0')})}
+ p=part();ear(p.x,true);if(b.f)fuzz(p,seed+3,.3);shadeD(p);comp(c,p,SEP);
+ x=c.x;
+ if(o&&o.eyes){const lc=o.eyes==='hearts'?'#e84a8a':'#16161c',hl=o.eyes==='hearts'?'#ffc0dc':'#6a7a9a';px(x,eN-1,ey-1,4,3,lc);px(x,eF-1,ey-1,hx0+hw-eF+1,3,lc);px(x,hx0+1,ey,hw-1,1,lc);px(x,eN,ey-1,1,1,hl);px(x,eF,ey-1,1,1,hl)}
+ if(o&&o.hat)hatSide(x,o.hat,o.hat==='flower'?hx0+2:hcx,o.hat==='flower'?T+1:T,hw>>1);
+ return SC[key]=outline(c,'#17120f')}
 function sil(c){const k=mk(c.width,c.height);k.x.drawImage(c,0,0);k.x.globalCompositeOperation='source-in';px(k.x,0,0,c.width,c.height,'#8a6a40');return k}
 
 /* ================= player sprite ================= */
@@ -823,6 +836,7 @@ const ACT={
   if(cat==='it'){const i=hs.it.indexOf(id);if(i<0)hs.it.push(id);else if(!bought)hs.it.splice(i,1)}else hs[cat]=+id;buildHome();save();deco()},
  sbuy(v){const o=OUTFITS.find(q=>q.id===v);if(S.owned.includes(v))return;if(S.treats<o.cost){sfx.buzz();toast(`You need ${o.cost-S.treats} more treats.`);return}S.treats-=o.cost;S.owned.push(v);save();sfx.coin();shopPanel()},
  pupround(){const ids=Object.keys(S.dogs);if(!ids.length){toast('You have no dogs yet!');return}if(S.treats<25){sfx.buzz();toast(`You need ${25-S.treats} more treats.`);return}S.treats-=25;ids.forEach(id=>addBond(id,1));sfx.jingle();closePanel();toast('Slurp! Every dog gained 1 bond.',2600)},
+ saynext(){if(!SAY||SAY.i>=SAY.l.length-1){SAY=null;closePanel();return}SAY.i++;sfx.tap&&sfx.tap();sayShow()},
  menu,settings,close:closePanel,dex,how,hint,dog:dogPage,dress,playm:playMenu,char:charEdit,
  chardone(){PS={};const first=!S.started,pn=$('#pn');if(pn)S.player.name=pn.value.trim().slice(0,12);if(G.fromTitle){G.fromTitle=false;if(S.started)save();closePanel();titleInit();return}S.started=true;save();dayCheck();closePanel();setState('world');if(first)toast('Drag anywhere to walk. Go find a dog!',4500)},
  cyc(v){const[k,d]=v.split(':'),n=CY.find(c=>c[0]===k)[2];S.player[k]=(S.player[k]+ +d+n)%n;save();charEdit()},
@@ -880,7 +894,7 @@ const ROOMS={
   px(x,196,44,12,10,'#b5622a');for(const[a,b]of[[202,30],[197,34],[207,34],[202,38]])ell(x,a,b,3,5,'#3aa655');
   this.ground=c},sol:[[10,54,70,24],[122,80,16,10],[170,108,16,10],[92,120,16,10]],fore:[[10,60,70,18]],
   get npcs(){return this._n||(this._n=[{npc:true,x:52,y:64,c:npcSpr({skin:0,hair:1,hairC:3,beard:0,shirt:8,pants:2})},{npc:true,x:154,y:92,c:npcSpr({skin:3,hair:0,hairC:0,beard:1,shirt:5,pants:0})},{npc:true,x:76,y:132,c:npcSpr({skin:1,hair:4,hairC:1,beard:0,shirt:3,pants:4})}])},
-  spots:[{x:52,y:90,h:46,act(){cafePanel()}},{x:154,y:92,r:24,act(){say('Regular','Best flat white in the park. My kelpie drags me here every arvo.')}},{x:76,y:132,r:24,act(){say('Dog walker','Heard the night dogs are the rare ones. The woods after 9pm, they reckon.')}}]},
+  spots:[{x:52,y:90,h:46,act(){cafePanel()}},{x:154,y:92,r:24,act(){say('Regular',['Best flat white in the park.','My kelpie drags me here every arvo.'])}},{x:76,y:132,r:24,act(){say('Dog walker',['Heard the night dogs are the rare ones.','The woods after 9pm, they reckon.'])}}]},
  hall:{name:'Hall of Fame',w:16,h:10,win:[20,204],build(){const W=256,c=roomBase(16,10,DECO.floor[2][2],DECO.wall[0][2],[20,204]),x=c.x;
   px(x,W/2-12,34,24,122,'#b83a3a');px(x,W/2-12,34,2,122,'#e8c46a');px(x,W/2+10,34,2,122,'#e8c46a');
   px(x,74,3,108,19,'#5e3618');px(x,76,5,104,15,'#2a2a32');for(let i=0;i<4;i++)px(x,82,8+i*3,60+((i*17)%30),1,'#f4f4f4');px(x,160,7,14,10,'#f4c020');
@@ -898,14 +912,22 @@ const ROOMS={
   this.ground=c},sol:[[10,40,14,36],[142,40,38,26],[14,108,22,16]],
   get npcs(){return this._n||(this._n=[{npc:true,x:70,y:62,c:npcSpr({skin:1,hair:4,hairC:5,beard:1,shirt:2,pants:1})}])},
   spots:[{x:70,y:62,r:26,act(){rangerPanel()}},{x:25,y:128,r:22,h:30,act(){chestPanel()}}]}};
-function say(who,t){openPanel(`<button class="xb" data-a="close" aria-label="Close">X</button><h2>${who}</h2><p>"${t}"</p>`)}
+let SAY=null;function say(who,t){SAY={who,l:Array.isArray(t)?t:[t],i:0};sayShow()}
+function sayShow(){const q=SAY,last=q.i>=q.l.length-1;openPanel(`<button class="xb" data-a="close" aria-label="Close">X</button><h2>${q.who}</h2><p>"${q.l[q.i]}"</p><button class="btn" data-a="saynext">${last?'OK':'Next'}</button>`)}
 function shopPanel(){const pb=S.buddy&&S.dogs[S.buddy]?BV(S.buddy):BY.lab;let h=`<button class="xb" data-a="close" aria-label="Close">X</button><h2>Pup Shop</h2><p>"G'day! Everything a good dog needs."</p><div class="tr">${bone()} ${S.treats} treats</div>`;
  for(const sl of['hat','neck','eyes']){h+=`<h3>${{hat:'Head',neck:'Neck',eyes:'Eyes'}[sl]}</h3><div class="grid">`;for(const o of OUTFITS)if(o.slot===sl){const own=S.owned.includes(o.id);h+=`<button class="cell${own?'':' un'}" style="border-color:${own?'#5a9a34':'#b9753a'};min-height:0" data-a="sbuy" data-v="${o.id}">${im(dogFront(pb,0,{hat:'',neck:'',eyes:'',[sl]:o.id},true),2)}<br>${o.n}<i>${own?'Owned ✓':o.cost+' treats'}</i></button>`}h+='</div>'}
  openPanel(h+`<p style="font-size:11px">Tap an item to buy it. Outfits you own can be worn by any of your dogs (tap a dog, then Dress).</p><button class="btn alt" data-a="deco">Kennel furniture</button>`,'wide')}
 function cafePanel(){const free=S.cafe!==today();if(free){S.cafe=today();S.treats+=8;save();sfx.coin()}
  openPanel(`<button class="xb" data-a="close" aria-label="Close">X</button><h2>Bark & Bean Café</h2><p>${free?'"First pupcake of the day is on the house!"<br><b>+8 treats</b>':'"You\'ve had today\'s free pupcake. Come back tomorrow!"'}</p><div class="tr">${bone()} ${S.treats} treats</div><button class="btn" data-a="pupround">Puppuccinos all round · 25<br><small>Every dog you own gains 1 bond</small></button>`)}
 function hallPanel(){const ds=Object.values(S.dogs),b=S.best||{};openPanel(`<button class="xb" data-a="close" aria-label="Close">X</button><h2>Hall of Fame</h2><p style="text-align:left;line-height:1.6">Breeds caught: <b>${count()}/${BR.length}</b><br>Three-star photos: <b>${ds.filter(d=>d.stars===3).length}</b><br>Shiny dogs: <b>${ds.filter(d=>d.shiny).length}</b><br>Highest dog level: <b>${ds.length?Math.max(...ds.map(lvl)):0}</b><br>Treasures dug up: <b>${S.digs||0}</b><br>Login streak: <b>${S.streak||1} day${(S.streak||1)>1?'s':''}</b><br>Blown away by Bali: <b>${S.bali||0}</b><br>Best Treat Catch: <b>${b.catch||0}</b><br>Best Park Dash: <b>${b.hop||0}</b><br>Best Fetch: <b>${b.fetch||0}</b></p>`)}
-function rangerPanel(){const un=BR.filter(b=>!S.dogs[b.id]),b=un.length?pick(un):null;say('Ranger',(b?`Looking for a ${b.n}? I've seen one around ${b.z.map(z=>ZNAME[z]).join(' and ')} in the ${b.h.split('').map(c=>PNAME[c]).join(' or ')}.`:"You've found every breed in the park. Legend!")+' As for Bali… nobody gets near that one. Believe me, I have tried.')}
+const RTIPS=[['Dogs come and go with the time of day.','Drop by in the evening and you will meet a different crowd.'],['Taming a dog? Keep the treat in the sweet spot.','Push too hard and they bolt.'],['Your buddy sniffs out buried treasure while you walk.'],['Shy breeds spook easily.','Take it slow with them.'],['Once in a while a dog turns up in a rare colour.','Snap it if you see one.'],['Quiet day.','Just how I like it.'],['There is a cat around here that only answers to Dog.','Do not ask me why.'],['The café does a round of puppuccinos.','Your whole pack will love you for it.']];let rLast=-1;
+function rangerPanel(){const un=BR.filter(b=>!S.dogs[b.id]),done=!un.length,r=Math.random();let l;
+ if(done&&!S.dogs.bali&&r<.5)l=["You've found every breed in the park.",'Legend!','Word is Bali might finally trust you now.'];
+ else if(done&&r<.5)l=["Every breed, and Bali too.","Never thought I'd see the day."];
+ else if(!done&&r<.5){const b=pick(un);l=[`Looking for a ${b.n}?`,`I've seen one around ${b.z.map(z=>ZNAME[z]).join(' and ')} in the ${b.h.split('').map(c=>PNAME[c]).join(' or ')}.`]}
+ else if(!done&&r<.62)l=['Seen Bali yet?','Nobody gets near that one.','Believe me, I have tried.'];
+ else{let i;do i=Math.random()*RTIPS.length|0;while(i===rLast);rLast=i;l=RTIPS[i]}
+ say('Ranger',l)}
 function chestPanel(){if(S.chest){say('Old chest','Empty. Just a few biscuit crumbs left.');return}S.chest=1;S.treats+=100;save();sfx.jingle();say('Old chest',"The ranger's secret stash! +100 treats")}
 function enterRoom(id){const b=BLD.find(q=>q.id===id);G.ret=[b.x,b.y+12];G.scene='home';G.room=id;closePet();keysClear();P.vx=P.vy=0;
  if(id==='kennel'){Object.assign(HOME,{w:18,h:12,ground:HOME.kg,win:[40,216],sol:[],fore:[],npcs:[],spots:[],fire:null});kennelFill()}
