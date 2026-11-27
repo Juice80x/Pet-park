@@ -579,6 +579,7 @@ function mkSprites(){
  c=mk(34,40);x=c.x;px(x,16,14,2,24,'#f4f4f4');ell(x,17,11,15,9,'#e84a4a');x.clearRect(0,13,34,10);px(x,16,14,2,24,'#f4f4f4');for(let i=0;i<34;i+=8)for(let j=0;j<12;j++){const a=x.getImageData(i+2,j,1,1).data;if(a[3]){}}px(x,7,3,4,10,'#fff4f0');px(x,15,2,4,11,'#fff4f0');px(x,23,3,4,10,'#fff4f0');px(x,16,0,2,2,'#f2c230');SPR.umbrella=outline(c);
  c=mk(34,22);x=c.x;px(x,4,3,26,6,'#d99a52');px(x,4,3,26,1,'#f0c07a');px(x,6,9,2,10,'#7a4a24');px(x,26,9,2,10,'#7a4a24');px(x,0,13,34,3,'#b9753a');px(x,0,13,34,1,'#d99a52');px(x,2,16,2,5,'#7a4a24');px(x,30,16,2,5,'#7a4a24');SPR.table=outline(c);
  c=mk(16,21);x=c.x;px(x,7,8,2,12,'#7a4a24');px(x,1,1,14,9,'#d99a52');px(x,1,1,14,1,'#f0c07a');px(x,6,5,4,3,'#7a4a24');px(x,5,3,2,2,'#7a4a24');px(x,9,3,2,2,'#7a4a24');SPR.sign=outline(c);
+ c=mk(34,30);x=c.x;px(x,3,6,3,24,'#6a4424');px(x,28,6,3,24,'#6a4424');px(x,3,6,1,24,'#8a5a34');px(x,28,6,1,24,'#8a5a34');px(x,1,5,32,18,'#8a5a34');px(x,3,7,28,14,'#c89a5e');px(x,3,7,28,1,'#a87a44');px(x,0,2,34,4,'#7a3e12');px(x,0,2,34,1,'#a85a22');px(x,5,9,8,10,'#fff8e8');px(x,6,11,6,1,'#9a8a78');px(x,6,13,5,1,'#9a8a78');px(x,6,15,6,1,'#9a8a78');px(x,8,8,2,2,'#d83a3a');px(x,15,9,7,6,'#ffe9a0');px(x,16,11,5,1,'#b89a4a');px(x,16,13,4,1,'#b89a4a');px(x,18,8,2,2,'#3a6fd8');px(x,23,10,6,8,'#d8f0ff');px(x,24,12,4,1,'#7a9ab8');px(x,24,14,4,1,'#7a9ab8');px(x,25,9,2,2,'#3aa655');px(x,15,16,6,4,'#ffd0dc');px(x,17,15,2,2,'#f2c230');SPR.board=outline(c);
  c=mk(12,16);x=c.x;px(x,2,4,8,11,'#3a8a4a');px(x,2,4,2,11,'#5aaa6a');px(x,1,2,10,3,'#2a6a3a');px(x,5,0,2,2,'#2a6a3a');SPR.bin=outline(c);
  c=mk(34,22);x=c.x;px(x,2,6,30,14,'#3a8ad8');ell(x,17,7,15,5,'#5aaaf0');for(let i=6;i<32;i+=8)px(x,i,3,2,17,'#2a6ab8');ell(x,5,14,3,6,'#16161c');SPR.tunnel=outline(c);
  c=mk(26,40);x=c.x;px(x,3,30,20,9,'#8a8f98');px(x,1,28,24,3,'#b4bac4');px(x,3,36,20,1,'#6a6f78');{const d=dogFront(BY.lab,0,null,false),t=mk(33,44);t.x.drawImage(d,0,0);t.x.globalCompositeOperation='source-atop';px(t.x,0,0,33,44,'rgba(150,158,170,.82)');x.drawImage(t,-3,-13)}SPR.statue=c;
@@ -593,7 +594,7 @@ function mkSprites(){
  SPR.iHat=pm(['..kkkkk..','..kKkkk..','..kKkkk..','..rrrrr..','kkkkkkkkk'],{k:'#2a2a32',K:'#5a5a66',r:'#d83a3a'});
  {const c=mk(7,5),x=c.x;['k.k.kkk','k.k.k.k','.k..k.k','.k..k.k','.k..kkk'].forEach((r,y)=>[...r].forEach((ch,i)=>{if(ch==='k')px(x,i,y,1,1,'#2a1a12')}));SPR.iYo=c}
  SPR.iBook=pm(['rrrrrrrr.','rRRRRRRrw','rRRppRRrw','rRpRRpRrw','rRRppRRrw','rRRRRRRrw','rrrrrrrrw','.wwwwwwww'],{r:'#b83a3a',R:'#e05a4a',p:'#fff4d8',w:'#f4ead8'});
- ['bench','lamp','rock','bush','table','sign','bin','stump','tunnel','house','shop','cafe','hall','cabin','hurdle','fountain'].forEach(k=>inSh(SPR[k]));
+ ['board','bench','lamp','rock','bush','table','sign','bin','stump','tunnel','house','shop','cafe','hall','cabin','hurdle','fountain'].forEach(k=>inSh(SPR[k]));
  c=mk(30,34);x=c.x;disc(x,7,29,3,'#3a3a44');disc(x,22,29,3,'#3a3a44');px(x,7,29,1,1,'#b4bac4');px(x,22,29,1,1,'#b4bac4');px(x,3,16,24,11,'#f8f4ec');px(x,3,22,24,2,'#f08ab8');px(x,3,25,24,2,'#d8d2c4');px(x,3,10,1,6,'#8a8f98');px(x,26,10,1,6,'#8a8f98');
  for(let i=0;i<7;i++)px(x,1+i*4,4,4,6,i%2?'#fff4f0':'#e84a4a');px(x,1,9,28,1,'#b83a3a');tri(x,14,13,12,16,17,'#e8c05a');disc(x,14,12,2,'#ffb4d4');SPR.cart=inSh(outline(c));
  c=mk(38,28);x=c.x;tri(x,19,2,2,36,26,'#e8843a');tri(x,19,2,2,19,26,'#f0a05a');tri(x,19,10,14,24,26,'#4a2208');px(x,18,2,2,4,'#7a4a24');px(x,2,26,35,1,'#b85a1a');SPR.tent=outline(c);
@@ -618,7 +619,7 @@ function genWorld(){
  const occ=new Uint8Array(MW*MH),put=(k,x,y,v,w)=>{for(let i=0;i<(w||1);i++){solid[I(x+i,y)]=1;occ[I(x+i,y)]=1}objs.push({k,v,x:x*16+(w===2?16:8),y:y*16+15})};
  // fixed props
  for(let y=47;y<=49;y++)for(let x=46;x<=49;x++){solid[I(x,y)]=1;occ[I(x,y)]=1}
- objs.push({k:'fountain',x:768,y:797});
+ objs.push({k:'fountain',x:768,y:797});for(let x=51;x<=52;x++){solid[I(x,52)]=1;occ[I(x,52)]=1}objs.push({k:'board',x:NB.x,y:NB.y});
  for(let i=10;i<=86;i+=8){if(Math.abs(i-47.5)<9)continue;put('lamp',46,i);put('lamp',i,46);lamps.push([46*16+8,i*16-12],[i*16+8,46*16-12])}
  [[23,23],[74,23],[23,74],[74,74],[41,41],[54,41],[41,54],[54,54]].forEach(([x,y])=>{put('lamp',x,y);lamps.push([x*16+8,y*16-12])});
  [[44,39],[50,39],[44,56],[50,56],[66,23],[60,27],[30,70],[20,74]].forEach(([x,y])=>put('bench',x,y,0,2));
@@ -694,7 +695,8 @@ function pick2(r,a){return a[r()*a.length|0]}
 
 /* ================= state ================= */
 const G={scene:'park',pet:null,nearPet:null,state:'title',time:0,paused:false,near:null,per:'',zone:'',cam:{x:0,y:0},cur:'',ph:null,tr:null,fx:[]};
-const P={x:47.5*16+8,y:53*16,dir:0,flip:false,anim:0,moving:false,vx:0,vy:0};
+const SPAWN=[47.5*16+8,52.5*16],NB={x:52*16,y:52*16+15};
+const P={x:SPAWN[0],y:SPAWN[1],dir:0,flip:false,anim:0,moving:false,vx:0,vy:0};
 const BUD={x:0,y:0,dir:1,moving:false,on:false,hop:0};
 const dogs=[];let MINI=null;
 const BAL={b:BALI,x:0,y:0,st:'sit',t:1,dir:1,v:1.08,seed:3,mode:0,tt:0,hop:0,happy:0,fast:true};
@@ -792,18 +794,35 @@ const TD=[];
 function titleInit(){TD.length=0;const ids=Object.keys(S.dogs);for(let i=0;i<5;i++){const id=ids[i]||pick(BR).id;TD.push({b:S.dogs[id]?BV(id):BY[id],o:S.dogs[id]||null,x:i*97+R()*30,v:30+i*7,l:i})}
  $('#tsub').textContent=S.started?`${S.player.name?'Welcome back, '+S.player.name+'! · ':''}Dogdex ${count()}/${BR.length} · ${S.treats} treats`:''}
 function drawTitle(){drawScene(0,1);const gy=gY(),sp=(vh-gy-22)/3;for(const d of TD){if(d.l>3)continue;const X=((d.x+G.time*d.v)%(vw+110))-55,Y=gy+16+(d.l%4)*sp*.9;shadow(X,Y,9);spr(dogSide(d.b,1+((G.time*d.v/5|0)%4),d.o,1),X,Y,1.25)}}
-$('#playB').addEventListener('click',()=>{audioInit();sfx.jingle();G.fromTitle=false;setState('world');if(!S.started)charEdit();else{const gf=dayCheck();if(gf)questPanel(gf)}});
+$('#playB').addEventListener('click',()=>{audioInit();sfx.jingle();G.fromTitle=false;if(G.scene==='park'){P.x=SPAWN[0];P.y=SPAWN[1];P.dir=0;P.vx=P.vy=0;G.cam.fx=undefined;G.zone='lawn'}setState('world');if(!S.started)charEdit();else{const gf=dayCheck();if(gf)questPanel(gf)}});
 $('#charB').addEventListener('click',()=>{audioInit();sfx.blip();G.fromTitle=true;charEdit()});
 $('#dexB').addEventListener('click',()=>{audioInit();sfx.blip();if(G.state==='world'&&!G.paused){closePet();dex()}});
 function menu(){openPanel(`<button class="xb" data-a="close" aria-label="Close">X</button><h2>Pup Park</h2><div class="tr">${bone()} ${S.treats} treats</div>
  <button class="btn" data-a="quests">Daily quests ${S.daily?S.daily.q.filter(q=>q.p>=q.n).length:0}/3</button>
+ <button class="btn" data-a="map">Park map</button>
  <button class="btn" data-a="album">Photo album</button>
  <button class="btn" data-a="deco">Decorate kennel</button>
  <button class="btn alt" data-a="settings">Settings</button>
  <button class="btn alt" data-a="leave">Leave game</button>`)}
-function questPanel(gift){if(!S.daily||S.daily.day!==today())gift=dayCheck()||gift;const D=S.daily;let h=`<button class="xb" data-a="close" aria-label="Close">X</button><h2>${gift?'Welcome back!':'Daily quests'}</h2><p><b>${S.streak||1}-day streak</b>${gift?` · gift +${gift} ${bone()}`:''}</p>`;
- for(const q of D.q)h+=`<div class="cy" style="text-align:left;border-top:2px solid #d9a868;padding-top:5px"><span>${q.p>=q.n?'✔':'○'} ${qlabel(q)}</span><b>${q.p>=q.n?'done':q.p+'/'+q.n}<br><small>+${q.r}</small></b></div>`;
- openPanel(h+`<p>${D.bonus?'All done! Bonus claimed.':'Finish all 3 for a +50 bonus.'}</p><p style="font-size:11px">Come back tomorrow for a bigger gift (grows to day 7).</p>`)}
+const VER='2.4',NEWS=[['2.4','27 Nov',['You now start each visit at the fountain.','Park map, in the clock menu.','This notice board: daily challenges and updates.']],['2.3','27 Nov',['Front views redrawn to match the side views.','Coat colours: Labs, Frenchies and most breeds come in a few.','The Ranger has more to say, one line at a time.']],['2.2','27 Nov',['New dog art for all breeds.','50th breed: Yorkshire Terrier.','Richer park: water banks, cobbles, fences.']],['2.1','27 Nov',['The shop shows each outfit on your dog.','Taming: the treat falls faster and both ends fail.']],['2.0','27 Nov',['Tame a dog with the treat bar, then snap a pose.','Walk all your dogs at once.','Catch Bali after completing the Dogdex.']]];
+const qLeft=()=>S.daily?S.daily.q.filter(q=>q.p<q.n).length:3,nbNew=()=>S.started&&(S.seenVer!==VER||(qLeft()>0&&S.nbDay!==today()));
+function questHTML(){const D=S.daily;let h='';for(const q of D.q)h+=`<div class="cy" style="text-align:left;border-top:2px solid #d9a868;padding-top:5px"><span>${q.p>=q.n?'✔':'○'} ${qlabel(q)}</span><b>${q.p>=q.n?'done':q.p+'/'+q.n}<br><small>+${q.r}</small></b></div>`;
+ return h+`<p>${D.bonus?'All done! Bonus claimed.':'Finish all 3 for a +50 bonus.'}</p><p style="font-size:11px">Come back tomorrow for a bigger gift (grows to day 7).</p>`}
+function questPanel(gift){if(!S.daily||S.daily.day!==today())gift=dayCheck()||gift;openPanel(`<button class="xb" data-a="close" aria-label="Close">X</button><h2>${gift?'Welcome back!':'Daily quests'}</h2><p><b>${S.streak||1}-day streak</b>${gift?` · gift +${gift} ${bone()}`:''}</p>`+questHTML())}
+function noticePanel(tab){if(!S.daily||S.daily.day!==today())dayCheck();tab=tab===undefined?(S.seenVer!==VER&&S.nbDay===today()?1:0):+tab;if(tab)S.seenVer=VER;else S.nbDay=today();save();
+ let h=`<button class="xb" data-a="close" aria-label="Close">X</button><h2>Notice board</h2><div class="row"><button class="btn sm ${tab?'':'on'}" data-a="nb" data-v="0">Challenges</button><button class="btn sm ${tab?'on':''}" data-a="nb" data-v="1">What's new${S.seenVer!==VER?' •':''}</button></div>`;
+ if(!tab)h+=`<p><b>${S.streak||1}-day streak</b> · today's challenges</p>`+questHTML();
+ else{h+=`<div style="text-align:left;max-height:46vh;overflow:auto">`;for(const[v,d,l]of NEWS)h+=`<p style="margin:8px 0 2px"><b>Version ${v}</b> · ${d}</p>`+l.map(t=>`<p style="margin:0 0 2px;font-size:12px">• ${t}</p>`).join('');h+='</div>'}
+ openPanel(h)}
+let MAPC=null;const BCOL={kennel:['#d83a3a','Your kennel'],shop:['#3a6fd8','Pup Shop'],cafe:['#2aa69a','Café'],hall:['#8a4fd8','Hall of Fame'],cabin:['#3a8a3a',"Ranger's Cabin"]};
+function mapPanel(){const K=3;if(!MAPC){MAPC=mk(MW*K,MH*K);const x=MAPC.x;for(let y=0;y<MH;y++)for(let i=0;i<MW;i++)px(x,i*K,y*K,K,K,BASE[map[I(i,y)]]||BASE[0]);
+  for(const o of objs)if(o.k==='tree')px(x,(o.x/16*K|0)-1,(o.y/16*K|0)-2,3,3,'#1f5f2a');px(x,46*K,47*K,4*K,3*K,'#9ad4f4');px(x,NB.x/16*K-3|0,NB.y/16*K-3|0,6,3,'#7a3e12');
+  for(const b of BLD){px(x,b.tx*K-1,b.ty*K-1,5*K+2,4*K+2,'#2a1a12');px(x,b.tx*K,b.ty*K,5*K,4*K,BCOL[b.id][0]);px(x,b.tx*K,b.ty*K,5*K,2,'rgba(255,255,255,.35)')}}
+ const c=mk(MW*K,MH*K),x=c.x;x.drawImage(MAPC,0,0);const mx=P.x/16*K|0,my=P.y/16*K|0,inP=G.scene==='park',ux=inP?mx:G.ret[0]/16*K|0,uy=inP?my:G.ret[1]/16*K|0;
+ px(x,ux-4,uy-4,9,9,'#2a1a12');px(x,ux-3,uy-3,7,7,'#fff');px(x,ux-2,uy-2,5,5,'#e8302a');
+ x.font='bold 10px monospace';x.textAlign='center';x.lineWidth=3;x.strokeStyle='#2a1a12';x.fillStyle='#fff8e0';
+ for(const[t,a,b]of[['WOODS',19,13],['POND',78,19],['LAWNS',47,31],['BEACH',77,82],['MEADOW',19,84],['PLAZA',47.5,43]]){x.strokeText(t,a*K,b*K);x.fillText(t,a*K,b*K)}
+ openPanel(`<button class="xb" data-a="close" aria-label="Close">X</button><h2>Park map</h2><img class="px" src="${c.toDataURL()}" style="width:100%;height:auto;border:3px solid #7a3e12;box-sizing:border-box" alt="Park map"><p style="font-size:11px;line-height:1.9;margin:6px 0 0"><span style="background:#e8302a;border:2px solid #fff;outline:2px solid #2a1a12;display:inline-block;width:8px;height:8px"></span> You &nbsp;${BLD.map(b=>`<span style="white-space:nowrap"><span style="background:${BCOL[b.id][0]};border:1px solid #2a1a12;display:inline-block;width:10px;height:10px;vertical-align:-1px"></span> ${BCOL[b.id][1]}</span>`).join(' &nbsp; ')}</p>`)}
 function deco(){const hs=S.home,own=S.hown||(S.hown=[]);let h=`<button class="xb" data-a="menu" aria-label="Close">X</button><h2>Decorate kennel</h2><div class="tr">${bone()} ${S.treats} treats</div>`;
  for(const[cat,ttl]of[['wall','Walls'],['floor','Floor'],['rug','Rug']]){h+=`<h3>${ttl}</h3><div class="row">`;DECO[cat].forEach((it,i)=>{const o=!it[1]||own.includes(cat+i);h+=`<button class="btn sm ${hs[cat]===i?'on':''} ${o?'':'lock'}" data-a="dbuy" data-v="${cat}:${i}"><span style="display:inline-block;width:22px;height:12px;vertical-align:middle;border:1px solid #5a2a0a;background:linear-gradient(90deg,${it[2][0]} 50%,${it[2][cat==='rug'?1:2]} 50%)"></span> ${it[0]}${o?'':' · '+it[1]}</button>`});h+='</div>'}
  h+='<h3>Furniture</h3><div class="row">';DECO.it.forEach(it=>{const o=own.includes(it[0]);h+=`<button class="btn sm ${hs.it.includes(it[0])?'on':''} ${o?'':'lock'}" data-a="dbuy" data-v="it:${it[0]}">${it[1]}${o?'':' · '+it[2]}</button>`});
@@ -813,7 +832,7 @@ function settings(){openPanel(`<button class="xb" data-a="menu" aria-label="Clos
  <div class="two"><button class="btn alt" data-a="music">Music: ${S.music?'on':'off'}</button><button class="btn alt" data-a="sound">Sounds: ${S.sound?'on':'off'}</button></div>
  <button class="btn alt" data-a="how">How to play</button>
  <button class="btn lock sm" data-a="reset" data-v="0">Erase save</button>`)}
-function how(){openPanel(`<h2>How to play</h2><p style="text-align:left">• Drag anywhere to walk (or arrow keys).<br>• Walk into buildings: your kennel (red roof), the Pup Shop (blue), the café (teal, by the pond), the Hall of Fame (purple, south) and the Ranger's Cabin (green, in the woods).<br>• In your kennel, Tap any dog of yours to pat, praise or play.<br>• Level your dogs up with pats, treats and games to unlock tricks. Your buddy digs up treasure as you walk and gives you a perk.<br>• Check Daily quests in the clock menu, and spend treats on outfits and kennel decorations.<br>• Progress saves automatically on this device.<br>• Walk up to a dog and tap it, or tap the camera button.<br>• First earn its trust: hold or tap to move the treat and keep it in the gold zone. Don't let it hit either red end or you lose the dog.<br>• Then snap a pose. Sitting or tongue out = 1 star, a special pose = 2, the breed's signature pose = 3. Blinks and look-aways waste film. You get 3 shots.<br>• Different dogs hang out in different parts of the park, and at different real-world times: morning, daytime, evening and night.<br>• Tap the book (top left) for your Dogdex and the clock (top right) for settings. Dress your dogs up, play mini games to earn treats, and pick a buddy to walk with you.</p><button class="btn" data-a="settings">Back</button>`)}
+function how(){openPanel(`<h2>How to play</h2><p style="text-align:left">• Drag anywhere to walk (or arrow keys).<br>• Walk into buildings: your kennel (red roof), the Pup Shop (blue), the café (teal, by the pond), the Hall of Fame (purple, south) and the Ranger's Cabin (green, in the woods).<br>• In your kennel, Tap any dog of yours to pat, praise or play.<br>• Level your dogs up with pats, treats and games to unlock tricks. Your buddy digs up treasure as you walk and gives you a perk.<br>• You start at the fountain. The notice board beside it has your daily challenges and what's new; the Park map is in the clock menu.<br>• Check Daily quests in the clock menu, and spend treats on outfits and kennel decorations.<br>• Progress saves automatically on this device.<br>• Walk up to a dog and tap it, or tap the camera button.<br>• First earn its trust: hold or tap to move the treat and keep it in the gold zone. Don't let it hit either red end or you lose the dog.<br>• Then snap a pose. Sitting or tongue out = 1 star, a special pose = 2, the breed's signature pose = 3. Blinks and look-aways waste film. You get 3 shots.<br>• Different dogs hang out in different parts of the park, and at different real-world times: morning, daytime, evening and night.<br>• Tap the book (top left) for your Dogdex and the clock (top right) for settings. Dress your dogs up, play mini games to earn treats, and pick a buddy to walk with you.</p><button class="btn" data-a="settings">Back</button>`)}
 function dex(){let h=`<h2>Dogdex ${count()}/${BR.length}</h2><button class="btn sm ${S.pack?'on':'alt'}" data-a="pack">Walk all my dogs: ${S.pack?'on':'off'}</button><div class="grid">`;
  for(const b of BR){const d=S.dogs[b.id];
   h+=d?`<button class="cell" style="border-color:${RAR[b.r][1]}" data-a="dog" data-v="${b.id}">${im(dogSide(BV(b.id),0,d,1),1.5)}<br>${d.shiny?'✦ ':''}${esc(d.name)}<i>${b.n}</i></button>`
@@ -845,7 +864,7 @@ function charEdit(){PS={};const p=S.player;let h=`<h2>${S.started?'Your characte
 const ACT={
  leave(){closePanel();if(G.scene==='home')exitHome();closePet();setNear(null,null);S.pos=[P.x,P.y];save();titleInit();setState('title')},
  bali(){openPanel(S.bali?`<h2>Bali</h2><div class="c">${im(dogFront(BALI,0,null,true),3)}</div><p>Aussie Shepherd · <span class="tag" style="background:#e0851a">Uncatchable</span></p><p><i>Get too close and Bali spins into a tornado and blows you away. Nobody has ever got the photo.</i></p><p>Blown away ${S.bali} time${S.bali>1?'s':''}.</p><p style="font-size:11px">${count()>=BR.length?'Your Dogdex is complete. Bali will let you get close now.':'They say only someone who has caught every other breed could get near.'}</p><button class="btn" data-a="dex">Back</button>`:`<h2>???</h2><div class="c">${im(sil(dogFront(BALI,0,null,false)),3)}</div><p>They say a brown blur roams the park. Nobody has ever caught it.</p><button class="btn" data-a="dex">Back</button>`)},
- quests(){questPanel(0)},deco,album,
+ quests(){questPanel(0)},nb(v){sfx.blip();noticePanel(v)},map(){mapPanel()},deco,album,
  pack(){S.pack=!S.pack;save();packBuild();dex();if(S.pack)toast(packIds().length?'The whole pack is coming with you!':'Catch more dogs and they will all follow you.',2600)},
  photo(v){const d=S.dogs[v],ph=d.ph||{per:'D',st:d.stars},b=BY[v];openPanel(`<button class="xb" data-a="album" aria-label="Close">X</button><div class="card">${im(polaroid(CVB(b,ph.cv!=null?ph.cv:d.cv),ph.per,d.shiny,ph.pose),3)}<p style="margin:4px 0 0;color:#333">${esc(d.name)} the ${b.n}</p></div><div class="stars">${stars(ph.st||d.stars)}</div><p>${ph.pose?POSEN[ph.pose]+(ph.pose===sigPose(b)?' (signature)':'')+' · ':''}${ph.d?ph.d+' · ':''}${PNAME[ph.per]||''}${d.shiny?' · ✦ Shiny':''}</p>`)},
  dbuy(v){const[cat,id]=v.split(':'),hs=S.home,own=S.hown,key=cat==='it'?id:cat+id,cost=cat==='it'?DECO.it.find(i=>i[0]===id)[2]:DECO[cat][+id][1];let bought=false;
@@ -853,7 +872,7 @@ const ACT={
   if(cat==='it'){const i=hs.it.indexOf(id);if(i<0)hs.it.push(id);else if(!bought)hs.it.splice(i,1)}else hs[cat]=+id;buildHome();save();deco()},
  sbuy(v){const o=OUTFITS.find(q=>q.id===v);if(S.owned.includes(v))return;if(S.treats<o.cost){sfx.buzz();toast(`You need ${o.cost-S.treats} more treats.`);return}S.treats-=o.cost;S.owned.push(v);save();sfx.coin();shopPanel()},
  pupround(){const ids=Object.keys(S.dogs);if(!ids.length){toast('You have no dogs yet!');return}if(S.treats<25){sfx.buzz();toast(`You need ${25-S.treats} more treats.`);return}S.treats-=25;ids.forEach(id=>addBond(id,1));sfx.jingle();closePanel();toast('Slurp! Every dog gained 1 bond.',2600)},
- saynext(){if(!SAY||SAY.i>=SAY.l.length-1){SAY=null;closePanel();return}SAY.i++;sfx.tap&&sfx.tap();sayShow()},
+ saynext(){if(!SAY||SAY.i>=SAY.l.length-1){SAY=null;closePanel();return}SAY.i++;sfx.blip();sayShow()},
  menu,settings,close:closePanel,dex,how,hint,dog:dogPage,dress,playm:playMenu,char:charEdit,
  chardone(){PS={};const first=!S.started,pn=$('#pn');if(pn)S.player.name=pn.value.trim().slice(0,12);if(G.fromTitle){G.fromTitle=false;if(S.started)save();closePanel();titleInit();return}S.started=true;save();dayCheck();closePanel();setState('world');if(first)toast('Drag anywhere to walk. Go find a dog!',4500)},
  cyc(v){const[k,d]=v.split(':'),n=CY.find(c=>c[0]===k)[2];S.player[k]=(S.player[k]+ +d+n)%n;save();charEdit()},
@@ -1129,6 +1148,7 @@ function tapWorld(x,y){
  for(const d of dogs)if(!d.leave&&Math.abs(wx-d.x)<14&&wy>d.y-30&&wy<d.y+6&&Math.hypot(d.x-P.x,d.y-P.y)<40)return startEncounter(d);
  if(!S.dogs.bali&&BAL.near&&Math.abs(wx-BAL.x)<14&&wy>BAL.y-30&&wy<BAL.y+6)return startEncounter(BAL);
  if(Math.abs(wx-CAT.x)<12&&wy>CAT.y-18&&wy<CAT.y+5&&Math.hypot(CAT.x-P.x,CAT.y-P.y)<60)return catYo();
+ if(Math.abs(wx-NB.x)<18&&wy>NB.y-32&&wy<NB.y+4&&Math.hypot(NB.x-P.x,NB.y-P.y)<70)return noticePanel();
  if(BUD.on&&S.buddy&&Math.abs(wx-BUD.x)<14&&wy>BUD.y-30&&wy<BUD.y+6)return openPet(BUD,S.buddy);
  for(let i=PACK.length-1;i>=0;i--){const e=PACK[i];if(Math.abs(wx-e.x)<12&&wy>e.y-26&&wy<e.y+6)return openPet(e,e.id)}}
 addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;keys[e.key.toLowerCase()]=true;audioInit();
@@ -1181,6 +1201,7 @@ function update(dt){G.time+=dt;G.dt=dt;
  const spd=movePlayer(dt,blocked);
  if(P.moving){fpD+=spd*dt;if(fpD>7){fpD=0;fpS=-fpS;const t=map[I(P.x>>4,P.y>>4)],life=[2.2,9,0,1,3,2.6,1.4][t];if(life)FP.push({x:P.x-P.vy/spd*2.5*fpS,y:P.y-1+P.vx/spd*1.5*fpS,t:life,l:life,k:t})}}
  for(const f of FP)f.t-=dt;if(FP.length&&(FP[0].t<=0||FP.length>200))FP=FP.filter(f=>f.t>0).slice(-200);
+ if(P.my<-.3&&Math.abs(P.x-NB.x)<17&&P.y>NB.y&&P.y<NB.y+9){keysClear();P.y=NB.y+10;return noticePanel()}
  if(P.my<-.3)for(const b of BLD)if(P.y<b.y+10&&P.y>b.y-6&&Math.abs(P.x-b.x)<8)return enterRoom(b.id);
  const z=zoneAt(P.x>>4,P.y>>4);if(z!==G.zone){if(G.zone)toast('~ '+ZNAME[z].replace(/^the /,'The ')+' ~',1800);G.zone=z}
  let near=null,nd=30;
@@ -1335,7 +1356,7 @@ function renderHome(){const W=HOME.w*16,H=HOME.h*16;px(g,0,0,vw,vh,'#120a06');
  for(const d of HOME.dogs){const x=d.x+ox,y=d.y+oy;if(d.emo)emoB(d,x,y-headTop(d)-1);else if(d.near)txt(S.dogs[d.id]?S.dogs[d.id].name:'',x,y-headTop(d)-5,5,'#fff')}
  drawJoy()}
 const AMB={ducks:[0,1,2,3].map(i=>({a:i*1.7,i})),bf:[]};
-const OCC={tent:[17,24],cart:[14,30],swing:[16,30],tree:[15,42],house:[44,82],shop:[44,82],cafe:[44,82],hall:[44,82],cabin:[44,82],umbrella:[15,36],statue:[10,34],fountain:[26,46],lamp:[5,30]},CASTK={pfence:1,cart:1,tent:1,hay:1,surf:1,swing:1,tree:1,bush:1,lamp:1,house:1,shop:1,cafe:1,hall:1,cabin:1,umbrella:1,statue:1,sign:1,bin:1,stump:1,table:1,rock:1};
+const OCC={tent:[17,24],cart:[14,30],swing:[16,30],tree:[15,42],house:[44,82],shop:[44,82],cafe:[44,82],hall:[44,82],cabin:[44,82],umbrella:[15,36],statue:[10,34],fountain:[26,46],lamp:[5,30]},CASTK={board:1,pfence:1,cart:1,tent:1,hay:1,surf:1,swing:1,tree:1,bush:1,lamp:1,house:1,shop:1,cafe:1,hall:1,cabin:1,umbrella:1,statue:1,sign:1,bin:1,stump:1,table:1,rock:1};
 const OSPR=o=>o.k==='tree'?SPR.tree[o.v]:SPR[o.k];
 function render(){
  g.setTransform(K,0,0,K,0,0);g.imageSmoothingEnabled=false;
@@ -1363,6 +1384,7 @@ function render(){
   else{const oc=OCC[o.k];let ta=1;if(oc&&P.y<o.y&&P.y>o.y-oc[1]&&Math.abs(P.x-o.x)<oc[0])ta=.36;o.a=o.a===undefined?1:o.a+(ta-o.a)*Math.min(1,(G.dt||.016)*10);
    g.globalAlpha=o.a;spr(OSPR(o),x,y,o.s||1);g.globalAlpha=1;
    if(o.k==='fire'){const t=G.time*9|0;for(let i=0;i<6;i++)px(g,sn(x)-3+((t+i*3)%6),sn(y)-6-((t*2+i*5)%8),2,2,i%3===0?'#fff0a0':i%2?'#ffd84a':'#ff8a2a')}
+   if(o.k==='board'&&nbNew())spr(SPR.bang,x,y-32+Math.sin(G.time*5)*1.5,1);
    if(o.k==='fountain'){const t=G.time*6|0;for(let i=0;i<5;i++){const a=(i*1.3+t*.7)%6.28;px(g,sn(x)+(Math.cos(a)*(6+(t+i)%5)|0),sn(y)-36+((t*3+i*7)%14),1,2,'#dff4ff')}}}}
  if(LV.night<.5){if(!AMB.bf.length){const r=rng(5);for(let i=0;i<26;i++)AMB.bf.push({x:(i<18?4+r()*34:40+r()*50)*16,y:(i<18?58+r()*32:30+r()*60)*16,p:r()*6,c:['#fff','#f2c230','#f08ab8','#7ab0ff'][i%4]})}
   for(const b of AMB.bf){const X=b.x+Math.sin(G.time*.7+b.p)*22+Math.sin(G.time*2.1+b.p)*5-cam.x,Y=b.y+Math.cos(G.time*.9+b.p*2)*14-cam.y;if(X<-4||Y<-4||X>vw+4||Y>vh+4)continue;const f=(G.time*9+b.p)&1;px(g,sn(X)-(f?2:1),sn(Y),f?2:1,2,b.c);px(g,sn(X)+1,sn(Y),f?2:1,2,b.c);px(g,sn(X),sn(Y),1,2,'#3a2a20')}}
@@ -1395,13 +1417,12 @@ function render(){
 let last=0;
 function frame(t){const dt=Math.min(.05,(t-last)/1000||0);last=t;update(dt);render();requestAnimationFrame(frame)}
 function boot(){load();mkSprites();genWorld();buildHome();resize();ACTI=[im(SPR.cam,3),im(SPR.bang,3)];$('#dexB').innerHTML=im(SPR.iBook,2)+'<span id="dexN"></span>'+im(SPR.bone,1.5)+'<span id="trN"></span>';
- if(S.pos&&!blocked(S.pos[0],S.pos[1])){P.x=S.pos[0];P.y=S.pos[1]}
  for(let i=0;i<44;i++)dogs.push(spawnDog({},false));baliSpawn();catSpawn();
  updClock();setInterval(updClock,1000);titleInit();requestAnimationFrame(frame);
- idbOpen().then(idbGet).then(j=>{if(j){try{const d=JSON.parse(j);if(d&&d.v===1&&(d.ts||0)>(S.ts||0)&&G.state==='title'){Object.assign(S,d);PS={};buildHome();if(S.pos&&!blocked(S.pos[0],S.pos[1])){P.x=S.pos[0];P.y=S.pos[1]}titleInit()}}catch(e){}}
+ idbOpen().then(idbGet).then(j=>{if(j){try{const d=JSON.parse(j);if(d&&d.v===1&&(d.ts||0)>(S.ts||0)&&G.state==='title'){Object.assign(S,d);PS={};buildHome();titleInit()}}catch(e){}}
   if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{})});
  if('serviceWorker'in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
- window.__pp={get PACK(){return PACK},sigPose,TT,CAT,catYo,ROOMS,BLD,enterRoom,resetPS(){PS={}},CV,CVB,BAL,BALI,HOME,BUD,enterHome,exitHome,openPet,G,P,get S(){return S},dogs,BR,BY,startEncounter,snap,startMini,dogFront,dogSide,playerSpr,SPR,get MINI(){return MINI},menu,dex,zoneAt,spr,save}}
+ window.__pp={get PACK(){return PACK},sigPose,TT,CAT,catYo,ROOMS,BLD,enterRoom,resetPS(){PS={}},CV,CVB,NB,SPAWN,noticePanel,mapPanel,BAL,BALI,HOME,BUD,enterHome,exitHome,openPet,G,P,get S(){return S},dogs,BR,BY,startEncounter,snap,startMini,dogFront,dogSide,playerSpr,SPR,get MINI(){return MINI},menu,dex,zoneAt,spr,save}}
 boot();
 })();
 </script>
